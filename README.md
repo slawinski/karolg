@@ -32,7 +32,11 @@ On the first admin visit Payload will guide you through creating the first user.
 - **Media** — image uploads with generated `card` and `hero` sizes.
 - **Users** — Payload administrators.
 
-The frontend ships with art-directed placeholder compositions so the design is complete before content entry. The supplied Instagram profile was used as the visual/content reference; upload Carla’s full-resolution originals in Payload and select them on Site Settings / Projects to replace the placeholders.
+## Temporary photo placeholders
+
+The public site currently uses a small set of WebP crops taken from the Instagram screenshot supplied during the design process. They are intentionally low-resolution **development placeholders only** and live in `public/placeholders/`.
+
+Once original photographs are available, upload them to Payload Media and assign them to **Site Settings → Hero Media** and the relevant **Projects → Cover / Gallery** fields. CMS images automatically take precedence over the screenshot placeholders.
 
 ## Performance decisions
 

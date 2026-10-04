@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
-import { fallbackProjects, getPortfolioData } from '@/lib/portfolio'
+import { fallbackProjects, getPortfolioData, placeholderMedia } from '@/lib/portfolio'
 
 export const revalidate = 300
 
@@ -185,7 +185,7 @@ export default async function HomePage() {
         {Array.from({ length: 9 }, (_, index) => (
           <div className="frame contact-thumb" key={index}>
             <Visual
-              media={null}
+              media={placeholderMedia[index % placeholderMedia.length]}
               alt={`Portfolio preview ${index + 1}`}
               sizes="(max-width: 700px) 25vw, 12vw"
               variant={index + 1}

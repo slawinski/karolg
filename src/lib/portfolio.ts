@@ -36,6 +36,44 @@ export type SiteLike = {
   seoDescription?: string | null
 }
 
+export const placeholderMedia: MediaLike[] = [
+  {
+    url: '/placeholders/instagram-01.webp',
+    alt: 'Carla Gorecka in a Pilates movement pose — temporary screenshot crop',
+    width: 320,
+    height: 320,
+  },
+  {
+    url: '/placeholders/instagram-02.webp',
+    alt: 'Carla Gorecka seated in black — temporary screenshot crop',
+    width: 320,
+    height: 320,
+  },
+  {
+    url: '/placeholders/instagram-04.webp',
+    alt: 'Black and white fashion portrait of Carla Gorecka — temporary screenshot crop',
+    width: 320,
+    height: 320,
+  },
+  {
+    url: '/placeholders/instagram-05.webp',
+    alt: 'Playful close portrait of Carla Gorecka — temporary screenshot crop',
+    width: 320,
+    height: 320,
+  },
+  {
+    url: '/placeholders/instagram-06.webp',
+    alt: 'Carla Gorecka in a brown top and denim — temporary screenshot crop',
+    width: 320,
+    height: 320,
+  },
+]
+
+const rotatePlaceholders = (offset: number) =>
+  Array.from({ length: placeholderMedia.length }, (_, index) =>
+    placeholderMedia[(index + offset) % placeholderMedia.length],
+  )
+
 export const fallbackSite: Required<
   Pick<
     SiteLike,
@@ -49,6 +87,7 @@ export const fallbackSite: Required<
   heroHeadline: 'A CREATIVE APPROACH TO MODELING',
   handwrittenLine: 'Movement · People · Stories',
   intro: 'Fashion, movement and natural portraiture — with a body-aware point of view.',
+  heroMedia: placeholderMedia[1],
   instagram: 'https://www.instagram.com/carlagorecka/',
   seoDescription: 'Portfolio of Carla Gorecka — model, classical Pilates teacher and creative.',
   locations: [{ label: 'WARSAW' }, { label: 'WORLDWIDE' }],
@@ -64,7 +103,8 @@ export const fallbackProjects: ProjectLike[] = [
     slug: 'editorials',
     category: 'editorial',
     excerpt: 'Graphic portraits, studio light and character-led fashion frames.',
-    cover: null,
+    cover: placeholderMedia[2],
+    gallery: rotatePlaceholders(2),
     order: 1,
   },
   {
@@ -72,7 +112,8 @@ export const fallbackProjects: ProjectLike[] = [
     slug: 'movement',
     category: 'movement',
     excerpt: 'Classical Pilates, line, control and motion translated into image.',
-    cover: null,
+    cover: placeholderMedia[0],
+    gallery: rotatePlaceholders(0),
     featured: true,
     order: 2,
   },
@@ -81,7 +122,8 @@ export const fallbackProjects: ProjectLike[] = [
     slug: 'personal',
     category: 'personal',
     excerpt: 'Unpolished, playful and close — the person between assignments.',
-    cover: null,
+    cover: placeholderMedia[3],
+    gallery: rotatePlaceholders(3),
     order: 3,
   },
   {
@@ -89,7 +131,8 @@ export const fallbackProjects: ProjectLike[] = [
     slug: 'portraits',
     category: 'portrait',
     excerpt: 'Natural portraits with a direct, modern casting-book feel.',
-    cover: null,
+    cover: placeholderMedia[4],
+    gallery: rotatePlaceholders(4),
     order: 4,
   },
 ]

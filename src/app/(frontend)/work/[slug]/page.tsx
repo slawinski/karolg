@@ -5,7 +5,12 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
-import { fallbackProjects, type MediaLike, type ProjectLike } from '@/lib/portfolio'
+import {
+  fallbackProjects,
+  placeholderMedia,
+  type MediaLike,
+  type ProjectLike,
+} from '@/lib/portfolio'
 
 export const revalidate = 300
 
@@ -42,9 +47,7 @@ export default async function WorkPage({ params }: Props) {
   if (!project) notFound()
 
   const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
-  const images: Array<MediaLike | null> = gallery.length
-    ? gallery
-    : Array.from({ length: 5 }, () => null)
+  const images: MediaLike[] = gallery.length ? gallery : placeholderMedia
 
   return (
     <main className="work-page">

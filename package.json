@@ -5,7 +5,7 @@
   "description": "Carla Gorecka portfolio — Next.js + Payload CMS",
   "license": "UNLICENSED",
   "type": "module",
-  "packageManager": "pnpm@10.9.2",
+  "packageManager": "pnpm@10.34.6",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=4096\" payload build",

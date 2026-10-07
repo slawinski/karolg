@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import {
-  fallbackProjects,
-  notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
 import { fallbackProjects,

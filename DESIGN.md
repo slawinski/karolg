@@ -1,67 +1,224 @@
-# Design — THE PROOF WALL
+# Design — Editorial Fashion System
 
-A printer's galley meets the Factory drying rack. Ink, pressure, misregistration —
-brutalist-editorial pushed from polite paper into the print shop after hours.
+The site should feel like a high-fashion editorial spread that happens to be interactive.
 
-## Color strategy: Committed
+The visual direction is **editorial fashion minimalism + Swiss modernism + cinematic neo-luxury**. It is deliberately less like a conventional portfolio website and more like a sequence of composed magazine spreads, campaign artboards, title cards, and image-led scenes.
 
-One saturated ink carries whole regions. Light ground picked from the use scene:
-proofs are judged under gallery daylight against paper, so the ground is paper.
+This direction explicitly replaces the earlier acid-lime / brutalist concept.
 
-- `--paper`: #f4f1e6 (proofing stock, warm-neutral)
-- `--ink`: #141311 (body ink, off-black — never pure #000)
-- `--signal`: #e8380d (vermilion selection ink; marks the active pull, selects, links)
-- `--signal-deep`: #b32a08 (small mono uses — keeps small text AA)
-- `--ink-soft`: #4a463c (secondary text, warm tint of the surface hue — never gray)
-- `--paper-2`: #e7e2d2 (mount board for quiet zones)
-- Secondary text on colored ground is tinted from that hue, never gray.
+## Design intent
 
-## Type
+The work leads. Interface recedes.
 
-- Chase/display: Anton 400 in caps via `next/font/google` (`--chase` variable;
-  fallback `Arial Narrow, Helvetica Neue, sans-serif`). Tracking -0.02em,
-  never below -0.04em. Display type verified against 320px overflow.
-- Text: workhorse grotesque, sentence case, 65–75ch measure.
-- Labels/measurements (edition marks, folio numbers, registration notes):
-  `ui-monospace` stack — used for data and measurement, which is its legitimate
-  job, not a costume.
-- No gradient text. Emphasis = weight or size. No eyebrow on every section:
-  edition marks (`ED. 01/04`, folio numbers) are the recurring label system
-  because the sequence carries information the reader needs.
+Each major viewport should feel intentionally art-directed rather than assembled from familiar web components. The visitor should experience a sequence of composed screens:
 
-## Material and composition
+1. opening portrait / identity
+2. editorial index or portfolio navigation
+3. immersive project spreads
+4. profile / measurements / representation
+5. contact
 
-- Furniture bars: 2–3px ink rules lock regions (the chase). Borders declare
-  elevation alone — no ghost cards, no soft shadows under bordered panels.
-- Halftone dot screen (`radial-gradient` dots) is allowed as a printing artifact
-  of this world; fractal-noise grain is not.
-- Registration crosses in margins are the world's own grammar (simple geometric
-  marks), not decoration.
-- Home scroll = walking the drying rack: stories are editions, keeper print
-  large with variant pulls and selects beside it. Rack grid reflows from
-  multi-up sheets to single pulls on small screens.
-- Radius: all-sharp (0). Pills only for small controls, if any.
+The site may scroll normally, horizontally, or use composed transitions where appropriate, but it should never feel like a generic header → hero → cards → footer template.
 
-## Motion (one authored moment)
+## Visual family
 
-The squeegee-wipe proof reveal, scroll-driven (`clip-path`, exponential
-ease-out, content visible by default). Everything else is still. Hovering a
-frame shifts its ink layers a hair off-register (printed shudder); active
-selection swaps which ink sits on top. Reduced motion locks all layers in
-perfect registration and makes reveals instant. No scroll listeners, no
-`window.scrollY` in state — CSS scroll-driven animations only.
+### Keep
 
-## States and interaction
+- fashion-magazine art direction
+- strong Swiss / International Typographic Style structure
+- cinematic image-first layouts
+- high-contrast editorial serif typography
+- restrained grotesk sans-serif for UI and metadata
+- large shifts in typographic scale: very large identity text + very small precise metadata
+- disciplined asymmetry
+- full-bleed or near-full-bleed photography
+- generous negative space
+- thin rules, indices, measurements, folio numbers, and quiet technical labels
+- monochrome and muted photography, with natural skin tones allowed to carry warmth
+- subtle overlapping of type and image when it improves composition
+- screens that read as deliberate spreads rather than stacked modules
 
-- Selects carry the signal-red pull; links underline on hover (hover-capable
-  only) with 44px targets on coarse pointers.
-- Focus-visible: 2px ink outlines (signal on dark ground), never removed.
-- Loading/empty/error: Payload-driven regions keep skeletal shapes matching
-  final layout; CMS failures fall back to fallback content, never to blank chrome.
+### Drop
 
-## Responsive rules
+- acid-lime as a signature color
+- brutalism / neo-brutalism
+- avant-garde-for-its-own-sake
+- handwritten or scribbled typography
+- halftone, print-shop, proof-wall, registration-mark, or misprint metaphors
+- loud clashes, intentionally awkward type collisions, and hostile spacing
+- heavy graphic gimmicks
+- novelty UI that distracts from the person and photography
+- conventional card grids when an editorial composition can do the job better
 
-The 5-tier system survives the new world: mobile ≤640 / tablet 641–1024 /
-laptop 1025–1440 / desktop base / wide ≥1720. Small screens fan one edition per
-viewport; the edition grid never wraps mid-thought. Touch never depends on
-hover. Type is run at every breakpoint until nothing overflows.
+## Color strategy
+
+The default palette should be quiet and photographic:
+
+- --black: #0b0b0a
+- --charcoal: #171715
+- --warm-white: #f3f0e8
+- --soft-white: #e8e4dc
+- --mid: #8a857c
+- --line: a low-contrast tint derived from the current surface
+
+Photography may introduce warm skin tones, brown, cream, black, red clothing, and other natural image colors.
+
+If an accent is used, it should be restrained and contextual — for example dusty burgundy, muted bronze, or warm beige. The site does **not** require a brand accent color.
+
+Dark and light editorial spreads may alternate. The transition between them should feel intentional rather than decorative.
+
+## Typography
+
+### Display
+
+Use an elegant high-contrast serif for:
+
+- Carla Gorecka identity
+- project titles
+- editorial statements
+- large section transitions
+
+Characteristics:
+
+- refined, fashion-editorial, not ornamental
+- large optical scale
+- tight but controlled spacing
+- allowed to overlap photography where legibility survives
+- never used as a shock device
+
+### Interface / metadata
+
+Use a neutral grotesk sans-serif for:
+
+- navigation
+- measurements
+- representation
+- project indices
+- labels
+- credits
+- contact information
+
+Small text should feel precise and calm, with deliberate tracking. Metadata should resemble editorial production notes or agency information, not developer-console UI.
+
+Avoid handwritten fonts and decorative display systems.
+
+## Composition
+
+The grid is strong but should not be obvious everywhere.
+
+Preferred patterns:
+
+- one dominant image with a narrow secondary image at the edge
+- full-height portrait with tiny metadata floating in negative space
+- asymmetrical two- or three-column editorial spreads
+- oversized serif identity crossing image boundaries
+- horizontal portfolio reels with partial adjacent frames visible
+- bottom or side strips of selected works
+- measurements aligned like magazine or agency data
+- quiet overlays on photography
+- alternating image-led and type-led scenes
+
+Photography is part of the composition, not content placed inside a card.
+
+Cards, rounded panels, badges, floating glass surfaces, and conventional dashboard-like components should be avoided unless functionally necessary.
+
+## Image treatment
+
+Photography should remain the emotional center of the experience.
+
+- prefer original crops over decorative masks
+- black-and-white may be used heavily
+- color imagery should remain natural and muted
+- preserve skin texture and photographic grain
+- avoid artificial duotones and aggressive color grading
+- use editorial crops: close portraits, off-center framing, edge crops, and partial bodies are welcome
+- let images touch viewport edges when composition benefits
+
+The temporary Instagram screenshot crops are development placeholders only. Final art direction should be revisited when full-resolution originals are available.
+
+## Motion
+
+Motion should be cinematic and restrained.
+
+Appropriate:
+
+- subtle crossfades
+- measured image reveals
+- slow horizontal movement between portfolio frames
+- understated text entrance
+- small parallax or crop movement where it adds depth
+- smooth project-to-project transitions
+
+Avoid:
+
+- bouncy easing
+- constant motion
+- novelty cursor effects
+- scroll hijacking
+- flashy WebGL
+- aggressive kinetic typography
+- motion that competes with the photography
+
+The site must remain fully understandable with prefers-reduced-motion enabled.
+
+## Interaction
+
+Navigation should be quiet, obvious, and secondary to the work.
+
+- contact is always easy to find
+- project navigation may feel like an editorial index
+- horizontal galleries must still work naturally on touch
+- no interaction may depend on hover
+- links and controls must retain visible focus states
+- minimum touch targets: 44px
+- no hidden navigation puzzles
+
+## Responsive composition
+
+The existing 5-tier responsive model remains:
+
+- mobile ≤640
+- tablet 641–1024
+- laptop 1025–1440
+- desktop base
+- wide ≥1720
+
+Responsive design is not just stacking desktop blocks vertically. Each breakpoint should preserve the editorial idea of the spread.
+
+On small screens:
+
+- prioritize one strong image at a time
+- preserve generous typography
+- simplify secondary metadata without deleting important facts
+- maintain intentional crop and rhythm
+- horizontal reels may become swipeable sequences
+- avoid cramped multi-column arrangements
+
+The mobile result should still feel like a designed fashion publication, not a collapsed desktop site.
+
+## Accessibility
+
+- WCAG AA contrast for functional text
+- 44px touch targets
+- visible keyboard focus
+- semantic navigation
+- prefers-reduced-motion
+- meaningful image alt text
+- avoid placing essential text where photography can make it unreadable
+
+## Design test
+
+A screen belongs in this system if it could plausibly exist as:
+
+- a luxury fashion editorial spread
+- a modern model agency book
+- a campaign title card
+- an art-directed portfolio page
+
+It does not belong if it primarily reads as:
+
+- a startup landing page
+- a component-library demo
+- a brutalist experiment
+- an art-school typography exercise
+- a conventional portfolio template

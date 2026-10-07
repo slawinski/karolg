@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+.env.local
+*.log
+.DS_Store
+data/*.db
+data/*.db-*
+public/media/*
+!public/media/.gitkeep
+payload-types.ts
+src/payload-types.ts

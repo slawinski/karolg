@@ -1,5 +1,5 @@
 ---
-version: 2
+version: 3
 slug: "src-app-frontend-page-tsx"
 primary_target: "src/app/(frontend)/page.tsx"
 related_targets: ["src/app/(frontend)/work/[slug]/page.tsx"]
@@ -23,11 +23,11 @@ Secondary action: **explore work**.
 
 ## Chosen direction
 
-**Editorial fashion minimalism + Swiss modernism + cinematic neo-luxury.**
+**Editorial fashion minimalism + cinematic neo-luxury.**
 
 The home page should feel like a sequence of composed screens or magazine spreads. Each viewport gets a strong visual idea; interface chrome stays quiet.
 
-This replaces the previous acid-lime, proof-wall, brutalist, and avant-garde directions.
+This replaces the previous acid-lime, proof-wall, brutalist, avant-garde, and Swiss-modernist directions.
 
 ## First viewport
 
@@ -43,7 +43,7 @@ Preferred composition:
 - optional partial next/previous image at an edge to imply a wider body of work
 - contact remains visible but quiet
 
-Do not use a conventional centered hero with CTA buttons.
+Do not use a conventional centered hero with CTA buttons or a rigid modernist poster grid.
 
 ## Page rhythm
 
@@ -78,6 +78,7 @@ When original photography arrives, art direction should be reviewed again.
 - very large type may coexist with very small metadata
 - no handwritten, marker, stencil, or intentionally distressed type
 - no brutalist all-caps wall-of-type treatment
+- do not use Swiss / International Style rigidity as a design motif
 
 ## Interaction and motion
 
@@ -143,4 +144,4 @@ The redesign should stay performance-first: Server Components where possible, op
 
 The result should feel closer to a luxury fashion editorial, agency book, or campaign microsite than to a normal portfolio template.
 
-If a section looks like a generic card grid, SaaS landing page, brutalist experiment, or art-school typography exercise, redesign it.
+If a section looks like a generic card grid, SaaS landing page, brutalist experiment, rigid Swiss-modernist poster, or art-school typography exercise, redesign it.

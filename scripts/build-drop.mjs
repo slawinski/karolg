@@ -1,4 +1,4 @@
-import { access, rename, rm } from 'node:fs/promises'
+import { access, copyFile, rename, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
@@ -6,6 +6,9 @@ import path from 'node:path'
 const root = process.cwd()
 const payloadApp = path.join(root, 'src', 'app', '(payload)')
 const parkedPayloadApp = path.join(root, '.drop-payload-app')
+const portfolioFile = path.join(root, 'src', 'lib', 'portfolio.ts')
+const staticPortfolioFile = path.join(root, 'src', 'lib', 'portfolio.static.ts')
+const parkedPortfolioFile = path.join(root, '.drop-portfolio.ts')
 const outDir = path.join(root, 'out')
 
 const exists = async (target) => {
@@ -20,6 +23,7 @@ const exists = async (target) => {
 await rm(outDir, { recursive: true, force: true })
 
 let payloadWasParked = false
+let portfolioWasSwapped = false
 
 try {
   if (await exists(parkedPayloadApp)) {
@@ -28,10 +32,20 @@ try {
     )
   }
 
+  if (await exists(parkedPortfolioFile)) {
+    throw new Error(
+      'Found .drop-portfolio.ts from an earlier interrupted build. Restore or remove it before continuing.',
+    )
+  }
+
   if (await exists(payloadApp)) {
     await rename(payloadApp, parkedPayloadApp)
     payloadWasParked = true
   }
+
+  await rename(portfolioFile, parkedPortfolioFile)
+  await copyFile(staticPortfolioFile, portfolioFile)
+  portfolioWasSwapped = true
 
   const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 
@@ -56,6 +70,13 @@ try {
     console.log('\nStatic Cloudflare Drop build ready in ./out')
   }
 } finally {
+  if (portfolioWasSwapped) {
+    await rm(portfolioFile, { force: true })
+    if (await exists(parkedPortfolioFile)) {
+      await rename(parkedPortfolioFile, portfolioFile)
+    }
+  }
+
   if (payloadWasParked && (await exists(parkedPayloadApp))) {
     await rename(parkedPayloadApp, payloadApp)
   }

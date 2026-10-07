@@ -2,6 +2,7 @@ node_modules
 .next
 out
 .drop-payload-app
+.drop-portfolio.ts
 .env
 .env.local
 *.log

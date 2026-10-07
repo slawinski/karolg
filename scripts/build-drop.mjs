@@ -10,6 +10,7 @@ const portfolioFile = path.join(root, 'src', 'lib', 'portfolio.ts')
 const staticPortfolioFile = path.join(root, 'src', 'lib', 'portfolio.static.ts')
 const parkedPortfolioFile = path.join(root, '.drop-portfolio.ts')
 const outDir = path.join(root, 'out')
+const nextDir = path.join(root, '.next')
 
 const exists = async (target) => {
   try {
@@ -21,6 +22,7 @@ const exists = async (target) => {
 }
 
 await rm(outDir, { recursive: true, force: true })
+await rm(nextDir, { recursive: true, force: true })
 
 let payloadWasParked = false
 let portfolioWasSwapped = false

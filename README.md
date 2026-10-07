@@ -120,3 +120,17 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.example
 ~~~
 
 SQLite and local media are a good fit for a persistent single-server/container deployment. Mount both ./data and ./public/media as persistent volumes. For serverless/multi-instance hosting, move the database to Postgres and media to object storage before launch.
+
+
+## Cloudflare Drop preview
+
+This branch can be exported as a fully static preview for [Cloudflare Drop](https://www.cloudflare.com/drop/):
+
+~~~bash
+pnpm install
+pnpm build:drop
+~~~
+
+The command creates an `out/` directory containing plain HTML, CSS, JavaScript and image assets. Drag the **contents of `out/`** (or the `out/` folder itself) into Cloudflare Drop.
+
+Static preview mode intentionally uses the repository fallback content and placeholder images. Payload Admin and the Payload API are excluded from the export; normal `pnpm dev` / `pnpm build` behavior is unchanged and still uses Payload CMS.

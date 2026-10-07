@@ -49,15 +49,15 @@ The interaction model may include horizontal galleries or cinematic transitions 
 
 The binding visual family is:
 
-**editorial fashion minimalism + Swiss modernism + cinematic neo-luxury**
+**editorial fashion minimalism + cinematic neo-luxury**
 
-This replaces the previous acid-lime / brutalist direction.
+This replaces the previous acid-lime, brutalist, avant-garde, and Swiss-modernist directions.
 
 Key characteristics:
 
 - art-directed fashion-magazine composition
 - image-first layouts
-- strong grid discipline with controlled asymmetry
+- controlled asymmetry rather than rigid grid-display aesthetics
 - high-contrast serif display typography
 - neutral grotesk sans-serif UI and metadata
 - very large type paired with very small technical information
@@ -71,6 +71,7 @@ Explicitly excluded:
 
 - acid-lime as a signature color
 - brutalism / neo-brutalism
+- Swiss / International Style as a named visual direction
 - avant-garde typography as spectacle
 - handwritten/scribbled graphics
 - proof-wall, halftone, misregistration, or print-shop visual metaphors
@@ -106,7 +107,7 @@ Explicitly excluded:
 1. **The work leads from the first viewport.** Interface is quiet and secondary.
 2. **Every major screen is composed.** Think editorial spread, not stacked components.
 3. **Photography is layout.** Images are not merely content inside cards.
-4. **Precision over novelty.** Swiss structure and typographic discipline carry the experience.
+4. **Precision over novelty.** Editorial composition and typographic discipline carry the experience.
 5. **Luxury through restraint.** Calm spacing, strong imagery, and typography do more than decorative effects.
 6. **Fast scan, deep browse.** A booker gets facts quickly; a collaborator can linger.
 7. **Contact is always close.** Never make booking or inquiry a hunt.

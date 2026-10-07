@@ -5,9 +5,15 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
-import { fallbackProjects, placeholderMedia, type MediaLike, type ProjectLike } from '@/lib/portfolio'
+import {
+  fallbackProjects,
+  placeholderMedia,
+  type MediaLike,
+  type ProjectLike,
+} from '@/lib/portfolio'
 
 export const revalidate = 300
+
 type Props = { params: Promise<{ slug: string }> }
 
 async function getProject(slug: string): Promise<ProjectLike | null> {
@@ -19,8 +25,11 @@ async function getProject(slug: string): Promise<ProjectLike | null> {
       depth: 1,
       limit: 1,
     })
-    return (result.docs[0] as unknown as ProjectLike) ||
-      fallbackProjects.find((project) => project.slug === slug) || null
+    return (
+      (result.docs[0] as unknown as ProjectLike) ||
+      fallbackProjects.find((project) => project.slug === slug) ||
+      null
+    )
   } catch {
     return fallbackProjects.find((project) => project.slug === slug) || null
   }
@@ -38,7 +47,12 @@ export default async function WorkPage({ params }: Props) {
   if (!project) notFound()
 
   const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
-  const images = gallery.length ? gallery : placeholderMedia
+  const images = gallery.length
+    ? gallery
+    : [
+        ...placeholderMedia,
+        ...placeholderMedia.slice(0, 3),
+      ]
 
   return (
     <main className="artist-page">
@@ -53,22 +67,29 @@ export default async function WorkPage({ params }: Props) {
       </header>
 
       <section className="artist-head">
-        <h1>{project.title}</h1>
-        <div className="artist-cats">
+        <div>
+          <h1>{project.title}</h1>
+          <p className="artist-count">({String(images.length).padStart(2, '0')}) All</p>
+        </div>
+        <nav className="artist-filters" aria-label="Portfolio filters">
+          <span>All ({String(images.length).padStart(2, '0')})</span>
           <span>{project.category}</span>
           <span>Portrait</span>
           <span>Movement</span>
           <span>Personal</span>
-        </div>
+        </nav>
       </section>
 
-      <section className="artist-grid">
+      <section className="artist-masonry" aria-label={`${project.title} portfolio`}>
         {images.map((image, index) => (
-          <figure className={`artist-image artist-image-${(index % 6) + 1} image-frame`} key={index}>
+          <figure
+            className={`artist-masonry-item artist-masonry-item-${(index % 7) + 1} image-frame`}
+            key={index}
+          >
             <Visual
               media={image}
               alt={`${project.title} image ${index + 1}`}
-              sizes="(max-width: 760px) 100vw, 50vw"
+              sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
               variant={index + 1}
             />
           </figure>

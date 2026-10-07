@@ -1,5 +1,7 @@
 node_modules
 .next
+out
+.drop-payload-app
 .env
 .env.local
 *.log

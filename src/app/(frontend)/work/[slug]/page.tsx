@@ -1,40 +1,34 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import {
+  fallbackProjects,
+  notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
-import { fallbackProjects, placeholderMedia, type MediaLike, type ProjectLike } from '@/lib/portfolio'
+import { fallbackProjects,
+  placeholderMedia,
+  type MediaLike,
+  getProjectBySlug,
+} from '@/lib/portfolio'
 
 export const revalidate = 300
 type Props = { params: Promise<{ slug: string }> }
 
-async function getProject(slug: string): Promise<ProjectLike | null> {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'projects',
-      where: { slug: { equals: slug } },
-      depth: 1,
-      limit: 1,
-    })
-    return (result.docs[0] as unknown as ProjectLike) ||
-      fallbackProjects.find((project) => project.slug === slug) || null
-  } catch {
-    return fallbackProjects.find((project) => project.slug === slug) || null
-  }
+export const dynamicParams = false
+
+export function generateStaticParams() {
+  return fallbackProjects.map((project) => ({ slug: project.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const project = await getProject(slug)
+  const project = await getProjectBySlug(slug)
   return project ? { title: project.title, description: project.excerpt || undefined } : {}
 }
 
 export default async function WorkPage({ params }: Props) {
   const { slug } = await params
-  const project = await getProject(slug)
+  const project = await getProjectBySlug(slug)
   if (!project) notFound()
 
   const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]

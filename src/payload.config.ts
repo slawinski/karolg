@@ -11,6 +11,14 @@ import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const projectRoot = path.resolve(dirname, '..')
+
+const rawDbUrl = process.env.DATABASE_URL || 'file:./data/karolg.db'
+// Resolve relative sqlite paths against the project root so the DB connects
+// regardless of the process working directory.
+const dbUrl = rawDbUrl.startsWith('file:./')
+  ? `file:${path.resolve(projectRoot, rawDbUrl.slice('file:./'.length))}`
+  : rawDbUrl
 
 export default buildConfig({
   admin: {
@@ -22,7 +30,7 @@ export default buildConfig({
   globals: [SiteSettings],
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URL || 'file:./data/karolg.db',
+      url: dbUrl,
     },
   }),
   secret: process.env.PAYLOAD_SECRET || 'development-only-change-me',

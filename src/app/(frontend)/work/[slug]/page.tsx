@@ -4,9 +4,11 @@ import { notFound } from 'next/navigation'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Arrow } from '@/components/Arrow'
+import { EditionMark } from '@/components/EditionMark'
 import { Visual } from '@/components/Visual'
 import {
   fallbackProjects,
+  getPortfolioData,
   placeholderMedia,
   type MediaLike,
   type ProjectLike,
@@ -41,50 +43,100 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return project ? { title: project.title, description: project.excerpt || undefined } : {}
 }
 
+const padNumber = (value: number) => String(value).padStart(2, '0')
+
 export default async function WorkPage({ params }: Props) {
   const { slug } = await params
   const project = await getProject(slug)
   if (!project) notFound()
 
+  const { projects: orderedProjects } = await getPortfolioData()
+  const editionIndex = orderedProjects.findIndex((candidate) => candidate.slug === slug)
+
   const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
   const images: MediaLike[] = gallery.length ? gallery : placeholderMedia
+  const rhythm = ['pull-a', 'pull-b', 'pull-c'] as const
+  const year = new Date().getFullYear()
 
   return (
-    <main className="work-page">
-      <header className="work-header shell">
-        <Link className="wordmark compact" href="/">
+    <main className="sheet">
+      <header className="rack-bar shell">
+        <Link className="wordmark" href="/" aria-label="Carla Gorecka home">
           <span>CARLA</span>
           <span>GORECKA</span>
         </Link>
-        <Link href="/#work">
-          Back to work <Arrow />
+        <nav className="rack-nav" aria-label="Primary navigation">
+          <Link href="/#work">Work</Link>
+          <Link href="/#about">About</Link>
+          <Link href="/#contact">Contact</Link>
+        </nav>
+        <Link className="rack-cta" href="/#work">
+          Back to rack <Arrow />
         </Link>
+        <details className="rack-menu">
+          <summary aria-label="Open menu">Menu</summary>
+          <nav aria-label="Mobile navigation">
+            <Link href="/#work">Back to rack</Link>
+            <Link href="/#about">About</Link>
+            <Link href="/#contact">Contact</Link>
+          </nav>
+        </details>
       </header>
 
-      <section className="work-hero shell">
-        <p className="eyebrow">{project.category}</p>
-        <h1>{project.title}</h1>
-        <p>{project.excerpt}</p>
+      <section className="sheet-hero shell">
+        <EditionMark index={editionIndex >= 0 ? editionIndex : undefined} folio={`EDITION SHEET — ${project.category}`} note="LOCKED CHASE" />
+        <h1 className="chase">
+          {project.title
+            .split(' ')
+            .filter(Boolean)
+            .map((word) => (
+              <span className="chase-line" key={word}>
+                <span className="chase-ink">{word}</span>
+                <span className="chase-signal" aria-hidden="true">
+                  {word}
+                </span>
+              </span>
+            ))}
+        </h1>
+        {project.excerpt ? <p className="sheet-excerpt">{project.excerpt}</p> : null}
+        <p className="sheet-meta">
+          {project.category}
+          {project.year ? ` — ${project.year}` : ''} — {images.length} PULL{images.length === 1 ? '' : 'S'} ON
+          THE RACK
+        </p>
       </section>
 
-      <section className="work-gallery shell">
+      <section className="sheet-rack shell" aria-label={`${project.title} pulls`}>
         {images.map((item, index) => (
-          <figure className={`frame gallery-item gallery-item-${(index % 3) + 1}`} key={index}>
-            <Visual
-              media={item}
-              alt={`${project.title} image ${index + 1}`}
-              sizes="(max-width: 760px) 100vw, 60vw"
-              variant={index + 1}
-            />
+          <figure className={`sheet-pull ${rhythm[index % rhythm.length]}`} key={index}>
+            <div className="frame reveal">
+              <Visual
+                media={item}
+                alt={`${project.title} pull ${index + 1}`}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 58vw"
+                variant={index + 1}
+                select={index === 1}
+              />
+            </div>
+            <figcaption className="pull-note">
+              <span>
+                PULL {padNumber(index + 1)}/{padNumber(images.length)}
+                {index === 1 ? ' — SELECT' : ''}
+              </span>
+              <span>REG ✓</span>
+            </figcaption>
           </figure>
         ))}
       </section>
 
-      <footer className="footer shell">
-        <Link href="/">Home</Link>
-        <a href="https://www.instagram.com/carlagorecka/" target="_blank" rel="noreferrer">
-          Instagram <Arrow diagonal />
-        </a>
+      <footer className="colophon shell">
+        <p>© {year} Carla Gorecka</p>
+        <p>
+          {project.title} — pulled on paper, set in Anton
+        </p>
+        <Link href="/#work">
+          Back to rack <Arrow />
+        </Link>
       </footer>
     </main>
   )

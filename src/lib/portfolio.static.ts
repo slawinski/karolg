@@ -147,62 +147,10 @@ export function mediaAlt(media: MediaLike | string | number | null | undefined, 
   return object?.alt || fallback
 }
 
-const isStaticExport = process.env.STATIC_EXPORT === '1'
-
-async function getPayloadClient() {
-  const [{ default: configPromise }, { getPayload }] = await Promise.all([
-    import('@payload-config'),
-    import('payload'),
-  ])
-
-  return getPayload({ config: configPromise })
-}
-
 export async function getProjectBySlug(slug: string): Promise<ProjectLike | null> {
-  if (isStaticExport) {
-    return fallbackProjects.find((project) => project.slug === slug) || null
-  }
-
-  try {
-    const payload = await getPayloadClient()
-    const result = await payload.find({
-      collection: 'projects',
-      where: { slug: { equals: slug } },
-      depth: 1,
-      limit: 1,
-    })
-
-    return (
-      (result.docs[0] as unknown as ProjectLike) ||
-      fallbackProjects.find((project) => project.slug === slug) ||
-      null
-    )
-  } catch {
-    return fallbackProjects.find((project) => project.slug === slug) || null
-  }
+  return fallbackProjects.find((project) => project.slug === slug) || null
 }
 
 export async function getPortfolioData() {
-  if (isStaticExport) {
-    return { site: fallbackSite, projects: fallbackProjects }
-  }
-
-  try {
-    const payload = await getPayloadClient()
-    const [site, projectResult] = await Promise.all([
-      payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-      payload.find({ collection: 'projects', depth: 1, limit: 20, sort: 'order' }),
-    ])
-
-    const projects = (projectResult.docs as unknown as ProjectLike[]).length
-      ? (projectResult.docs as unknown as ProjectLike[])
-      : fallbackProjects
-
-    return {
-      site: { ...fallbackSite, ...(site as unknown as SiteLike) },
-      projects,
-    }
-  } catch {
-    return { site: fallbackSite, projects: fallbackProjects }
-  }
+  return { site: fallbackSite, projects: fallbackProjects }
 }

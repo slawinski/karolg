@@ -11,146 +11,97 @@ import {
 
 export const revalidate = 300
 
-const categoryLabel = (value: string) =>
-  (
-    {
-      editorial: 'Editorial',
-      campaign: 'Campaign',
-      personal: 'Personal',
-      movement: 'Movement',
-      portrait: 'Portrait',
-    } as Record<string, string>
-  )[value] || value
-
 const galleryOf = (project: ProjectLike): MediaLike[] =>
   (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
 
 export default async function HomePage() {
   const { site, projects } = await getPortfolioData()
   const pool = projects.length ? projects : fallbackProjects
-  const featured = pool.slice(0, 4)
-  const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
-  const locations = (site.locations || []).filter((location) => location.label)
+  const stories = pool.slice(0, 6)
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const hero = site.heroMedia || placeholderMedia[1]
-  const secondary = galleryOf(featured[0] || fallbackProjects[0])[1] || placeholderMedia[2]
-  const portrait = galleryOf(featured[2] || fallbackProjects[2])[0] || placeholderMedia[3]
+  const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
 
   return (
     <main className="site">
-      <header className="header shell">
-        <a className="brand" href="#top" aria-label="Carla Gorecka home">
-          Carla Gorecka
-        </a>
+      <header className="header">
+        <a className="brand" href="#top">Carla Gorecka</a>
         <nav className="nav" aria-label="Primary navigation">
           <a href="#work">Work</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
         </nav>
-        <a className="instagram" href={instagram} target="_blank" rel="noreferrer">
-          Instagram <Arrow diagonal />
+        <a className="menu-link" href={instagram} target="_blank" rel="noreferrer">
+          Instagram
         </a>
       </header>
 
-      <section className="hero shell" id="top">
-        <div className="hero-copy">
-          <p className="kicker">{site.roles}</p>
+      <section className="opening" id="top">
+        <div className="opening-copy">
+          <p className="eyebrow">{site.roles}</p>
           <h1>
-            <span>Carla</span>
-            <span>Gorecka</span>
+            Carla is model.
+            <br />
+            Carla is movement.
+            <br />
+            Carla is creative.
           </h1>
-          <div className="hero-bottom">
-            <p className="intro">{site.intro}</p>
-            <dl className="facts">
-              {facts.map((fact, index) => (
-                <div key={`${fact.label}-${index}`}>
-                  <dt>{fact.label}</dt>
-                  <dd>{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+          <p className="opening-intro">{site.intro}</p>
         </div>
 
-        <figure className="hero-image image-frame">
-          <Visual media={hero} alt="Carla Gorecka portrait" priority sizes="(max-width: 760px) 100vw, 58vw" />
+        <figure className="opening-image image-frame">
+          <Visual media={hero} alt="Carla Gorecka portrait" priority sizes="(max-width: 760px) 100vw, 56vw" />
         </figure>
-
-        <div className="hero-side">
-          <p>
-            {locations.map((location) => location.label).join(' / ')}
-          </p>
-          <p>{site.handwrittenLine}</p>
-        </div>
       </section>
 
-      <section className="work shell" id="work">
-        <div className="section-intro">
-          <p className="kicker">Selected work</p>
-          <h2>Portfolio</h2>
-          <p>Fashion, portraiture and movement, edited as a sequence rather than a grid.</p>
+      <section className="news" id="work">
+        <div className="section-label">
+          <h2>Selected work</h2>
+          <span>{String(stories.length).padStart(2, '0')} stories</span>
         </div>
 
-        <div className="work-list">
-          {featured.map((project, index) => {
+        <div className="news-grid">
+          {stories.map((project, index) => {
             const gallery = galleryOf(project)
             const image = project.cover || gallery[0] || placeholderMedia[index % placeholderMedia.length]
-            const alt = gallery[1] || placeholderMedia[(index + 2) % placeholderMedia.length]
             return (
-              <article className="work-row" key={project.slug}>
-                <div className="work-meta">
-                  <span className="work-no">{String(index + 1).padStart(2, '0')}</span>
-                  <div>
-                    <p>{categoryLabel(project.category)}</p>
-                    <h3>{project.title}</h3>
-                    <p className="excerpt">{project.excerpt}</p>
-                    <Link href={`/work/${project.slug}`}>
-                      View story <Arrow />
-                    </Link>
-                  </div>
-                </div>
-                <Link className="work-image image-frame" href={`/work/${project.slug}`}>
+              <Link className={`news-item news-item-${index + 1}`} href={`/work/${project.slug}`} key={project.slug}>
+                <figure className="image-frame">
                   <Visual
                     media={image}
                     alt={project.title}
-                    sizes="(max-width: 760px) 100vw, 55vw"
+                    sizes="(max-width: 760px) 100vw, 48vw"
                     variant={index + 1}
                   />
-                </Link>
-                <div className="work-thumb image-frame">
-                  <Visual
-                    media={alt}
-                    alt={`${project.title} detail`}
-                    sizes="(max-width: 760px) 38vw, 14vw"
-                    variant={index + 2}
-                  />
+                </figure>
+                <div className="news-meta">
+                  <span>{project.category}</span>
+                  <h3>{project.title}</h3>
+                  <Arrow />
                 </div>
-              </article>
+              </Link>
             )
           })}
         </div>
       </section>
 
-      <section className="about shell" id="about">
-        <div className="about-images">
-          <figure className="about-large image-frame">
-            <Visual media={portrait} alt="Carla Gorecka portrait" sizes="(max-width: 760px) 100vw, 42vw" />
-          </figure>
-          <figure className="about-small image-frame">
-            <Visual media={secondary} alt="Carla Gorecka editorial detail" sizes="(max-width: 760px) 42vw, 18vw" />
-          </figure>
-        </div>
+      <section className="about" id="about">
         <div className="about-copy">
-          <p className="kicker">About</p>
-          <h2>Body-aware, image-first.</h2>
-          <p>{site.intro}</p>
-          <p>
-            The portfolio brings together modeling, movement and portraiture without separating them
-            into different identities.
-          </p>
-          <dl className="facts about-facts">
+          <p className="about-line">Carla is model.</p>
+          <p className="about-line">Carla is movement.</p>
+          <p className="about-line">Carla is portraiture.</p>
+          <p className="about-line">Carla is presence.</p>
+          <p className="about-line">Come create together.</p>
+        </div>
+
+        <div className="about-detail">
+          <div>
+            <p>{site.intro}</p>
+            <p>{site.handwrittenLine}</p>
+          </div>
+          <dl className="facts">
             {facts.map((fact, index) => (
-              <div key={`about-${fact.label}-${index}`}>
+              <div key={`${fact.label}-${index}`}>
                 <dt>{fact.label}</dt>
                 <dd>{fact.value}</dd>
               </div>
@@ -159,19 +110,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="contact shell" id="contact">
-        <p className="kicker">Bookings / collaborations</p>
-        <h2>Let&apos;s make something memorable.</h2>
-        <div className="contact-links">
-          {site.email ? <a href={`mailto:${site.email}`}>{site.email} <Arrow diagonal /></a> : null}
-          <a href={instagram} target="_blank" rel="noreferrer">@carlagorecka <Arrow diagonal /></a>
+      <footer className="footer" id="contact">
+        <div className="footer-col">
+          <h2>Work</h2>
+          {pool.slice(0, 5).map((project) => (
+            <Link href={`/work/${project.slug}`} key={project.slug}>{project.title}</Link>
+          ))}
         </div>
-      </section>
-
-      <footer className="footer shell">
-        <p>© {new Date().getFullYear()} Carla Gorecka</p>
-        <p>Model · Pilates · Creative</p>
-        <a href="/admin">CMS <Arrow diagonal /></a>
+        <div className="footer-col">
+          <h2>Explore</h2>
+          <a href="#about">About</a>
+          <a href="#work">Selected work</a>
+          <a href="/admin">CMS</a>
+        </div>
+        <div className="footer-col">
+          <h2>Connect</h2>
+          {site.email ? <a href={`mailto:${site.email}`}>{site.email}</a> : null}
+          <a href={instagram} target="_blank" rel="noreferrer">@carlagorecka</a>
+        </div>
+        <div className="footer-signoff">
+          <p>Carla is model.</p>
+          <p>Carla is movement.</p>
+          <p>Come create with her.</p>
+        </div>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} Carla Gorecka</span>
+          <span>Warsaw / Worldwide</span>
+        </div>
       </footer>
     </main>
   )

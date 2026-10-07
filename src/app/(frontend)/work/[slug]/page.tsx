@@ -8,7 +8,6 @@ import { Visual } from '@/components/Visual'
 import { fallbackProjects, placeholderMedia, type MediaLike, type ProjectLike } from '@/lib/portfolio'
 
 export const revalidate = 300
-
 type Props = { params: Promise<{ slug: string }> }
 
 async function getProject(slug: string): Promise<ProjectLike | null> {
@@ -20,11 +19,8 @@ async function getProject(slug: string): Promise<ProjectLike | null> {
       depth: 1,
       limit: 1,
     })
-    return (
-      (result.docs[0] as unknown as ProjectLike) ||
-      fallbackProjects.find((project) => project.slug === slug) ||
-      null
-    )
+    return (result.docs[0] as unknown as ProjectLike) ||
+      fallbackProjects.find((project) => project.slug === slug) || null
   } catch {
     return fallbackProjects.find((project) => project.slug === slug) || null
   }
@@ -45,34 +41,61 @@ export default async function WorkPage({ params }: Props) {
   const images = gallery.length ? gallery : placeholderMedia
 
   return (
-    <main className="story-page">
-      <header className="header shell">
+    <main className="artist-page">
+      <header className="header">
         <Link className="brand" href="/">Carla Gorecka</Link>
-        <Link className="instagram" href="/#work">Back to work <Arrow /></Link>
+        <nav className="nav" aria-label="Primary navigation">
+          <Link href="/#work">Work</Link>
+          <Link href="/#about">About</Link>
+          <Link href="/#contact">Contact</Link>
+        </nav>
+        <Link className="menu-link" href="/#work">Close</Link>
       </header>
 
-      <section className="story-head shell">
-        <p className="kicker">{project.category}{project.year ? ` / ${project.year}` : ''}</p>
+      <section className="artist-head">
         <h1>{project.title}</h1>
-        {project.excerpt ? <p>{project.excerpt}</p> : null}
+        <div className="artist-cats">
+          <span>{project.category}</span>
+          <span>Portrait</span>
+          <span>Movement</span>
+          <span>Personal</span>
+        </div>
       </section>
 
-      <section className="story-gallery shell">
+      <section className="artist-grid">
         {images.map((image, index) => (
-          <figure className={`story-image story-image-${(index % 3) + 1} image-frame`} key={index}>
+          <figure className={`artist-image artist-image-${(index % 6) + 1} image-frame`} key={index}>
             <Visual
               media={image}
               alt={`${project.title} image ${index + 1}`}
-              sizes="(max-width: 760px) 100vw, 68vw"
+              sizes="(max-width: 760px) 100vw, 50vw"
               variant={index + 1}
             />
           </figure>
         ))}
       </section>
 
-      <footer className="footer shell">
-        <Link href="/#work">Selected work</Link>
-        <Link href="/#contact">Contact <Arrow /></Link>
+      <section className="artist-info">
+        <div>
+          <h2>{project.title}</h2>
+          {project.excerpt ? <p>{project.excerpt}</p> : null}
+        </div>
+        <div>
+          <p className="eyebrow">Work / Bio / Contact</p>
+          <Link href="/#contact">Bookings <Arrow /></Link>
+        </div>
+      </section>
+
+      <footer className="footer compact-footer">
+        <div className="footer-signoff">
+          <p>Carla is model.</p>
+          <p>Carla is movement.</p>
+          <p>Come create with her.</p>
+        </div>
+        <div className="footer-bottom">
+          <Link href="/#work">All work</Link>
+          <span>© {new Date().getFullYear()} Carla Gorecka</span>
+        </div>
       </footer>
     </main>
   )

@@ -2,9 +2,9 @@
 
 The site should feel like a high-fashion editorial spread that happens to be interactive.
 
-The visual direction is **editorial fashion minimalism + Swiss modernism + cinematic neo-luxury**. It is deliberately less like a conventional portfolio website and more like a sequence of composed magazine spreads, campaign artboards, title cards, and image-led scenes.
+The visual direction is **editorial fashion minimalism + cinematic neo-luxury**. It is deliberately less like a conventional portfolio website and more like a sequence of composed magazine spreads, campaign artboards, title cards, and image-led scenes.
 
-This direction explicitly replaces the earlier acid-lime / brutalist concept.
+This direction explicitly replaces the earlier acid-lime, brutalist, avant-garde, and Swiss-modernist references.
 
 ## Design intent
 
@@ -25,23 +25,24 @@ The site may scroll normally, horizontally, or use composed transitions where ap
 ### Keep
 
 - fashion-magazine art direction
-- strong Swiss / International Typographic Style structure
 - cinematic image-first layouts
 - high-contrast editorial serif typography
 - restrained grotesk sans-serif for UI and metadata
 - large shifts in typographic scale: very large identity text + very small precise metadata
-- disciplined asymmetry
+- elegant, controlled asymmetry
 - full-bleed or near-full-bleed photography
 - generous negative space
 - thin rules, indices, measurements, folio numbers, and quiet technical labels
 - monochrome and muted photography, with natural skin tones allowed to carry warmth
 - subtle overlapping of type and image when it improves composition
 - screens that read as deliberate spreads rather than stacked modules
+- typographic precision without turning the composition into a rigid modernist grid
 
 ### Drop
 
 - acid-lime as a signature color
 - brutalism / neo-brutalism
+- Swiss / International Style as a visual reference
 - avant-garde-for-its-own-sake
 - handwritten or scribbled typography
 - halftone, print-shop, proof-wall, registration-mark, or misprint metaphors
@@ -100,11 +101,11 @@ Use a neutral grotesk sans-serif for:
 
 Small text should feel precise and calm, with deliberate tracking. Metadata should resemble editorial production notes or agency information, not developer-console UI.
 
-Avoid handwritten fonts and decorative display systems.
+Avoid handwritten fonts, decorative display systems, and rigid modernist typography used as an aesthetic statement.
 
 ## Composition
 
-The grid is strong but should not be obvious everywhere.
+The layout should feel composed rather than visibly grid-driven.
 
 Preferred patterns:
 
@@ -117,6 +118,7 @@ Preferred patterns:
 - measurements aligned like magazine or agency data
 - quiet overlays on photography
 - alternating image-led and type-led scenes
+- irregular but deliberate image proportions that feel art-directed rather than system-generated
 
 Photography is part of the composition, not content placed inside a card.
 
@@ -220,5 +222,6 @@ It does not belong if it primarily reads as:
 - a startup landing page
 - a component-library demo
 - a brutalist experiment
+- a Swiss-modernist poster translated too literally to the web
 - an art-school typography exercise
 - a conventional portfolio template

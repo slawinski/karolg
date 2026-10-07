@@ -17,110 +17,136 @@ const galleryOf = (project: ProjectLike): MediaLike[] =>
 export default async function HomePage() {
   const { site, projects } = await getPortfolioData()
   const pool = projects.length ? projects : fallbackProjects
-  const selected = pool.slice(0, 4)
+  const selected = pool.slice(0, 5)
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const hero = site.heroMedia || placeholderMedia[1]
-  const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
 
   return (
     <main className="site">
-      <header className="header shell">
-        <a className="brand" href="#top">Carla Gorecka</a>
-        <nav className="nav" aria-label="Primary navigation">
+      <header className="header">
+        <nav className="nav nav-left" aria-label="Primary navigation">
           <a href="#work">Work</a>
-          <a href="#about">Profile</a>
+          <a href="#profile">Profile</a>
           <a href="#contact">Contact</a>
         </nav>
-        <a className="ig" href={instagram} target="_blank" rel="noreferrer">Instagram</a>
+        <a className="brand-mini" href="#top">CG</a>
+        <div className="nav nav-right">
+          <a href={instagram} target="_blank" rel="noreferrer">Instagram</a>
+          <a href="/admin">CMS</a>
+        </div>
       </header>
 
       <section className="hero" id="top">
         <figure className="hero-media image-frame">
           <Visual media={hero} alt="Carla Gorecka" priority sizes="100vw" />
         </figure>
-        <div className="hero-title shell">
-          <h1>
-            <span>Carla</span>
-            <span>Gorecka</span>
-          </h1>
-        </div>
-        <div className="hero-caption shell">
-          <p>{site.roles}</p>
-          <p>{site.intro}</p>
+        <div className="hero-copy">
+          <p className="hero-note">Model · Movement · Creative</p>
+          <h1>Carla Gorecka</h1>
+          <p className="hero-small">{site.intro}</p>
         </div>
       </section>
 
-      <section className="intro shell" id="about">
-        <p className="eyebrow">Profile</p>
-        <div className="intro-grid">
-          <h2>{site.heroHeadline || 'A creative approach to modeling'}</h2>
-          <div className="intro-copy">
-            <p>{site.intro}</p>
-            <dl className="facts">
-              {facts.map((fact, index) => (
-                <div key={`${fact.label}-${index}`}>
-                  <dt>{fact.label}</dt>
-                  <dd>{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </div>
+      <section className="season-intro">
+        <p>Selected work</p>
+        <h2>Portfolio 2026</h2>
       </section>
 
-      <section className="work shell" id="work">
-        <div className="work-head">
-          <p className="eyebrow">Selected work</p>
-          <p>{selected.length} stories</p>
-        </div>
+      <section className="campaigns" id="work">
+        {selected.map((project, index) => {
+          const gallery = galleryOf(project)
+          const primary = project.cover || gallery[0] || placeholderMedia[index % placeholderMedia.length]
+          const secondary = gallery[1] || placeholderMedia[(index + 1) % placeholderMedia.length]
 
-        <div className="work-grid">
-          {selected.map((project, index) => {
-            const gallery = galleryOf(project)
-            const image = project.cover || gallery[0] || placeholderMedia[index % placeholderMedia.length]
+          if (index === 0) {
             return (
-              <Link className={`work-item work-item-${index + 1}`} href={`/work/${project.slug}`} key={project.slug}>
+              <Link className="campaign campaign-full" href={`/work/${project.slug}`} key={project.slug}>
                 <figure className="image-frame">
-                  <Visual
-                    media={image}
-                    alt={project.title}
-                    sizes="(max-width: 760px) 100vw, 58vw"
-                    variant={index + 1}
-                  />
+                  <Visual media={primary} alt={project.title} sizes="100vw" variant={index + 1} />
                 </figure>
-                <div className="work-label">
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  <div>
+                <div className="campaign-overlay">
+                  <p>{project.category}</p>
+                  <h3>{project.title}</h3>
+                  <span>View story</span>
+                </div>
+              </Link>
+            )
+          }
+
+          if (index === 1) {
+            return (
+              <section className="split-story" key={project.slug}>
+                <Link className="split-main image-frame" href={`/work/${project.slug}`}>
+                  <Visual media={primary} alt={project.title} sizes="(max-width: 760px) 100vw, 66vw" variant={index + 1} />
+                  <div className="split-label">
+                    <p>{project.category}</p>
                     <h3>{project.title}</h3>
-                    <p>{project.category}{project.year ? ` · ${project.year}` : ''}</p>
                   </div>
+                </Link>
+                <Link className="split-side image-frame" href={`/work/${project.slug}`}>
+                  <Visual media={secondary} alt={`${project.title} detail`} sizes="(max-width: 760px) 100vw, 34vw" variant={index + 2} />
+                  <span className="side-caption">Explore</span>
+                </Link>
+              </section>
+            )
+          }
+
+          if (index === 2) {
+            return (
+              <Link className="campaign campaign-letterbox" href={`/work/${project.slug}`} key={project.slug}>
+                <figure className="image-frame">
+                  <Visual media={primary} alt={project.title} sizes="100vw" variant={index + 1} />
+                </figure>
+                <div className="letterbox-title">
+                  <span>{project.category}</span>
+                  <h3>{project.title}</h3>
                   <Arrow />
                 </div>
               </Link>
             )
-          })}
-        </div>
+          }
+
+          return (
+            <Link className={`campaign campaign-half campaign-half-${index}`} href={`/work/${project.slug}`} key={project.slug}>
+              <figure className="image-frame">
+                <Visual media={primary} alt={project.title} sizes="(max-width: 760px) 100vw, 50vw" variant={index + 1} />
+              </figure>
+              <div className="half-title">
+                <p>{project.category}</p>
+                <h3>{project.title}</h3>
+              </div>
+            </Link>
+          )
+        })}
       </section>
 
-      <section className="statement">
-        <div className="shell statement-inner">
+      <section className="profile" id="profile">
+        <p className="eyebrow">Profile</p>
+        <h2>{site.heroHeadline || 'A creative approach to modeling'}</h2>
+        <div className="profile-grid">
+          <p>{site.intro}</p>
           <p>{site.handwrittenLine}</p>
-          <h2>Quiet images. Strong presence.</h2>
         </div>
       </section>
 
-      <section className="contact shell" id="contact">
-        <p className="eyebrow">Bookings / collaborations</p>
-        <h2>Available for selected projects.</h2>
-        <div className="contact-row">
+      <section className="contact" id="contact">
+        <div>
+          <p className="eyebrow">Bookings / collaborations</p>
+          <h2>Carla Gorecka</h2>
+        </div>
+        <div className="contact-links">
           {site.email ? <a href={`mailto:${site.email}`}>{site.email} <Arrow diagonal /></a> : null}
           <a href={instagram} target="_blank" rel="noreferrer">@carlagorecka <Arrow diagonal /></a>
         </div>
       </section>
 
-      <footer className="footer shell">
+      <footer className="footer">
+        <div>
+          <a href="#work">Work</a>
+          <a href="#profile">Profile</a>
+          <a href="#contact">Contact</a>
+        </div>
         <p>© {new Date().getFullYear()} Carla Gorecka</p>
-        <a href="/admin">CMS</a>
       </footer>
     </main>
   )

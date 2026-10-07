@@ -39,21 +39,33 @@ export default async function WorkPage({ params }: Props) {
 
   const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
   const images = gallery.length ? gallery : placeholderMedia
+  const hero = project.cover || images[0]
 
   return (
     <main className="story-page">
-      <header className="header shell">
-        <Link className="brand" href="/">Carla Gorecka</Link>
-        <Link className="ig" href="/#work">Back <Arrow /></Link>
+      <header className="header">
+        <Link className="nav-back" href="/#work">Back</Link>
+        <Link className="brand-mini" href="/">CG</Link>
+        <Link className="nav-back nav-back-right" href="/#contact">Contact</Link>
       </header>
 
-      <section className="story-intro shell">
-        <p className="eyebrow">{project.category}{project.year ? ` · ${project.year}` : ''}</p>
-        <h1>{project.title}</h1>
-        {project.excerpt ? <p>{project.excerpt}</p> : null}
+      <section className="story-hero">
+        <figure className="story-hero-media image-frame">
+          <Visual media={hero} alt={project.title} priority sizes="100vw" />
+        </figure>
+        <div className="story-hero-copy">
+          <p>{project.category}{project.year ? ` · ${project.year}` : ''}</p>
+          <h1>{project.title}</h1>
+        </div>
       </section>
 
-      <section className="story-gallery shell">
+      {project.excerpt ? (
+        <section className="story-text">
+          <p>{project.excerpt}</p>
+        </section>
+      ) : null}
+
+      <section className="story-gallery">
         {images.map((image, index) => (
           <figure className={`story-frame story-frame-${(index % 4) + 1} image-frame`} key={index}>
             <Visual
@@ -66,10 +78,10 @@ export default async function WorkPage({ params }: Props) {
         ))}
       </section>
 
-      <footer className="footer shell">
-        <Link href="/#work">Selected work</Link>
-        <Link href="/#contact">Contact</Link>
-      </footer>
+      <section className="story-end">
+        <p>{project.title}</p>
+        <Link href="/#work">Next / all work <Arrow /></Link>
+      </section>
     </main>
   )
 }

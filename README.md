@@ -2,7 +2,7 @@
 
 A fast, responsive fashion / movement portfolio built with **Next.js 16** and **Payload CMS 3**.
 
-The current visual direction is **editorial fashion minimalism + Swiss modernism + cinematic neo-luxury**: image-first, highly art-directed, typographically precise, and intentionally less like a conventional website.
+The current visual direction is **editorial fashion minimalism + cinematic neo-luxury**: image-first, highly art-directed, typographically precise, and intentionally less like a conventional website.
 
 The experience should feel closer to a sequence of interactive fashion-editorial spreads than to a standard header → hero → cards → footer portfolio.
 
@@ -11,8 +11,8 @@ The experience should feel closer to a sequence of interactive fashion-editorial
 Core characteristics:
 
 - high-fashion editorial composition
-- strong Swiss / International Style grid discipline
 - cinematic, image-led layouts
+- controlled asymmetry rather than rigid grid-display aesthetics
 - high-contrast serif display type
 - neutral grotesk sans-serif for UI and metadata
 - extreme but controlled hierarchy: very large identity type + very small precise information
@@ -26,6 +26,7 @@ Explicitly **not** part of the direction:
 
 - acid-lime branding
 - brutalism / neo-brutalism
+- Swiss / International Style as a visual direction
 - avant-garde typography as spectacle
 - handwritten/scribbled graphics
 - proof-wall, halftone, or misregistration effects

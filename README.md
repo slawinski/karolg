@@ -29,7 +29,7 @@ In the admin:
 
 There is no Featured flag.
 
-The homepage automatically creates up to **five image slots per photoshoot** (four when a shoot has four images). Those slots are interleaved across photoshoots instead of appearing as one block. Each slot cycles through images belonging to that same photoshoot with a staggered bounce/fade transition.
+The homepage automatically creates up to **five image slots per photoshoot** (four when a shoot has four images). Those slots are interleaved across photoshoots instead of appearing as one block. Only the first card in each responsive column is eligible to swap. A single global scheduler changes one column at a time: after a 3 s idle period it preloads and decodes the next photo from the same photoshoot, runs a synchronized 1.5 s whole-column bounce plus outgoing → solid color → incoming image transition, then waits 3 s before choosing the next eligible column. The animation pauses immediately when both the title and first row leave the viewport, when the tab is hidden, or when reduced motion is enabled.
 
 Every homepage image links to:
 

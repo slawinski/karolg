@@ -24,75 +24,68 @@ img { display:block; }
   transition:transform .7s cubic-bezier(.2,.7,.2,1);
 }
 
-.swap-visual {
+.gallery-stage {
   position:absolute;
   inset:0;
   overflow:hidden;
-  background:var(--swap-wash,#d8d5cf);
+  isolation:isolate;
+  background:var(--frame-color,#b8afa5);
 }
 
-.swap-visual__wash {
+.gallery-stage__color,
+.gallery-stage__outgoing,
+.gallery-stage__incoming,
+.gallery-static-image {
   position:absolute;
   inset:0;
-  z-index:1;
-  background:var(--swap-wash,#d8d5cf);
+  width:100%;
+  height:100%;
 }
 
-.swap-visual__image {
+.gallery-stage__color {
+  z-index:0;
+  background:var(--frame-color,#b8afa5);
+}
+
+.gallery-stage__outgoing,
+.gallery-stage__incoming,
+.gallery-static-image {
+  display:block;
   object-fit:cover;
-  transform:translate3d(0,0,0);
-  backface-visibility:hidden;
+  object-position:center;
+  pointer-events:none;
 }
 
-.swap-visual__image--incoming {
+.gallery-stage__outgoing {
+  z-index:1;
+  opacity:1;
+}
+
+.gallery-stage__incoming {
   z-index:2;
   opacity:0;
 }
 
-.swap-visual__image--current {
-  z-index:3;
-  opacity:1;
+.gallery-stage.is-swapping .gallery-stage__outgoing {
+  animation:gallery-out 1500ms linear both;
 }
 
-.swap-visual.is-swapping .swap-visual__image--current {
-  animation:viv-image-out 2100ms cubic-bezier(.45,0,.2,1) both;
+.gallery-stage.is-swapping .gallery-stage__incoming {
+  animation:gallery-in 1500ms linear both;
 }
 
-.swap-visual.is-swapping .swap-visual__image--incoming {
-  animation:viv-image-in 2100ms cubic-bezier(.35,0,.18,1) both;
+@keyframes gallery-out {
+  0% { opacity:1; }
+  10% { opacity:.9; }
+  20% { opacity:.35; }
+  28.667%, 100% { opacity:0; }
 }
 
-/* Only the first card in a column can enter .is-swapping. The whole column
-   makes a large, slow spring excursion while the lead image passes through
-   a fully flat-color frame before the replacement appears. */
-.cursor-masonry__column {
-  --viv-bounce-down:clamp(72px,8vw,150px);
-  --viv-bounce-up:-30px;
-  --viv-bounce-settle:16px;
-  --viv-bounce-rebound:-7px;
-}
-
-.cursor-masonry__column:has(> .masonry-card:first-child .swap-visual.is-swapping) {
-  animation:viv-column-bounce 2100ms cubic-bezier(.22,.72,.2,1) both;
-}
-
-@keyframes viv-image-out {
-  0%, 14% { opacity:1; }
-  42%, 100% { opacity:0; }
-}
-
-@keyframes viv-image-in {
-  0%, 62% { opacity:0; }
-  100% { opacity:1; }
-}
-
-@keyframes viv-column-bounce {
-  0%, 12%, 100% { transform:translate3d(0,0,0); }
-  34% { transform:translate3d(0,var(--viv-bounce-down),0); }
-  52% { transform:translate3d(0,var(--viv-bounce-up),0); }
-  66% { transform:translate3d(0,var(--viv-bounce-settle),0); }
-  79% { transform:translate3d(0,var(--viv-bounce-rebound),0); }
-  90% { transform:translate3d(0,3px,0); }
+@keyframes gallery-in {
+  0%, 36.667% { opacity:0; }
+  50% { opacity:.28; }
+  62% { opacity:.72; }
+  73.333%, 100% { opacity:1; }
 }
 
 .visual-placeholder { position:absolute; inset:0; background:linear-gradient(145deg,#dad7d0,#918b82); }
@@ -198,7 +191,8 @@ img { display:block; }
   position:relative;
   z-index:1;
   width:100%;
-  overflow:hidden;
+  overflow-x:clip;
+  overflow-y:visible;
 }
 
 .cursor-masonry__rail {
@@ -225,7 +219,7 @@ img { display:block; }
 .cursor-masonry__column[data-column='3'] { padding-top:clamp(170px,22vw,430px); }
 .cursor-masonry__column[data-column='4'] { padding-top:0; }
 
-.cursor-masonry__column .masonry-card {
+.cursor-masonry__column-motion .masonry-card {
   display:block;
   margin-bottom:0;
 }
@@ -286,11 +280,11 @@ img { display:block; }
     will-change:auto;
   }
 
-  .cursor-masonry__column {
-    --viv-bounce-down:64px;
-    --viv-bounce-up:-20px;
-    --viv-bounce-settle:10px;
-    --viv-bounce-rebound:-5px;
+  .cursor-masonry__column-motion {
+    --bounce-down:clamp(50px,12svh,130px);
+    --bounce-up:clamp(-32px,-2.7svh,-12px);
+    --bounce-rebound:clamp(6px,1.4svh,18px);
+    --bounce-last-up:clamp(-6px,-.5svh,-2px);
     gap:8px;
   }
 
@@ -566,8 +560,9 @@ img { display:block; }
 @media (prefers-reduced-motion:reduce) {
   html { scroll-behavior:auto; }
   .visual-img { transition:none; }
-  .swap-visual__image,
-  .cursor-masonry__column { animation:none !important; }
+  .gallery-stage__outgoing,
+  .gallery-stage__incoming,
+  .cursor-masonry__column-motion { animation:none !important; }
   .cursor-masonry__rail {
     transform:none !important;
     will-change:auto;

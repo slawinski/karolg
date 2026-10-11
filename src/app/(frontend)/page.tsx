@@ -1,6 +1,8 @@
 import Link from 'next/link'
-import { CursorMasonry } from '@/components/CursorMasonry'
-import { SwappingVisual } from '@/components/SwappingVisual'
+import {
+  HomepageMasonry,
+  type HomepageMasonrySlot,
+} from '@/components/HomepageMasonry'
 import {
   getPortfolioData,
   photoshootOf,
@@ -44,13 +46,15 @@ export default async function HomePage() {
 
   // Interleave photoshoots instead of placing five images from one shoot together.
   // Every slot gets the full shoot as its swap pool, but starts on a different image.
-  const homeSlots = Array.from({ length: 5 }, (_, slotIndex) =>
+  const homeSlots: HomepageMasonrySlot[] = Array.from({ length: 5 }, (_, slotIndex) =>
     groups.flatMap((group) =>
       slotIndex < group.slots
         ? [{
-            photoshoot: group.photoshoot,
-            images: group.images,
-            startIndex: slotIndex % group.images.length,
+            id: `${group.photoshoot.id ?? group.photoshoot.slug}-${slotIndex}`,
+            photoshootSlug: group.photoshoot.slug,
+            photoshootTitle: group.photoshoot.title,
+            images: group.images.slice(0, 5),
+            startIndex: slotIndex % Math.min(group.images.length, 5),
           }]
         : [],
     ),
@@ -75,26 +79,7 @@ export default async function HomePage() {
             <span className="masonry-name__last">Gorecka</span>
           </h1>
 
-          <CursorMasonry>
-            {homeSlots.map(({ photoshoot, images, startIndex }, index) => (
-              <Link
-                className={`masonry-card masonry-card-${(index % 7) + 1}`}
-                href={`/work/${photoshoot.slug}`}
-                key={`${photoshoot.id ?? photoshoot.slug}-${startIndex}`}
-              >
-                <figure className="image-frame">
-                  <SwappingVisual
-                    images={images}
-                    startIndex={startIndex}
-                    seed={index + 1}
-                    alt={`${photoshoot.title} portfolio image`}
-                    sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 33vw"
-                    priority={index < 4}
-                  />
-                </figure>
-              </Link>
-            ))}
-          </CursorMasonry>
+          <HomepageMasonry slots={homeSlots} />
         </div>
       </section>
 

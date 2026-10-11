@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { CursorMasonry } from '@/components/CursorMasonry'
 import { Visual } from '@/components/Visual'
 import { getPortfolioData, photoshootOf } from '@/lib/portfolio'
 
@@ -53,7 +54,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="masonry-grid">
+        <CursorMasonry>
           {featured.map(({ image, photoshoot }, index) => (
             <Link
               className={`masonry-card masonry-card-${(index % 7) + 1}`}
@@ -64,7 +65,7 @@ export default async function HomePage() {
                 <Visual
                   media={image}
                   alt={image.alt || `${photoshoot.title} featured image ${index + 1}`}
-                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw"
                   variant={index + 1}
                 />
               </figure>
@@ -74,7 +75,7 @@ export default async function HomePage() {
               </div>
             </Link>
           ))}
-        </div>
+        </CursorMasonry>
       </section>
 
       <section className="about" id="about">

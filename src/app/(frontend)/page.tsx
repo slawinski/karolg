@@ -62,13 +62,7 @@ export default async function HomePage() {
 
   return (
     <main className="site" id="top">
-      <header className="header">
-        <span className="header-spacer" aria-hidden="true" />
-        <nav className="nav" aria-label="Primary navigation">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </nav>
+      <header className="header header--home">
         <a className="menu-link" href={instagram} target="_blank" rel="noreferrer">Instagram</a>
       </header>
 

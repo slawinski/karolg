@@ -50,7 +50,7 @@ const clamp = (value: number, min: number, max: number) =>
 const columnsForWidth = (width: number) => {
   if (width <= 700) return 2
   if (width <= 1100) return 3
-  return 4
+  return 5
 }
 
 const sourceOf = (image: MediaLike | undefined) => image?.url || null
@@ -113,7 +113,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
   const generationRef = useRef(0)
   const roundRobinRef = useRef(0)
 
-  const [columnCount, setColumnCount] = useState(4)
+  const [columnCount, setColumnCount] = useState(5)
   const [currentIndexes, setCurrentIndexes] = useState<Record<string, number>>({})
   const [activeSwap, setActiveSwap] = useState<ActiveSwap | null>(null)
   const [heroEligible, setHeroEligible] = useState(false)
@@ -459,7 +459,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
                               }
                               fill
                               priority={columnIndex < 4}
-                              sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 33vw"
+                              sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
                               className="gallery-stage__outgoing"
                             />
                             {incomingSrc ? (
@@ -467,7 +467,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
                                 src={incomingSrc}
                                 alt=""
                                 fill
-                                sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 33vw"
+                                sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
                                 className="gallery-stage__incoming"
                                 aria-hidden="true"
                               />
@@ -481,7 +481,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
                               `${slot.photoshootTitle} portfolio image`
                             }
                             fill
-                            sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 33vw"
+                            sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
                             className="gallery-static-image"
                           />
                         ) : (

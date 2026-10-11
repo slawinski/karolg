@@ -67,25 +67,23 @@ img { display:block; }
 }
 
 .gallery-stage.is-swapping .gallery-stage__outgoing {
-  animation:gallery-out 1500ms linear both;
+  animation:gallery-out 1500ms cubic-bezier(.4,0,.2,1) both;
 }
 
 .gallery-stage.is-swapping .gallery-stage__incoming {
-  animation:gallery-in 1500ms linear both;
+  animation:gallery-in 1500ms cubic-bezier(.4,0,.2,1) both;
 }
 
+/* The visual transition uses the same 1500 ms master duration as the
+   column movement: fade fully to the flat frame, then reveal the next photo. */
 @keyframes gallery-out {
   0% { opacity:1; }
-  10% { opacity:.9; }
-  20% { opacity:.35; }
-  28.667%, 100% { opacity:0; }
+  50%, 100% { opacity:0; }
 }
 
 @keyframes gallery-in {
-  0%, 36.667% { opacity:0; }
-  50% { opacity:.28; }
-  62% { opacity:.72; }
-  73.333%, 100% { opacity:1; }
+  0%, 50% { opacity:0; }
+  100% { opacity:1; }
 }
 
 .visual-placeholder { position:absolute; inset:0; background:linear-gradient(145deg,#dad7d0,#918b82); }
@@ -211,10 +209,7 @@ img { display:block; }
 }
 
 .cursor-masonry__column-motion {
-  --bounce-down:clamp(70px,18vh,220px);
-  --bounce-up:clamp(-50px,-4vh,-16px);
-  --bounce-rebound:clamp(8px,2vh,25px);
-  --bounce-last-up:clamp(-8px,-.7vh,-3px);
+  --motion-distance:clamp(70px,18vh,220px);
   display:flex;
   flex-direction:column;
   gap:clamp(12px,1.5vw,24px);
@@ -222,34 +217,16 @@ img { display:block; }
 }
 
 .cursor-masonry__column-motion.is-swapping {
-  animation:gallery-column-bounce 1500ms both;
+  animation:gallery-column-move 1500ms cubic-bezier(.4,0,.2,1) both;
   will-change:transform;
 }
 
-@keyframes gallery-column-bounce {
-  0% {
-    transform:translate3d(0,0,0);
-    animation-timing-function:cubic-bezier(.35,.00,.72,.64);
-  }
-  23% {
-    transform:translate3d(0,var(--bounce-down),0);
-    animation-timing-function:cubic-bezier(.18,.72,.28,1);
-  }
-  45% {
-    transform:translate3d(0,var(--bounce-up),0);
-    animation-timing-function:cubic-bezier(.25,.55,.35,1);
-  }
-  64% {
-    transform:translate3d(0,var(--bounce-rebound),0);
-    animation-timing-function:cubic-bezier(.25,.60,.40,1);
-  }
-  82% {
-    transform:translate3d(0,var(--bounce-last-up),0);
-    animation-timing-function:ease-out;
-  }
-  100% {
-    transform:translate3d(0,0,0);
-  }
+/* One simple excursion: down, then directly back to rest.
+   No overshoot, rebound or secondary oscillation. */
+@keyframes gallery-column-move {
+  0% { transform:translate3d(0,0,0); }
+  50% { transform:translate3d(0,var(--motion-distance),0); }
+  100% { transform:translate3d(0,0,0); }
 }
 
 /* ViV-style skyline: edge columns start high, inner columns drop to reveal the name. */
@@ -320,10 +297,7 @@ img { display:block; }
   }
 
   .cursor-masonry__column-motion {
-    --bounce-down:clamp(50px,12svh,130px);
-    --bounce-up:clamp(-32px,-2.7svh,-12px);
-    --bounce-rebound:clamp(6px,1.4svh,18px);
-    --bounce-last-up:clamp(-6px,-.5svh,-2px);
+    --motion-distance:clamp(50px,12svh,130px);
     gap:8px;
   }
 

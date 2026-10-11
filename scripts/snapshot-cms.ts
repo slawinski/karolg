@@ -74,8 +74,21 @@ try {
     handwrittenLine: siteDoc.handwrittenLine,
     intro: siteDoc.intro,
     heroMedia: normalizeMedia(siteDoc.heroMedia),
-    locations: siteDoc.locations,
-    profileFacts: siteDoc.profileFacts,
+    locations: Array.isArray(siteDoc.locations)
+      ? siteDoc.locations.map((item) => {
+          const row = item as AnyDoc
+          return { label: typeof row.label === 'string' ? row.label : null }
+        })
+      : [],
+    profileFacts: Array.isArray(siteDoc.profileFacts)
+      ? siteDoc.profileFacts.map((item) => {
+          const row = item as AnyDoc
+          return {
+            label: typeof row.label === 'string' ? row.label : null,
+            value: typeof row.value === 'string' ? row.value : null,
+          }
+        })
+      : [],
     instagram: siteDoc.instagram,
     email: siteDoc.email,
     seoDescription: siteDoc.seoDescription,

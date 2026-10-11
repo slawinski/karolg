@@ -111,14 +111,14 @@ img { display:block; }
   margin:0 0 clamp(28px,3vw,48px);
   vertical-align:top;
 }
-.masonry-card figure { width:100%; }
-.masonry-card-1 figure { aspect-ratio:3/4; }
-.masonry-card-2 figure { aspect-ratio:4/5; }
-.masonry-card-3 figure { aspect-ratio:1/1; }
-.masonry-card-4 figure { aspect-ratio:2/3; }
-.masonry-card-5 figure { aspect-ratio:5/4; }
-.masonry-card-6 figure { aspect-ratio:3/5; }
-.masonry-card-7 figure { aspect-ratio:4/3; }
+.masonry-card .image-frame { width:100%; }
+.masonry-card-1 .image-frame { aspect-ratio:3/4; }
+.masonry-card-2 .image-frame { aspect-ratio:4/5; }
+.masonry-card-3 .image-frame { aspect-ratio:1/1; }
+.masonry-card-4 .image-frame { aspect-ratio:2/3; }
+.masonry-card-5 .image-frame { aspect-ratio:5/4; }
+.masonry-card-6 .image-frame { aspect-ratio:3/5; }
+.masonry-card-7 .image-frame { aspect-ratio:4/3; }
 .masonry-caption {
   display:flex;
   justify-content:space-between;

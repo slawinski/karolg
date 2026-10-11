@@ -13,7 +13,9 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Portfolio',
     useAsTitle: 'alt',
-    defaultColumns: ['alt', 'photoshoot', 'featured', 'filename'],
+    defaultColumns: ['filename', 'alt', 'photoshoot', 'featured'],
+    description:
+      'Assign photoshoots and homepage featured state directly from this list. Changes save immediately.',
   },
   upload: {
     mimeTypes: ['image/*'],
@@ -40,6 +42,9 @@ export const Media: CollectionConfig = {
       relationTo: 'projects',
       admin: {
         position: 'sidebar',
+        components: {
+          Cell: '/components/admin/MediaListCells#PhotoshootCell',
+        },
       },
     },
     {
@@ -49,6 +54,9 @@ export const Media: CollectionConfig = {
       defaultValue: false,
       admin: {
         position: 'sidebar',
+        components: {
+          Cell: '/components/admin/MediaListCells#FeaturedCell',
+        },
       },
     },
   ],

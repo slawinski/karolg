@@ -82,7 +82,10 @@ const updateMedia = async (
   })
 
   if (!response.ok) {
-    throw new Error('Could not update media')
+    const details = await response.text().catch(() => '')
+    throw new Error(
+      `Could not update media (${response.status})${details ? `: ${details}` : ''}`,
+    )
   }
 
   return response.json()
@@ -127,6 +130,9 @@ export function PhotoshootCell({
     const id = getRowID(rowData)
     const previous = value
     const next = event.target.value
+    const selectedPhotoshoot = photoshoots.find(
+      (photoshoot) => String(photoshoot.id) === next,
+    )
 
     setValue(next)
     setSaving(true)
@@ -141,9 +147,12 @@ export function PhotoshootCell({
 
     try {
       await updateMedia(id, {
-        photoshoot: next || null,
+        // SQLite-backed Payload collections use numeric IDs. <select> values
+        // are always strings, so preserve the ID type returned by Payload.
+        photoshoot: next ? selectedPhotoshoot?.id ?? null : null,
       })
-    } catch {
+    } catch (updateError) {
+      console.error(updateError)
       setValue(previous)
       setError(true)
     } finally {
@@ -234,7 +243,8 @@ export function FeaturedCell({
 
     try {
       await updateMedia(id, { featured: next })
-    } catch {
+    } catch (updateError) {
+      console.error(updateError)
       setFeatured(previous)
       setError(true)
     } finally {

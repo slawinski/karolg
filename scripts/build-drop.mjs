@@ -1,4 +1,4 @@
-import { access, rename, rm } from 'node:fs/promises'
+import { access, readFile, rename, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
@@ -9,6 +9,9 @@ const parkedPayloadApp = path.join(root, '.drop-payload-app')
 const portfolioFile = path.join(root, 'src', 'lib', 'portfolio.ts')
 const generatedPortfolioFile = path.join(root, 'src', 'lib', '.portfolio.drop.generated.ts')
 const parkedPortfolioFile = path.join(root, '.drop-portfolio.ts')
+const workRoutes = path.join(root, 'src', 'app', '(frontend)', 'work')
+const parkedWorkRoutes = path.join(root, '.drop-work-routes')
+const snapshotMetaFile = path.join(root, '.drop-snapshot-meta.json')
 const outDir = path.join(root, 'out')
 const nextDir = path.join(root, '.next')
 
@@ -38,14 +41,22 @@ const run = (args, env = process.env) =>
 await rm(outDir, { recursive: true, force: true })
 await rm(nextDir, { recursive: true, force: true })
 await rm(generatedPortfolioFile, { force: true })
+await rm(snapshotMetaFile, { force: true })
 
 let payloadWasParked = false
 let portfolioWasSwapped = false
+let workRoutesWereParked = false
 
 try {
   if (await exists(parkedPayloadApp)) {
     throw new Error(
       'Found .drop-payload-app from an earlier interrupted build. Restore or remove it before continuing.',
+    )
+  }
+
+  if (await exists(parkedWorkRoutes)) {
+    throw new Error(
+      'Found .drop-work-routes from an earlier interrupted build. Restore or remove it before continuing.',
     )
   }
 
@@ -61,11 +72,19 @@ try {
     'tsx',
     'scripts/snapshot-cms.ts',
     generatedPortfolioFile,
+    snapshotMetaFile,
   ])
 
   if (snapshotExitCode !== 0) {
     process.exitCode = snapshotExitCode
     throw new Error('Could not snapshot Payload CMS content.')
+  }
+
+  const snapshotMeta = JSON.parse(await readFile(snapshotMetaFile, 'utf8'))
+
+  if (snapshotMeta.projects === 0 && (await exists(workRoutes))) {
+    await rename(workRoutes, parkedWorkRoutes)
+    workRoutesWereParked = true
   }
 
   if (await exists(payloadApp)) {
@@ -100,6 +119,11 @@ try {
   }
 
   await rm(generatedPortfolioFile, { force: true })
+  await rm(snapshotMetaFile, { force: true })
+
+  if (workRoutesWereParked && (await exists(parkedWorkRoutes))) {
+    await rename(parkedWorkRoutes, workRoutes)
+  }
 
   if (payloadWasParked && (await exists(parkedPayloadApp))) {
     await rename(parkedPayloadApp, payloadApp)

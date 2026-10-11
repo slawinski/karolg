@@ -33,43 +33,45 @@ export type SiteLike = {
   seoDescription?: string | null
 }
 
-export const placeholderMedia: MediaLike[] = [
-  {
-    url: '/placeholders/instagram-01.webp',
-    alt: 'Carla Gorecka in a Pilates movement pose — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-02.webp',
-    alt: 'Carla Gorecka seated in black — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-04.webp',
-    alt: 'Black and white fashion portrait of Carla Gorecka — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-05.webp',
-    alt: 'Playful close portrait of Carla Gorecka — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-06.webp',
-    alt: 'Carla Gorecka in a brown top and denim — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
+export const sesjaMedia: MediaLike[] = [
+  { url: '/sesja/000729840002-Edit.jpg', alt: 'Sesja Karolg — 000729840002 Edit', width: 720, height: 960 },
+  { url: '/sesja/000729840004-Edit.jpg', alt: 'Sesja Karolg — 000729840004 Edit', width: 720, height: 960 },
+  { url: '/sesja/000729840006-Edit.jpg', alt: 'Sesja Karolg — 000729840006 Edit', width: 720, height: 960 },
+  { url: '/sesja/000729840007-Edit.jpg', alt: 'Sesja Karolg — 000729840007 Edit', width: 720, height: 960 },
+  { url: '/sesja/000729840008-2-Edit.jpg', alt: 'Sesja Karolg — 000729840008 2 Edit', width: 720, height: 960 },
+  { url: '/sesja/000729840012-Edit.jpg', alt: 'Sesja Karolg — 000729840012 Edit', width: 720, height: 960 },
+  { url: '/sesja/3N7A0290.jpg', alt: 'Sesja Karolg — 3N7A0290', width: 720, height: 960 },
+  { url: '/sesja/3N7A0293.jpg', alt: 'Sesja Karolg — 3N7A0293', width: 720, height: 960 },
+  { url: '/sesja/3N7A0295.jpg', alt: 'Sesja Karolg — 3N7A0295', width: 720, height: 960 },
+  { url: '/sesja/3N7A0304.jpg', alt: 'Sesja Karolg — 3N7A0304', width: 720, height: 960 },
+  { url: '/sesja/3N7A0352.jpg', alt: 'Sesja Karolg — 3N7A0352', width: 720, height: 960 },
+  { url: '/sesja/3N7A0369.jpg', alt: 'Sesja Karolg — 3N7A0369', width: 720, height: 960 },
+  { url: '/sesja/3N7A0407.jpg', alt: 'Sesja Karolg — 3N7A0407', width: 720, height: 960 },
+  { url: '/sesja/3N7A0416.jpg', alt: 'Sesja Karolg — 3N7A0416', width: 720, height: 960 },
+  { url: '/sesja/3N7A0433-2.jpg', alt: 'Sesja Karolg — 3N7A0433 2', width: 720, height: 960 },
+  { url: '/sesja/3N7A0440.jpg', alt: 'Sesja Karolg — 3N7A0440', width: 720, height: 960 },
+  { url: '/sesja/IMG_1178.jpg', alt: 'Sesja Karolg — IMG 1178', width: 720, height: 960 },
+  { url: '/sesja/IMG_8825.jpg', alt: 'Sesja Karolg — IMG 8825', width: 720, height: 960 },
+  { url: '/sesja/IMG_8831.jpg', alt: 'Sesja Karolg — IMG 8831', width: 720, height: 960 },
+  { url: '/sesja/IMG_8852.jpg', alt: 'Sesja Karolg — IMG 8852', width: 720, height: 960 },
+  { url: '/sesja/IMG_8855.jpg', alt: 'Sesja Karolg — IMG 8855', width: 720, height: 960 },
+  { url: '/sesja/IMG_8862.jpg', alt: 'Sesja Karolg — IMG 8862', width: 720, height: 960 },
+  { url: '/sesja/IMG_8865.jpg', alt: 'Sesja Karolg — IMG 8865', width: 720, height: 960 },
+  { url: '/sesja/IMG_8867.jpg', alt: 'Sesja Karolg — IMG 8867', width: 720, height: 960 },
+  { url: '/sesja/IMG_8885.jpg', alt: 'Sesja Karolg — IMG 8885', width: 720, height: 960 },
+  { url: '/sesja/IMG_8949.jpg', alt: 'Sesja Karolg — IMG 8949', width: 720, height: 960 },
+  { url: '/sesja/IMG_8987.jpg', alt: 'Sesja Karolg — IMG 8987', width: 720, height: 960 },
+  { url: '/sesja/IMG_9104.jpg', alt: 'Sesja Karolg — IMG 9104', width: 720, height: 960 },
+  { url: '/sesja/IMG_9109.jpg', alt: 'Sesja Karolg — IMG 9109', width: 720, height: 960 },
+  { url: '/sesja/IMG_9167.jpg', alt: 'Sesja Karolg — IMG 9167', width: 720, height: 960 },
+  { url: '/sesja/IMG_9304.jpg', alt: 'Sesja Karolg — IMG 9304', width: 720, height: 960 },
+  { url: '/sesja/IMG_9309.jpg', alt: 'Sesja Karolg — IMG 9309', width: 720, height: 960 },
+  { url: '/sesja/IMG_9331.jpg', alt: 'Sesja Karolg — IMG 9331', width: 720, height: 960 },
+  { url: '/sesja/IMG_9354.jpg', alt: 'Sesja Karolg — IMG 9354', width: 720, height: 960 },
 ]
 
-const rotatePlaceholders = (offset: number) =>
-  Array.from({ length: placeholderMedia.length }, (_, index) =>
-    placeholderMedia[(index + offset) % placeholderMedia.length],
-  )
+const sesjaHero = sesjaMedia[3]
+const sesjaGallery = [...sesjaMedia.slice(0, 3), ...sesjaMedia.slice(4)]
 
 export const fallbackSite: Required<
   Pick<
@@ -84,7 +86,7 @@ export const fallbackSite: Required<
   heroHeadline: 'A CREATIVE APPROACH TO MODELING',
   handwrittenLine: 'Movement · People · Stories',
   intro: 'Fashion, movement and natural portraiture — with a body-aware point of view.',
-  heroMedia: placeholderMedia[1],
+  heroMedia: sesjaHero,
   instagram: 'https://www.instagram.com/carlagorecka/',
   seoDescription: 'Portfolio of Carla Gorecka — model, classical Pilates teacher and creative.',
   locations: [{ label: 'WARSAW' }, { label: 'WORLDWIDE' }],
@@ -96,41 +98,15 @@ export const fallbackSite: Required<
 
 export const fallbackProjects: ProjectLike[] = [
   {
-    title: 'Editorials',
-    slug: 'editorials',
-    category: 'editorial',
-    excerpt: 'Graphic portraits, studio light and character-led fashion frames.',
-    cover: placeholderMedia[2],
-    gallery: rotatePlaceholders(2),
-    order: 1,
-  },
-  {
-    title: 'Movement',
-    slug: 'movement',
-    category: 'movement',
-    excerpt: 'Classical Pilates, line, control and motion translated into image.',
-    cover: placeholderMedia[0],
-    gallery: rotatePlaceholders(0),
-    featured: true,
-    order: 2,
-  },
-  {
-    title: 'Personal',
-    slug: 'personal',
-    category: 'personal',
-    excerpt: 'Unpolished, playful and close — the person between assignments.',
-    cover: placeholderMedia[3],
-    gallery: rotatePlaceholders(3),
-    order: 3,
-  },
-  {
-    title: 'Portraits',
-    slug: 'portraits',
+    title: 'Sesja Karolg',
+    slug: 'sesja-karolg',
     category: 'portrait',
-    excerpt: 'Natural portraits with a direct, modern casting-book feel.',
-    cover: placeholderMedia[4],
-    gallery: rotatePlaceholders(4),
-    order: 4,
+    excerpt: 'Studio portraits — natural light, movement and quiet character.',
+    cover: sesjaHero,
+    gallery: sesjaGallery,
+    featured: true,
+    year: '2026',
+    order: 1,
   },
 ]
 

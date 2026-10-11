@@ -4,7 +4,6 @@ import { Visual } from '@/components/Visual'
 import {
   fallbackProjects,
   getPortfolioData,
-  placeholderMedia,
   type MediaLike,
   type ProjectLike,
 } from '@/lib/portfolio'
@@ -31,16 +30,11 @@ export default async function HomePage() {
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
 
-  const masonryItems = pool.flatMap((project, projectIndex) => {
+  const masonryItems = pool.flatMap((project) => {
     const gallery = galleryOf(project)
-    const media = [
-      project.cover,
-      ...gallery,
-      placeholderMedia[projectIndex % placeholderMedia.length],
-      placeholderMedia[(projectIndex + 2) % placeholderMedia.length],
-    ].filter(Boolean) as MediaLike[]
+    const media = [project.cover, ...gallery].filter(Boolean) as MediaLike[]
 
-    return media.slice(0, 4).map((image, imageIndex) => ({
+    return media.slice(0, 14).map((image, imageIndex) => ({
       project,
       image,
       imageIndex,

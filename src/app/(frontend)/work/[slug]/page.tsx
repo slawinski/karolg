@@ -5,7 +5,7 @@ import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
 import {
   fallbackProjects,
-  placeholderMedia,
+  getPortfolioData,
   type MediaLike,
   getProjectBySlug,
 } from '@/lib/portfolio'
@@ -16,7 +16,13 @@ type Props = { params: Promise<{ slug: string }> }
 
 export const dynamicParams = false
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  try {
+    const { projects } = await getPortfolioData()
+    if (projects.length) return projects.map((project) => ({ slug: project.slug }))
+  } catch {
+    /* fall through to fallbacks */
+  }
   return fallbackProjects.map((project) => ({ slug: project.slug }))
 }
 
@@ -32,12 +38,7 @@ export default async function WorkPage({ params }: Props) {
   if (!project) notFound()
 
   const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
-  const images = gallery.length
-    ? gallery
-    : [
-        ...placeholderMedia,
-        ...placeholderMedia.slice(0, 3),
-      ]
+  const images = gallery
 
   return (
     <main className="artist-page">

@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   ...(isStaticExport ? { output: 'export' as const, trailingSlash: true } : {}),
   images: {
     formats: ['image/avif', 'image/webp'],
-    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/placeholders/**' }],
+    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/sesja/**' }],
     ...(isStaticExport ? { unoptimized: true } : {}),
   },
   poweredByHeader: false,

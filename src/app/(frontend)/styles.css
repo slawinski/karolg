@@ -35,7 +35,6 @@ img { display:block; }
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   padding:0 clamp(18px,2.8vw,46px);
-  border-bottom:1px solid var(--line);
   font-size:11px;
   letter-spacing:.02em;
 }
@@ -76,7 +75,7 @@ img { display:block; }
 }
 
 .masonry-section {
-  padding:0 0 clamp(100px,12vw,190px);
+  padding:clamp(72px,8vw,144px) 0 clamp(100px,12vw,190px);
 }
 .masonry-grid {
   column-count:3;
@@ -126,7 +125,7 @@ img { display:block; }
 .cursor-masonry__column {
   display:flex;
   flex-direction:column;
-  gap:clamp(96px,10vw,190px);
+  gap:clamp(12px,1.5vw,24px);
   min-width:0;
 }
 
@@ -144,10 +143,6 @@ img { display:block; }
 @media (hover:hover) and (pointer:fine) and (min-width:701px) and (max-width:1100px) {
   .cursor-masonry__rail {
     width:150%;
-  }
-
-  .cursor-masonry__column {
-    gap:clamp(72px,10vw,130px);
   }
 
   .cursor-masonry__column[data-column='1'] { padding-top:0; }
@@ -177,7 +172,7 @@ img { display:block; }
   }
 
   .cursor-masonry__column {
-    gap:42px;
+    gap:18px;
     padding-top:0 !important;
   }
 }

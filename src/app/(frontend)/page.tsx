@@ -30,8 +30,8 @@ export default async function HomePage() {
 
       <section className="masonry-section" id="work">
         <div className="masonry-stage">
-          <h1 className="masonry-name" aria-label="Carla Gorecka">
-            <span className="masonry-name__first">Carla</span>
+          <h1 className="masonry-name" aria-label="Karo Gorecka">
+            <span className="masonry-name__first">Karo</span>
             <span className="masonry-name__last">Gorecka</span>
           </h1>
 

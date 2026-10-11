@@ -55,34 +55,44 @@ img { display:block; }
 }
 
 .swap-visual.is-swapping .swap-visual__image--current {
-  animation:viv-image-out 940ms cubic-bezier(.4,0,.2,1) both;
+  animation:viv-image-out 2100ms cubic-bezier(.45,0,.2,1) both;
 }
 
 .swap-visual.is-swapping .swap-visual__image--incoming {
-  animation:viv-image-in 940ms cubic-bezier(.4,0,.2,1) both;
+  animation:viv-image-in 2100ms cubic-bezier(.35,0,.18,1) both;
 }
 
-/* Only the first card in a column can enter .is-swapping, so the complete
-   column rebounds while its lead image changes. */
+/* Only the first card in a column can enter .is-swapping. The whole column
+   makes a large, slow spring excursion while the lead image passes through
+   a fully flat-color frame before the replacement appears. */
+.cursor-masonry__column {
+  --viv-bounce-down:clamp(72px,8vw,150px);
+  --viv-bounce-up:-30px;
+  --viv-bounce-settle:16px;
+  --viv-bounce-rebound:-7px;
+}
+
 .cursor-masonry__column:has(> .masonry-card:first-child .swap-visual.is-swapping) {
-  animation:viv-column-bounce 940ms cubic-bezier(.34,1.56,.64,1) both;
+  animation:viv-column-bounce 2100ms cubic-bezier(.22,.72,.2,1) both;
 }
 
 @keyframes viv-image-out {
-  0%, 10% { opacity:1; }
-  38%, 100% { opacity:0; }
+  0%, 14% { opacity:1; }
+  42%, 100% { opacity:0; }
 }
 
 @keyframes viv-image-in {
-  0%, 54% { opacity:0; }
+  0%, 62% { opacity:0; }
   100% { opacity:1; }
 }
 
 @keyframes viv-column-bounce {
-  0%, 100% { transform:translate3d(0,0,0); }
-  28% { transform:translate3d(0,14px,0); }
-  52% { transform:translate3d(0,-5px,0); }
-  72% { transform:translate3d(0,2px,0); }
+  0%, 12%, 100% { transform:translate3d(0,0,0); }
+  34% { transform:translate3d(0,var(--viv-bounce-down),0); }
+  52% { transform:translate3d(0,var(--viv-bounce-up),0); }
+  66% { transform:translate3d(0,var(--viv-bounce-settle),0); }
+  79% { transform:translate3d(0,var(--viv-bounce-rebound),0); }
+  90% { transform:translate3d(0,3px,0); }
 }
 
 .visual-placeholder { position:absolute; inset:0; background:linear-gradient(145deg,#dad7d0,#918b82); }
@@ -277,6 +287,10 @@ img { display:block; }
   }
 
   .cursor-masonry__column {
+    --viv-bounce-down:64px;
+    --viv-bounce-up:-20px;
+    --viv-bounce-settle:10px;
+    --viv-bounce-rebound:-5px;
     gap:8px;
   }
 

@@ -91,7 +91,7 @@ export function SwappingVisual({
           setSwapping(false)
           cycleRef.current += 1
           schedule()
-        }, 940)
+        }, 2100)
       }, delay)
     }
 

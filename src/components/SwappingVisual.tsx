@@ -33,6 +33,7 @@ export function SwappingVisual({
     usableImages.length > 1 ? (firstIndex + 1) % usableImages.length : firstIndex,
   )
   const [swapping, setSwapping] = useState(false)
+  const [heroVisible, setHeroVisible] = useState(true)
   const rootRef = useRef<HTMLDivElement>(null)
   const cycleRef = useRef(0)
 
@@ -46,6 +47,60 @@ export function SwappingVisual({
   }, [firstIndex, usableImages.length])
 
   useEffect(() => {
+    const root = rootRef.current
+    const card = root?.closest('.masonry-card')
+    const column = card?.parentElement
+    const isFirstCardInColumn = Boolean(
+      card && column && column.firstElementChild === card,
+    )
+
+    if (!isFirstCardInColumn) {
+      setHeroVisible(false)
+      return
+    }
+
+    const stage = root?.closest('.masonry-stage')
+    if (!stage) return
+
+    const title = stage.querySelector('.masonry-name')
+    const firstCards = Array.from(
+      stage.querySelectorAll('.cursor-masonry__column > .masonry-card:first-child'),
+    )
+    const targets = [title, ...firstCards].filter(
+      (target): target is Element => Boolean(target),
+    )
+
+    if (!targets.length) return
+
+    const visibility = new Map<Element, boolean>()
+
+    const isOnScreen = (target: Element) => {
+      const rect = target.getBoundingClientRect()
+      return rect.bottom > 0 && rect.top < window.innerHeight
+    }
+
+    targets.forEach((target) => {
+      visibility.set(target, isOnScreen(target))
+    })
+    setHeroVisible(Array.from(visibility.values()).some(Boolean))
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          visibility.set(entry.target, entry.isIntersecting)
+        })
+
+        setHeroVisible(Array.from(visibility.values()).some(Boolean))
+      },
+      { threshold: 0 },
+    )
+
+    targets.forEach((target) => observer.observe(target))
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
     if (usableImages.length < 2) return
 
     const root = rootRef.current
@@ -56,7 +111,11 @@ export function SwappingVisual({
     )
 
     // ViV swaps only the leading image in each visible masonry column.
-    if (!isFirstCardInColumn) return
+    // Once the title and every leading card leave the viewport, stop immediately.
+    if (!isFirstCardInColumn || !heroVisible) {
+      setSwapping(false)
+      return
+    }
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (reducedMotion.matches) return
@@ -102,7 +161,7 @@ export function SwappingVisual({
       window.clearTimeout(swapTimer)
       window.clearTimeout(commitTimer)
     }
-  }, [seed, usableImages.length])
+  }, [heroVisible, seed, usableImages.length])
 
   if (!usableImages.length) {
     return <div className="visual-placeholder" role="img" aria-label={alt} />

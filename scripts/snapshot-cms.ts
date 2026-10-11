@@ -1,8 +1,7 @@
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { loadEnvFile } from 'node:process'
 import { getPayload } from 'payload'
-import config from '../src/payload.config'
 
 const root = process.cwd()
 
@@ -13,6 +12,13 @@ for (const envFile of ['.env', '.env.local']) {
     // Optional local env file.
   }
 }
+
+const dbUrl = process.env.DATABASE_URL || 'file:./data/karolg.db'
+if (dbUrl.startsWith('file:./')) {
+  await mkdir(path.dirname(path.resolve(root, dbUrl.slice('file:./'.length))), { recursive: true })
+}
+
+const { default: config } = await import('../src/payload.config')
 
 const outputFile = process.argv[2]
 

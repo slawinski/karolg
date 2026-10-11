@@ -383,7 +383,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
   ) => {
     if (
       event.target !== event.currentTarget ||
-      event.animationName !== 'gallery-column-bounce' ||
+      event.animationName !== 'gallery-column-move' ||
       !firstSlot ||
       activeSwapRef.current?.slotId !== firstSlot.id
     ) {

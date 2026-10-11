@@ -28,65 +28,63 @@ img { display:block; }
   position:absolute;
   inset:0;
   overflow:hidden;
-  background:#d8d5cf;
+  background:var(--swap-wash,#d8d5cf);
+}
+
+.swap-visual__wash {
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:var(--swap-wash,#d8d5cf);
 }
 
 .swap-visual__image {
   object-fit:cover;
-  transform:translate3d(0,0,0) scale(1);
-  transform-origin:center;
+  transform:translate3d(0,0,0);
   backface-visibility:hidden;
 }
 
 .swap-visual__image--incoming {
-  z-index:1;
+  z-index:2;
+  opacity:0;
 }
 
 .swap-visual__image--current {
-  z-index:2;
+  z-index:3;
+  opacity:1;
 }
 
 .swap-visual.is-swapping .swap-visual__image--current {
-  animation:viv-image-out 820ms both;
+  animation:viv-image-out 940ms cubic-bezier(.4,0,.2,1) both;
 }
 
 .swap-visual.is-swapping .swap-visual__image--incoming {
-  animation:viv-image-in 820ms both;
+  animation:viv-image-in 940ms cubic-bezier(.4,0,.2,1) both;
+}
+
+/* Only the first card in a column can enter .is-swapping, so the complete
+   column rebounds while its lead image changes. */
+.cursor-masonry__column:has(> .masonry-card:first-child .swap-visual.is-swapping) {
+  animation:viv-column-bounce 940ms cubic-bezier(.34,1.56,.64,1) both;
 }
 
 @keyframes viv-image-out {
-  0% {
-    opacity:1;
-    transform:translate3d(0,0,0) scale(1);
-  }
-  24% {
-    opacity:1;
-    transform:translate3d(0,-1.2%,0) scale(.985);
-  }
-  47% {
-    opacity:.92;
-    transform:translate3d(0,1.1%,0) scale(1.025);
-  }
-  67% {
-    opacity:.58;
-    transform:translate3d(0,-1.4%,0) scale(.985);
-  }
-  100% {
-    opacity:0;
-    transform:translate3d(0,-3%,0) scale(.94);
-  }
+  0%, 10% { opacity:1; }
+  38%, 100% { opacity:0; }
 }
 
 @keyframes viv-image-in {
-  0%, 38% {
-    opacity:.72;
-    transform:translate3d(0,1%,0) scale(1.035);
-  }
-  100% {
-    opacity:1;
-    transform:translate3d(0,0,0) scale(1);
-  }
+  0%, 54% { opacity:0; }
+  100% { opacity:1; }
 }
+
+@keyframes viv-column-bounce {
+  0%, 100% { transform:translate3d(0,0,0); }
+  28% { transform:translate3d(0,14px,0); }
+  52% { transform:translate3d(0,-5px,0); }
+  72% { transform:translate3d(0,2px,0); }
+}
+
 .visual-placeholder { position:absolute; inset:0; background:linear-gradient(145deg,#dad7d0,#918b82); }
 .visual-placeholder-2 { background:linear-gradient(145deg,#cab5a4,#514a45); }
 .visual-placeholder-3 { background:linear-gradient(155deg,#e4e1da,#2d2b29); }
@@ -480,7 +478,6 @@ img { display:block; }
 .compact-footer { grid-template-columns:1fr; }
 
 @media (hover:hover) {
-  .image-frame:hover .visual-img { transform:scale(1.018); }
   .nav a:hover,
   .menu-link:hover,
   .footer a:hover,
@@ -555,7 +552,8 @@ img { display:block; }
 @media (prefers-reduced-motion:reduce) {
   html { scroll-behavior:auto; }
   .visual-img { transition:none; }
-  .swap-visual__image { animation:none !important; }
+  .swap-visual__image,
+  .cursor-masonry__column { animation:none !important; }
   .cursor-masonry__rail {
     transform:none !important;
     will-change:auto;

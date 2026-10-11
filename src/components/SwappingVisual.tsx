@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 import type { MediaLike } from '@/lib/portfolio'
 
 type SwappingVisualProps = {
@@ -33,6 +33,7 @@ export function SwappingVisual({
     usableImages.length > 1 ? (firstIndex + 1) % usableImages.length : firstIndex,
   )
   const [swapping, setSwapping] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
   const cycleRef = useRef(0)
 
   useEffect(() => {
@@ -46,6 +47,16 @@ export function SwappingVisual({
 
   useEffect(() => {
     if (usableImages.length < 2) return
+
+    const root = rootRef.current
+    const card = root?.closest('.masonry-card')
+    const column = card?.parentElement
+    const isFirstCardInColumn = Boolean(
+      card && column && column.firstElementChild === card,
+    )
+
+    // ViV swaps only the leading image in each visible masonry column.
+    if (!isFirstCardInColumn) return
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (reducedMotion.matches) return
@@ -80,7 +91,7 @@ export function SwappingVisual({
           setSwapping(false)
           cycleRef.current += 1
           schedule()
-        }, 820)
+        }, 940)
       }, delay)
     }
 
@@ -106,8 +117,17 @@ export function SwappingVisual({
     return <div className="visual-placeholder" role="img" aria-label={alt} />
   }
 
+  const washColors = ['#d8d5cf', '#c9c4ba', '#b7b1a6', '#dedbd4']
+  const wash = washColors[(seed - 1) % washColors.length]
+
   return (
-    <div className={`swap-visual${swapping ? ' is-swapping' : ''}`}>
+    <div
+      ref={rootRef}
+      className={`swap-visual${swapping ? ' is-swapping' : ''}`}
+      style={{ '--swap-wash': wash } as CSSProperties}
+    >
+      <span className="swap-visual__wash" aria-hidden="true" />
+
       {nextSrc && usableImages.length > 1 ? (
         <Image
           src={nextSrc}

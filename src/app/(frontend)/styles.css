@@ -90,10 +90,9 @@ img { display:block; }
   position:absolute;
   z-index:0;
   top:0;
-  left:clamp(56px,18vw,350px);
+  left:clamp(40px,17vw,330px);
   margin:0;
-  width:min(64vw,1240px);
-  overflow:visible;
+  width:min(60vw,1140px);
   pointer-events:none;
   user-select:none;
 }
@@ -102,26 +101,23 @@ img { display:block; }
 .masonry-name__last {
   display:block;
   white-space:nowrap;
+  font-family:var(--chase),var(--sans);
+  font-weight:400;
+  line-height:.74;
+  letter-spacing:-.045em;
+  text-transform:uppercase;
+  text-box-trim:trim-start;
+  text-box-edge:cap alphabetic;
 }
 
 .masonry-name__first {
-  font-family:var(--chase),var(--sans);
-  font-size:clamp(72px,8.8vw,168px);
-  font-weight:400;
-  line-height:.76;
-  letter-spacing:-.035em;
-  text-transform:uppercase;
+  font-size:clamp(94px,12.4vw,238px);
 }
 
 .masonry-name__last {
-  margin-top:.04em;
-  margin-left:clamp(28px,7vw,138px);
-  font-family:var(--serif);
-  font-size:clamp(92px,12.2vw,234px);
-  font-style:italic;
-  font-weight:400;
-  line-height:.76;
-  letter-spacing:-.065em;
+  margin-top:.05em;
+  margin-left:clamp(8px,2vw,38px);
+  font-size:clamp(86px,11.4vw,220px);
 }
 
 .cursor-masonry {
@@ -180,14 +176,12 @@ img { display:block; }
   }
 
   .masonry-name__first {
-    font-size:clamp(56px,17vw,92px);
-    line-height:.78;
+    font-size:clamp(68px,21vw,112px);
   }
 
   .masonry-name__last {
-    margin-left:clamp(22px,10vw,56px);
-    font-size:clamp(68px,21vw,116px);
-    line-height:.78;
+    margin-left:0;
+    font-size:clamp(62px,18.5vw,102px);
   }
 
   .cursor-masonry {

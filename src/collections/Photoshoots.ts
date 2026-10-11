@@ -9,8 +9,13 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 
-export const Projects: CollectionConfig = {
+export const Photoshoots: CollectionConfig = {
+  // Keep the historical collection slug to preserve existing SQLite data.
   slug: 'projects',
+  labels: {
+    singular: 'Photoshoot',
+    plural: 'Photoshoots',
+  },
   access: {
     read: () => true,
     create: isAuthenticated,
@@ -20,7 +25,7 @@ export const Projects: CollectionConfig = {
   admin: {
     group: 'Portfolio',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'featured', 'order'],
+    defaultColumns: ['title', 'year', 'order'],
   },
   defaultSort: 'order',
   fields: [
@@ -38,23 +43,7 @@ export const Projects: CollectionConfig = {
         ],
       },
     },
-    {
-      name: 'category',
-      type: 'select',
-      required: true,
-      defaultValue: 'editorial',
-      options: [
-        { label: 'Editorial', value: 'editorial' },
-        { label: 'Campaign', value: 'campaign' },
-        { label: 'Personal', value: 'personal' },
-        { label: 'Movement', value: 'movement' },
-        { label: 'Portrait', value: 'portrait' },
-      ],
-    },
     { name: 'excerpt', type: 'textarea', maxLength: 220 },
-    { name: 'cover', type: 'upload', relationTo: 'media' },
-    { name: 'gallery', type: 'upload', relationTo: 'media', hasMany: true },
-    { name: 'featured', type: 'checkbox', defaultValue: false, admin: { position: 'sidebar' } },
     { name: 'year', type: 'text', admin: { position: 'sidebar' } },
     { name: 'order', type: 'number', defaultValue: 10, min: 0, admin: { position: 'sidebar' } },
   ],

@@ -1,13 +1,19 @@
 import Link from 'next/link'
 import { Visual } from '@/components/Visual'
-import { getPortfolioData } from '@/lib/portfolio'
+import { getPortfolioData, photoshootOf } from '@/lib/portfolio'
 
 export const revalidate = 300
 
 export default async function HomePage() {
-  const { site, projects, media } = await getPortfolioData()
+  const { site, photoshoots, featuredMedia } = await getPortfolioData()
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
+  const featured = featuredMedia
+    .map((image) => ({ image, photoshoot: photoshootOf(image) }))
+    .filter(
+      (item): item is typeof item & { photoshoot: NonNullable<typeof item.photoshoot> } =>
+        Boolean(item.photoshoot),
+    )
 
   return (
     <main className="site">
@@ -42,30 +48,31 @@ export default async function HomePage() {
         <div className="masonry-head">
           <h2>Work</h2>
           <div>
-            <span>{String(media.length).padStart(2, '0')} images</span>
-            <span>All</span>
+            <span>{String(featured.length).padStart(2, '0')} featured</span>
+            <span>Selected</span>
           </div>
         </div>
 
         <div className="masonry-grid">
-          {media.map((image, index) => (
-            <figure
+          {featured.map(({ image, photoshoot }, index) => (
+            <Link
               className={`masonry-card masonry-card-${(index % 7) + 1}`}
+              href={`/work/${photoshoot.slug}`}
               key={image.id ?? image.filename ?? index}
             >
-              <div className="image-frame">
+              <figure className="image-frame">
                 <Visual
                   media={image}
-                  alt={image.alt || `Carla Gorecka portfolio image ${index + 1}`}
+                  alt={image.alt || `${photoshoot.title} featured image ${index + 1}`}
                   sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
                   variant={index + 1}
                 />
+              </figure>
+              <div className="masonry-caption">
+                <span>{photoshoot.title}</span>
+                <span>{image.caption || photoshoot.year || 'View shoot'}</span>
               </div>
-              <figcaption className="masonry-caption">
-                <span>{image.caption || image.alt || 'Portfolio'}</span>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-              </figcaption>
-            </figure>
+            </Link>
           ))}
         </div>
       </section>
@@ -98,14 +105,16 @@ export default async function HomePage() {
       <footer className="footer" id="contact">
         <div className="footer-col">
           <h2>Work</h2>
-          {projects.slice(0, 6).map((project) => (
-            <Link href={`/work/${project.slug}`} key={project.slug}>{project.title}</Link>
+          {photoshoots.slice(0, 6).map((photoshoot) => (
+            <Link href={`/work/${photoshoot.slug}`} key={photoshoot.slug}>
+              {photoshoot.title}
+            </Link>
           ))}
         </div>
         <div className="footer-col">
           <h2>Explore</h2>
           <a href="#about">About</a>
-          <a href="#work">All work</a>
+          <a href="#work">Selected work</a>
           <a href="/admin">CMS</a>
         </div>
         <div className="footer-col">

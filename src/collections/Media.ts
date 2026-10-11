@@ -13,6 +13,7 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Portfolio',
     useAsTitle: 'alt',
+    defaultColumns: ['alt', 'photoshoot', 'featured', 'filename'],
   },
   upload: {
     mimeTypes: ['image/*'],
@@ -31,6 +32,24 @@ export const Media: CollectionConfig = {
     {
       name: 'caption',
       type: 'text',
+    },
+    {
+      name: 'photoshoot',
+      label: 'Photoshoot',
+      type: 'relationship',
+      relationTo: 'projects',
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'featured',
+      label: 'Featured on homepage',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+      },
     },
   ],
 }

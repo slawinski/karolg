@@ -2,7 +2,7 @@
 
 A fast, responsive fashion / movement portfolio built with **Next.js 16** and **Payload CMS 3**.
 
-The ViV variant uses an image-first masonry portfolio driven directly by Payload Media.
+The ViV variant uses a CMS-driven masonry portfolio. Media is organized into photoshoots, individual images can be featured, and the homepage links featured images into complete photoshoot galleries.
 
 ## Local development
 
@@ -17,22 +17,33 @@ Open:
 - Portfolio: http://localhost:3000
 - Payload admin: http://localhost:3000/admin
 
-## CMS-first media
+## Photoshoots and featured images
 
-Portfolio photography comes **only from Payload CMS**.
+Payload is the single source of truth for photography.
 
-The homepage queries the `media` collection and renders every returned document as the masonry wall. There is no checked-in image manifest, no per-file import list, and no local `sesja` fallback.
+In the admin:
 
-To add or remove portfolio images, use **Media** in `/admin`, then refresh the portfolio. Alt text is used for accessibility and the optional caption is shown below the image.
+1. Create a **Photoshoot**.
+2. Open each image in **Media** and assign its **Photoshoot**.
+3. Check **Featured on homepage** for images that should appear on the homepage.
+4. Save.
 
-Projects remain available for curated project pages. A project page renders the images assigned to its **Gallery** field; those are Payload Media relationships as well.
+The homepage queries only featured Media items. A featured image is rendered in the masonry wall and links to:
+
+`/work/[photoshoot-slug]`
+
+The photoshoot page then queries every Media item assigned to that photoshoot and renders the complete masonry gallery.
+
+Nothing in the frontend names individual image files. Adding, removing, featuring, or moving images between photoshoots is entirely CMS-driven.
 
 ## CMS model
 
 - **Site settings** — identity copy, roles, locations, profile facts, Instagram/email and optional hero media.
-- **Projects** — optional curated stories with a cover and gallery backed by Media.
-- **Media** — the single source of truth for portfolio photography.
+- **Photoshoots** — title, URL slug, description, year and ordering.
+- **Media** — uploaded image, alt text, optional caption, Photoshoot relationship and Featured flag.
 - **Users** — Payload administrators.
+
+Internally the Photoshoots collection retains the historical Payload slug `projects` so existing SQLite records remain compatible; the admin UI and frontend treat those records as photoshoots.
 
 ## Cloudflare Drop preview
 
@@ -43,7 +54,7 @@ pnpm install
 pnpm build:drop
 ~~~
 
-`build:drop` reads Site Settings, Projects and Media from Payload, converts media URLs to static `/media/...` paths, builds all project routes from that snapshot, excludes the Payload admin/API, and writes the static site to `out/`.
+`build:drop` snapshots Site Settings, Photoshoots and Media, including each image's Photoshoot relationship and Featured flag. It rewrites media URLs to static `/media/...` paths and creates all `/work/[photoshoot-slug]` routes before exporting to `out/`.
 
 Payload uploads in `public/media/` are copied into `out/media/` by Next's static export. Drag `out/` into Cloudflare Drop.
 

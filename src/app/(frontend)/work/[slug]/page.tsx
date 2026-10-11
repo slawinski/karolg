@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
 import {
+  getPhotoshootBySlug,
+  getPhotoshootMedia,
   getPortfolioData,
-  getProjectBySlug,
-  type MediaLike,
 } from '@/lib/portfolio'
 
 export const revalidate = 300
@@ -16,26 +16,24 @@ type Props = { params: Promise<{ slug: string }> }
 export const dynamicParams = false
 
 export async function generateStaticParams() {
-  try {
-    const { projects } = await getPortfolioData()
-    return projects.map((project) => ({ slug: project.slug }))
-  } catch {
-    return []
-  }
+  const { photoshoots } = await getPortfolioData()
+  return photoshoots.map((photoshoot) => ({ slug: photoshoot.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const project = await getProjectBySlug(slug)
-  return project ? { title: project.title, description: project.excerpt || undefined } : {}
+  const photoshoot = await getPhotoshootBySlug(slug)
+  return photoshoot
+    ? { title: photoshoot.title, description: photoshoot.excerpt || undefined }
+    : {}
 }
 
 export default async function WorkPage({ params }: Props) {
   const { slug } = await params
-  const project = await getProjectBySlug(slug)
-  if (!project) notFound()
+  const photoshoot = await getPhotoshootBySlug(slug)
+  if (!photoshoot?.id) notFound()
 
-  const images = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
+  const images = await getPhotoshootMedia(photoshoot.id)
 
   return (
     <main className="artist-page">
@@ -51,16 +49,16 @@ export default async function WorkPage({ params }: Props) {
 
       <section className="artist-head">
         <div>
-          <h1>{project.title}</h1>
+          <h1>{photoshoot.title}</h1>
           <p className="artist-count">({String(images.length).padStart(2, '0')}) All</p>
         </div>
-        <nav className="artist-filters" aria-label="Portfolio filters">
+        <nav className="artist-filters" aria-label="Photoshoot information">
           <span>All ({String(images.length).padStart(2, '0')})</span>
-          <span>{project.category}</span>
+          {photoshoot.year ? <span>{photoshoot.year}</span> : null}
         </nav>
       </section>
 
-      <section className="artist-masonry" aria-label={`${project.title} portfolio`}>
+      <section className="artist-masonry" aria-label={`${photoshoot.title} portfolio`}>
         {images.map((image, index) => (
           <figure
             className={`artist-masonry-item artist-masonry-item-${(index % 7) + 1} image-frame`}
@@ -68,7 +66,7 @@ export default async function WorkPage({ params }: Props) {
           >
             <Visual
               media={image}
-              alt={image.alt || `${project.title} image ${index + 1}`}
+              alt={image.alt || `${photoshoot.title} image ${index + 1}`}
               sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
               variant={index + 1}
             />
@@ -78,8 +76,8 @@ export default async function WorkPage({ params }: Props) {
 
       <section className="artist-info">
         <div>
-          <h2>{project.title}</h2>
-          {project.excerpt ? <p>{project.excerpt}</p> : null}
+          <h2>{photoshoot.title}</h2>
+          {photoshoot.excerpt ? <p>{photoshoot.excerpt}</p> : null}
         </div>
         <div>
           <p className="eyebrow">Work / Bio / Contact</p>
@@ -94,7 +92,7 @@ export default async function WorkPage({ params }: Props) {
           <p>Come create with her.</p>
         </div>
         <div className="footer-bottom">
-          <Link href="/#work">All work</Link>
+          <Link href="/#work">Selected work</Link>
           <span>© {new Date().getFullYear()} Carla Gorecka</span>
         </div>
       </footer>

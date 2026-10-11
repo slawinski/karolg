@@ -1,3 +1,12 @@
+export type PhotoshootLike = {
+  id?: string | number
+  title: string
+  slug: string
+  excerpt?: string | null
+  year?: string | null
+  order?: number | null
+}
+
 export type MediaLike = {
   id?: string | number
   url?: string | null
@@ -6,19 +15,8 @@ export type MediaLike = {
   filename?: string | null
   width?: number | null
   height?: number | null
-}
-
-export type ProjectLike = {
-  id?: string | number
-  title: string
-  slug: string
-  category: string
-  excerpt?: string | null
-  cover?: MediaLike | string | number | null
-  gallery?: Array<MediaLike | string | number> | null
   featured?: boolean | null
-  year?: string | null
-  order?: number | null
+  photoshoot?: PhotoshootLike | string | number | null
 }
 
 export type SiteLike = {
@@ -63,6 +61,10 @@ export function mediaAlt(media: MediaLike | string | number | null | undefined, 
   return safeObject<MediaLike>(media)?.alt || fallback
 }
 
+export function photoshootOf(media: MediaLike) {
+  return safeObject<PhotoshootLike>(media.photoshoot)
+}
+
 async function getPayloadClient() {
   const [{ default: configPromise }, { getPayload }] = await Promise.all([
     import('@payload-config'),
@@ -72,41 +74,66 @@ async function getPayloadClient() {
   return getPayload({ config: configPromise })
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectLike | null> {
+export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike | null> {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'projects',
       where: { slug: { equals: slug } },
-      depth: 1,
+      depth: 0,
       limit: 1,
     })
 
-    return (result.docs[0] as unknown as ProjectLike) || null
+    return (result.docs[0] as unknown as PhotoshootLike) || null
   } catch {
     return null
+  }
+}
+
+export async function getPhotoshootMedia(
+  photoshootId: string | number,
+): Promise<MediaLike[]> {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'media',
+      where: { photoshoot: { equals: photoshootId } },
+      depth: 0,
+      limit: 500,
+      sort: 'filename',
+    })
+
+    return result.docs as unknown as MediaLike[]
+  } catch {
+    return []
   }
 }
 
 export async function getPortfolioData() {
   try {
     const payload = await getPayloadClient()
-    const [site, projectResult, mediaResult] = await Promise.all([
+    const [site, photoshootResult, featuredResult] = await Promise.all([
       payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-      payload.find({ collection: 'projects', depth: 1, limit: 100, sort: 'order' }),
-      payload.find({ collection: 'media', depth: 0, limit: 500, sort: 'filename' }),
+      payload.find({ collection: 'projects', depth: 0, limit: 100, sort: 'order' }),
+      payload.find({
+        collection: 'media',
+        where: { featured: { equals: true } },
+        depth: 1,
+        limit: 500,
+        sort: 'filename',
+      }),
     ])
 
     return {
       site: { ...fallbackSite, ...(site as unknown as SiteLike) },
-      projects: projectResult.docs as unknown as ProjectLike[],
-      media: mediaResult.docs as unknown as MediaLike[],
+      photoshoots: photoshootResult.docs as unknown as PhotoshootLike[],
+      featuredMedia: featuredResult.docs as unknown as MediaLike[],
     }
   } catch {
     return {
       site: fallbackSite,
-      projects: [] as ProjectLike[],
-      media: [] as MediaLike[],
+      photoshoots: [] as PhotoshootLike[],
+      featuredMedia: [] as MediaLike[],
     }
   }
 }

@@ -32,23 +32,36 @@ type AnyDoc = Record<string, unknown>
 const payload = await getPayload({ config })
 
 try {
-  const [site, projectsResult, mediaResult] = await Promise.all([
+  const [site, photoshootsResult, mediaResult] = await Promise.all([
     payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-    payload.find({ collection: 'projects', depth: 1, limit: 100, sort: 'order' }),
-    payload.find({ collection: 'media', depth: 0, limit: 500, sort: 'filename' }),
+    payload.find({ collection: 'projects', depth: 0, limit: 100, sort: 'order' }),
+    payload.find({ collection: 'media', depth: 1, limit: 500, sort: 'filename' }),
   ])
 
-  const mediaDocs = mediaResult.docs as unknown as AnyDoc[]
-  const mediaById = new Map(mediaDocs.map((doc) => [String(doc.id), doc]))
+  const photoshootDocs = photoshootsResult.docs as unknown as AnyDoc[]
+  const photoshootsById = new Map(photoshootDocs.map((doc) => [String(doc.id), doc]))
 
-  const normalizeMedia = (value: unknown) => {
+  const normalizePhotoshoot = (value: unknown) => {
     const doc =
       value && typeof value === 'object'
         ? (value as AnyDoc)
-        : mediaById.get(String(value))
+        : photoshootsById.get(String(value))
 
     if (!doc) return null
 
+    return {
+      id: doc.id as string | number | undefined,
+      title: typeof doc.title === 'string' ? doc.title : '',
+      slug: typeof doc.slug === 'string' ? doc.slug : '',
+      excerpt: typeof doc.excerpt === 'string' ? doc.excerpt : null,
+      year: typeof doc.year === 'string' ? doc.year : null,
+      order: typeof doc.order === 'number' ? doc.order : null,
+    }
+  }
+
+  const normalizeMedia = (value: unknown) => {
+    if (!value || typeof value !== 'object') return null
+    const doc = value as AnyDoc
     const filename = typeof doc.filename === 'string' ? doc.filename : null
 
     return {
@@ -59,10 +72,16 @@ try {
       filename,
       width: typeof doc.width === 'number' ? doc.width : null,
       height: typeof doc.height === 'number' ? doc.height : null,
+      featured: doc.featured === true,
+      photoshoot: normalizePhotoshoot(doc.photoshoot),
     }
   }
 
-  const normalizedMedia = mediaDocs
+  const photoshoots = photoshootDocs
+    .map(normalizePhotoshoot)
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+
+  const media = (mediaResult.docs as unknown as AnyDoc[])
     .map(normalizeMedia)
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
 
@@ -95,28 +114,22 @@ try {
     seoDescription: siteDoc.seoDescription,
   }
 
-  const projects = (projectsResult.docs as unknown as AnyDoc[]).map((project) => ({
-    id: project.id,
-    title: project.title,
-    slug: project.slug,
-    category: project.category,
-    excerpt: project.excerpt,
-    cover: normalizeMedia(project.cover),
-    gallery: Array.isArray(project.gallery)
-      ? project.gallery.map(normalizeMedia).filter(Boolean)
-      : [],
-    featured: project.featured,
-    year: project.year,
-    order: project.order,
-  }))
-
   const snapshot = {
     site: siteSnapshot,
-    projects,
-    media: normalizedMedia,
+    photoshoots,
+    media,
   }
 
-  const source = `export type MediaLike = {
+  const source = `export type PhotoshootLike = {
+  id?: string | number
+  title: string
+  slug: string
+  excerpt?: string | null
+  year?: string | null
+  order?: number | null
+}
+
+export type MediaLike = {
   id?: string | number
   url?: string | null
   alt?: string | null
@@ -124,19 +137,8 @@ try {
   filename?: string | null
   width?: number | null
   height?: number | null
-}
-
-export type ProjectLike = {
-  id?: string | number
-  title: string
-  slug: string
-  category: string
-  excerpt?: string | null
-  cover?: MediaLike | string | number | null
-  gallery?: Array<MediaLike | string | number> | null
   featured?: boolean | null
-  year?: string | null
-  order?: number | null
+  photoshoot?: PhotoshootLike | string | number | null
 }
 
 export type SiteLike = {
@@ -154,7 +156,7 @@ export type SiteLike = {
   seoDescription?: string | null
 }
 
-const snapshot: { site: SiteLike; projects: ProjectLike[]; media: MediaLike[] } = ${JSON.stringify(snapshot, null, 2)}
+const snapshot: { site: SiteLike; photoshoots: PhotoshootLike[]; media: MediaLike[] } = ${JSON.stringify(snapshot, null, 2)}
 
 export function mediaUrl(media: MediaLike | string | number | null | undefined) {
   return media && typeof media === 'object' ? media.url || null : null
@@ -164,19 +166,39 @@ export function mediaAlt(media: MediaLike | string | number | null | undefined, 
   return media && typeof media === 'object' ? media.alt || fallback : fallback
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectLike | null> {
-  return snapshot.projects.find((project) => project.slug === slug) || null
+export function photoshootOf(media: MediaLike) {
+  return media.photoshoot && typeof media.photoshoot === 'object' ? media.photoshoot : null
+}
+
+export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike | null> {
+  return snapshot.photoshoots.find((photoshoot) => photoshoot.slug === slug) || null
+}
+
+export async function getPhotoshootMedia(photoshootId: string | number): Promise<MediaLike[]> {
+  return snapshot.media.filter((media) => {
+    const photoshoot = photoshootOf(media)
+    return photoshoot && String(photoshoot.id) === String(photoshootId)
+  })
 }
 
 export async function getPortfolioData() {
-  return snapshot
+  return {
+    site: snapshot.site,
+    photoshoots: snapshot.photoshoots,
+    featuredMedia: snapshot.media.filter((media) => media.featured && photoshootOf(media)),
+  }
 }
 `
 
   await writeFile(path.resolve(outputFile), source, 'utf8')
-  await writeFile(path.resolve(metaFile), JSON.stringify({ projects: projects.length, media: normalizedMedia.length }), 'utf8')
+  await writeFile(
+    path.resolve(metaFile),
+    JSON.stringify({ photoshoots: photoshoots.length, media: media.length }),
+    'utf8',
+  )
+
   payload.logger.info(
-    `Static snapshot: media=${normalizedMedia.length}, projects=${projects.length}`,
+    `Static snapshot: media=${media.length}, photoshoots=${photoshoots.length}`,
   )
 } finally {
   if (typeof payload.destroy === 'function') {

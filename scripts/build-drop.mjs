@@ -82,7 +82,7 @@ try {
 
   const snapshotMeta = JSON.parse(await readFile(snapshotMetaFile, 'utf8'))
 
-  if (snapshotMeta.projects === 0 && (await exists(workRoutes))) {
+  if (snapshotMeta.photoshoots === 0 && (await exists(workRoutes))) {
     await rename(workRoutes, parkedWorkRoutes)
     workRoutesWereParked = true
   }

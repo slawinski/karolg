@@ -76,14 +76,14 @@ img { display:block; }
 }
 
 .masonry-section {
-  padding:0 clamp(18px,2.8vw,46px) clamp(100px,12vw,190px);
+  padding:0 0 clamp(100px,12vw,190px);
 }
 .masonry-head {
   display:flex;
   justify-content:space-between;
   align-items:end;
   gap:30px;
-  padding:14px 0 20px;
+  padding:14px clamp(18px,2.8vw,46px) 20px;
   border-top:1px solid var(--line);
 }
 .masonry-head h2 {
@@ -128,11 +128,11 @@ img { display:block; }
   min-width:0;
 }
 
-/* ViV-style staggered skyline: each masonry column enters at a different height. */
+/* ViV-style staggered skyline: columns can start as much as ~2/3 of a portrait lower. */
 .cursor-masonry__column[data-column='1'] { padding-top:0; }
-.cursor-masonry__column[data-column='2'] { padding-top:clamp(58px,6.2vw,104px); }
-.cursor-masonry__column[data-column='3'] { padding-top:clamp(20px,2.8vw,48px); }
-.cursor-masonry__column[data-column='4'] { padding-top:clamp(92px,8.4vw,142px); }
+.cursor-masonry__column[data-column='2'] { padding-top:clamp(120px,13vw,250px); }
+.cursor-masonry__column[data-column='3'] { padding-top:clamp(52px,6vw,120px); }
+.cursor-masonry__column[data-column='4'] { padding-top:clamp(220px,27vw,520px); }
 
 .cursor-masonry__column .masonry-card {
   display:block;
@@ -145,8 +145,8 @@ img { display:block; }
   }
 
   .cursor-masonry__column[data-column='1'] { padding-top:0; }
-  .cursor-masonry__column[data-column='2'] { padding-top:clamp(50px,7vw,82px); }
-  .cursor-masonry__column[data-column='3'] { padding-top:clamp(18px,3.5vw,42px); }
+  .cursor-masonry__column[data-column='2'] { padding-top:clamp(100px,18vw,210px); }
+  .cursor-masonry__column[data-column='3'] { padding-top:clamp(190px,34vw,390px); }
 }
 
 @media (max-width:700px) {

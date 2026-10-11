@@ -16,7 +16,7 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
 
 const columnsForWidth = (width: number) => {
-  if (width <= 700) return 1
+  if (width <= 700) return 2
   if (width <= 1100) return 3
   return 4
 }
@@ -44,7 +44,7 @@ export function CursorMasonry({ children }: CursorMasonryProps) {
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-    if (!finePointer.matches || reducedMotion.matches || columnCount === 1) {
+    if (!finePointer.matches || reducedMotion.matches) {
       rail.style.removeProperty('transform')
       return
     }

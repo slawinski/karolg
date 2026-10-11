@@ -169,40 +169,63 @@ img { display:block; }
 }
 
 @media (max-width:700px) {
+  .masonry-section {
+    padding-top:clamp(54px,14vw,86px);
+  }
+
   .masonry-name {
-    position:relative;
-    top:auto;
-    left:auto;
-    width:auto;
-    padding:0 18px 28px;
+    position:absolute;
+    z-index:0;
+    top:0;
+    left:14px;
+    width:calc(100% - 28px);
+    padding:0;
+  }
+
+  .masonry-name__first,
+  .masonry-name__last {
+    text-box-trim:trim-start;
+    text-box-edge:cap alphabetic;
   }
 
   .masonry-name__first {
-    font-size:clamp(88px,27vw,144px);
-    line-height:.72;
+    font-size:clamp(84px,28vw,146px);
+    line-height:.7;
+    letter-spacing:-.075em;
   }
 
   .masonry-name__last {
-    margin-top:.04em;
-    margin-left:clamp(22px,8vw,48px);
-    font-size:clamp(80px,24vw,132px);
-    line-height:.72;
+    margin-top:.025em;
+    margin-left:clamp(18px,8vw,42px);
+    font-size:clamp(76px,25vw,132px);
+    line-height:.7;
+    letter-spacing:-.07em;
   }
 
   .cursor-masonry {
-    overflow:visible;
+    overflow:hidden;
   }
 
   .cursor-masonry__rail {
     width:100%;
-    grid-template-columns:1fr;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
     transform:none !important;
     will-change:auto;
   }
 
   .cursor-masonry__column {
-    gap:18px;
-    padding-top:0 !important;
+    gap:8px;
+  }
+
+  /* Mobile follows the ViV composition: the title owns the top of the stage,
+     then both image columns enter below it at slightly different heights. */
+  .cursor-masonry__column[data-column='1'] {
+    padding-top:clamp(225px,66vw,360px);
+  }
+
+  .cursor-masonry__column[data-column='2'] {
+    padding-top:clamp(275px,80vw,430px);
   }
 }
 
@@ -410,39 +433,59 @@ img { display:block; }
 }
 
 @media (max-width:700px) {
-  .header { min-height:64px; grid-template-columns:1fr auto; }
+  .header {
+    min-height:58px;
+    grid-template-columns:1fr auto;
+    padding:0 14px;
+  }
   .nav { display:none; }
-
-  .intro-shell {
-    min-height:auto;
-    grid-template-columns:1fr;
-    padding-top:72px;
-  }
-  .intro-copy h1 {
-    font-size:clamp(50px,15vw,84px);
+  .menu-link {
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
   }
 
-  .masonry-grid,
-  .artist-masonry { column-count:1; }
-  .masonry-card,
-  .artist-masonry-item { margin-bottom:18px; }
+  .masonry-grid { column-count:2; }
+  .artist-masonry { column-count:2; }
+  .artist-masonry {
+    column-gap:8px;
+    padding-left:0;
+    padding-right:0;
+  }
+  .artist-masonry-item { margin-bottom:8px; }
 
+  .about {
+    padding-left:14px;
+    padding-right:14px;
+  }
   .about-statement p {
     font-size:clamp(48px,14vw,78px);
   }
 
-  .footer { grid-template-columns:1fr; }
+  .footer {
+    grid-template-columns:1fr;
+    padding-left:14px;
+    padding-right:14px;
+  }
   .footer-signoff,
   .footer-bottom { grid-column:1; }
   .footer-signoff p {
     font-size:clamp(48px,14vw,78px);
   }
 
+  .artist-head {
+    padding-left:14px;
+    padding-right:14px;
+  }
   .artist-head h1 {
     font-size:clamp(70px,21vw,116px);
   }
   .artist-filters { gap:6px 12px; }
-  .artist-info { grid-template-columns:1fr; }
+  .artist-info {
+    grid-template-columns:1fr;
+    padding-left:14px;
+    padding-right:14px;
+  }
 }
 
 @media (prefers-reduced-motion:reduce) {

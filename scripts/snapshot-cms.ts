@@ -21,9 +21,10 @@ if (dbUrl.startsWith('file:./')) {
 const { default: config } = await import('../src/payload.config')
 
 const outputFile = process.argv[2]
+const metaFile = process.argv[3]
 
-if (!outputFile) {
-  throw new Error('Usage: tsx scripts/snapshot-cms.ts <output-file>')
+if (!outputFile || !metaFile) {
+  throw new Error('Usage: tsx scripts/snapshot-cms.ts <output-file> <meta-file>')
 }
 
 type AnyDoc = Record<string, unknown>
@@ -173,6 +174,7 @@ export async function getPortfolioData() {
 `
 
   await writeFile(path.resolve(outputFile), source, 'utf8')
+  await writeFile(path.resolve(metaFile), JSON.stringify({ projects: projects.length, media: normalizedMedia.length }), 'utf8')
   payload.logger.info(
     `Static snapshot: media=${normalizedMedia.length}, projects=${projects.length}`,
   )

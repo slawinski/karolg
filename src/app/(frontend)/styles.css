@@ -90,7 +90,7 @@ img { display:block; }
 .masonry-name {
   position:absolute;
   z-index:0;
-  top:-.08em;
+  top:0;
   left:0;
   margin:0;
   width:100%;
@@ -126,7 +126,7 @@ img { display:block; }
 .cursor-masonry__column {
   display:flex;
   flex-direction:column;
-  gap:clamp(28px,3vw,48px);
+  gap:clamp(96px,10vw,190px);
   min-width:0;
 }
 
@@ -144,6 +144,10 @@ img { display:block; }
 @media (hover:hover) and (pointer:fine) and (min-width:701px) and (max-width:1100px) {
   .cursor-masonry__rail {
     width:150%;
+  }
+
+  .cursor-masonry__column {
+    gap:clamp(72px,10vw,130px);
   }
 
   .cursor-masonry__column[data-column='1'] { padding-top:0; }
@@ -173,7 +177,7 @@ img { display:block; }
   }
 
   .cursor-masonry__column {
-    gap:18px;
+    gap:42px;
     padding-top:0 !important;
   }
 }

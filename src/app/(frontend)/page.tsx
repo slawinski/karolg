@@ -65,7 +65,7 @@ export default async function HomePage() {
                 <Visual
                   media={image}
                   alt={image.alt || `${photoshoot.title} featured image ${index + 1}`}
-                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
                   variant={index + 1}
                 />
               </figure>

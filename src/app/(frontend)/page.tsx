@@ -17,7 +17,7 @@ export default async function HomePage() {
     )
 
   return (
-    <main className="site">
+    <main className="site" id="top">
       <header className="header">
         <a className="brand" href="#top">Carla Gorecka</a>
         <nav className="nav" aria-label="Primary navigation">
@@ -28,23 +28,6 @@ export default async function HomePage() {
         <a className="menu-link" href={instagram} target="_blank" rel="noreferrer">Instagram</a>
       </header>
 
-      <section className="intro-shell" id="top">
-        <div className="intro-copy">
-          <p className="eyebrow">{site.roles}</p>
-          <h1>
-            Carla is model.
-            <br />
-            Carla is movement.
-            <br />
-            Carla is creative.
-          </h1>
-        </div>
-        <div className="intro-meta">
-          <p>{site.intro}</p>
-          <p>{site.handwrittenLine}</p>
-        </div>
-      </section>
-
       <section className="masonry-section" id="work">
         <div className="masonry-head">
           <h2>Work</h2>
@@ -54,28 +37,34 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <CursorMasonry>
-          {featured.map(({ image, photoshoot }, index) => (
-            <Link
-              className={`masonry-card masonry-card-${(index % 7) + 1}`}
-              href={`/work/${photoshoot.slug}`}
-              key={image.id ?? image.filename ?? index}
-            >
-              <figure className="image-frame">
-                <Visual
-                  media={image}
-                  alt={image.alt || `${photoshoot.title} featured image ${index + 1}`}
-                  sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
-                  variant={index + 1}
-                />
-              </figure>
-              <div className="masonry-caption">
-                <span>{photoshoot.title}</span>
-                <span>{image.caption || photoshoot.year || 'View shoot'}</span>
-              </div>
-            </Link>
-          ))}
-        </CursorMasonry>
+        <div className="masonry-stage">
+          <h1 className="masonry-name" aria-label="Carla Gorecka">
+            Carla Gorecka
+          </h1>
+
+          <CursorMasonry>
+            {featured.map(({ image, photoshoot }, index) => (
+              <Link
+                className={`masonry-card masonry-card-${(index % 7) + 1}`}
+                href={`/work/${photoshoot.slug}`}
+                key={image.id ?? image.filename ?? index}
+              >
+                <figure className="image-frame">
+                  <Visual
+                    media={image}
+                    alt={image.alt || `${photoshoot.title} featured image ${index + 1}`}
+                    sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                    variant={index + 1}
+                  />
+                </figure>
+                <div className="masonry-caption">
+                  <span>{photoshoot.title}</span>
+                  <span>{image.caption || photoshoot.year || 'View shoot'}</span>
+                </div>
+              </Link>
+            ))}
+          </CursorMasonry>
+        </div>
       </section>
 
       <section className="about" id="about">

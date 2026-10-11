@@ -105,7 +105,31 @@ img { display:block; }
   column-gap:clamp(12px,1.5vw,24px);
 }
 
+.masonry-stage {
+  position:relative;
+}
+
+.masonry-name {
+  position:absolute;
+  z-index:0;
+  top:-.08em;
+  left:0;
+  margin:0;
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  font-family:var(--serif);
+  font-size:clamp(104px,15.4vw,268px);
+  font-weight:400;
+  line-height:.78;
+  letter-spacing:-.065em;
+  pointer-events:none;
+  user-select:none;
+}
+
 .cursor-masonry {
+  position:relative;
+  z-index:1;
   width:100%;
   overflow:hidden;
 }
@@ -150,6 +174,15 @@ img { display:block; }
 }
 
 @media (max-width:700px) {
+  .masonry-name {
+    position:relative;
+    top:auto;
+    padding:0 18px 22px;
+    white-space:normal;
+    font-size:clamp(68px,20vw,112px);
+    line-height:.82;
+  }
+
   .cursor-masonry {
     overflow:visible;
   }

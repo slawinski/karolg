@@ -3,6 +3,8 @@ node_modules
 out
 .drop-payload-app
 .drop-portfolio.ts
+.drop-work-routes
+.drop-snapshot-meta.json
 src/lib/.portfolio.drop.generated.ts
 .env
 .env.local

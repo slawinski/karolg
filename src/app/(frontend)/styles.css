@@ -90,9 +90,9 @@ img { display:block; }
   position:absolute;
   z-index:0;
   top:0;
-  left:clamp(64px,18vw,350px);
+  left:clamp(36px,14vw,270px);
   margin:0;
-  width:min(58vw,1080px);
+  width:min(70vw,1360px);
   pointer-events:none;
   user-select:none;
 }
@@ -108,18 +108,18 @@ img { display:block; }
 }
 
 .masonry-name__first {
-  font-size:clamp(96px,12vw,228px);
-  line-height:.76;
-  letter-spacing:-.07em;
+  font-size:clamp(138px,17.4vw,336px);
+  line-height:.69;
+  letter-spacing:-.075em;
 }
 
 .masonry-name__last {
-  margin-top:.08em;
-  margin-left:clamp(54px,8.5vw,164px);
-  font-size:clamp(88px,11vw,212px);
+  margin-top:.035em;
+  margin-left:clamp(48px,7vw,136px);
+  font-size:clamp(126px,15.8vw,306px);
   font-style:italic;
-  line-height:.78;
-  letter-spacing:-.065em;
+  line-height:.7;
+  letter-spacing:-.07em;
 }
 
 .cursor-masonry {
@@ -178,12 +178,15 @@ img { display:block; }
   }
 
   .masonry-name__first {
-    font-size:clamp(68px,21vw,112px);
+    font-size:clamp(88px,27vw,144px);
+    line-height:.72;
   }
 
   .masonry-name__last {
-    margin-left:clamp(28px,11vw,60px);
-    font-size:clamp(62px,19vw,104px);
+    margin-top:.04em;
+    margin-left:clamp(22px,8vw,48px);
+    font-size:clamp(80px,24vw,132px);
+    line-height:.72;
   }
 
   .cursor-masonry {

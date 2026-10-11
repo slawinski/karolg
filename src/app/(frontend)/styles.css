@@ -90,10 +90,9 @@ img { display:block; }
   position:absolute;
   z-index:0;
   top:0;
-  left:clamp(56px,18vw,350px);
+  left:clamp(64px,18vw,350px);
   margin:0;
-  width:min(64vw,1240px);
-  overflow:visible;
+  width:min(58vw,1080px);
   pointer-events:none;
   user-select:none;
 }
@@ -102,25 +101,24 @@ img { display:block; }
 .masonry-name__last {
   display:block;
   white-space:nowrap;
+  font-family:var(--serif);
+  font-weight:400;
+  text-box-trim:trim-start;
+  text-box-edge:cap alphabetic;
 }
 
 .masonry-name__first {
-  font-family:var(--chase),var(--sans);
-  font-size:clamp(72px,8.8vw,168px);
-  font-weight:400;
+  font-size:clamp(96px,12vw,228px);
   line-height:.76;
-  letter-spacing:-.035em;
-  text-transform:uppercase;
+  letter-spacing:-.07em;
 }
 
 .masonry-name__last {
-  margin-top:.04em;
-  margin-left:clamp(28px,7vw,138px);
-  font-family:var(--serif);
-  font-size:clamp(92px,12.2vw,234px);
+  margin-top:.08em;
+  margin-left:clamp(54px,8.5vw,164px);
+  font-size:clamp(88px,11vw,212px);
   font-style:italic;
-  font-weight:400;
-  line-height:.76;
+  line-height:.78;
   letter-spacing:-.065em;
 }
 
@@ -180,14 +178,12 @@ img { display:block; }
   }
 
   .masonry-name__first {
-    font-size:clamp(56px,17vw,92px);
-    line-height:.78;
+    font-size:clamp(68px,21vw,112px);
   }
 
   .masonry-name__last {
-    margin-left:clamp(22px,10vw,56px);
-    font-size:clamp(68px,21vw,116px);
-    line-height:.78;
+    margin-left:clamp(28px,11vw,60px);
+    font-size:clamp(62px,19vw,104px);
   }
 
   .cursor-masonry {

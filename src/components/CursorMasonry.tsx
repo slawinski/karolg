@@ -1,7 +1,12 @@
 'use client'
 
-import type { ReactNode } from 'react'
-import { useEffect, useRef } from 'react'
+import {
+  Children,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 type CursorMasonryProps = {
   children: ReactNode
@@ -10,9 +15,25 @@ type CursorMasonryProps = {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
 
+const columnsForWidth = (width: number) => {
+  if (width <= 700) return 1
+  if (width <= 1100) return 3
+  return 4
+}
+
 export function CursorMasonry({ children }: CursorMasonryProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
+  const [columnCount, setColumnCount] = useState(4)
+
+  useEffect(() => {
+    const updateColumns = () => setColumnCount(columnsForWidth(window.innerWidth))
+
+    updateColumns()
+    window.addEventListener('resize', updateColumns)
+
+    return () => window.removeEventListener('resize', updateColumns)
+  }, [])
 
   useEffect(() => {
     const viewport = viewportRef.current
@@ -23,7 +44,10 @@ export function CursorMasonry({ children }: CursorMasonryProps) {
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-    if (!finePointer.matches || reducedMotion.matches) return
+    if (!finePointer.matches || reducedMotion.matches || columnCount === 1) {
+      rail.style.removeProperty('transform')
+      return
+    }
 
     let current = 0.5
     let target = 0.5
@@ -57,7 +81,6 @@ export function CursorMasonry({ children }: CursorMasonryProps) {
       const bounds = viewport.getBoundingClientRect()
       const progress = clamp((event.clientX - bounds.left) / bounds.width, 0, 1)
 
-      // Left edge shows the first column; right edge reveals the extra final column.
       target = progress
       animateToTarget()
     }
@@ -87,12 +110,29 @@ export function CursorMasonry({ children }: CursorMasonryProps) {
 
       rail.style.removeProperty('transform')
     }
-  }, [])
+  }, [columnCount])
+
+  const items = Children.toArray(children)
+  const columns = Array.from({ length: columnCount }, (_, columnIndex) =>
+    items.filter((_, itemIndex) => itemIndex % columnCount === columnIndex),
+  )
 
   return (
     <div className="cursor-masonry" ref={viewportRef}>
-      <div className="masonry-grid cursor-masonry__rail" ref={railRef}>
-        {children}
+      <div
+        className="cursor-masonry__rail"
+        ref={railRef}
+        style={{ '--masonry-columns': columnCount } as React.CSSProperties}
+      >
+        {columns.map((column, columnIndex) => (
+          <div
+            className="cursor-masonry__column"
+            data-column={columnIndex + 1}
+            key={columnIndex}
+          >
+            {column}
+          </div>
+        ))}
       </div>
     </div>
   )

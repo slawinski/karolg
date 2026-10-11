@@ -111,25 +111,62 @@ img { display:block; }
 }
 
 .cursor-masonry__rail {
+  --masonry-columns:4;
+  display:grid;
+  grid-template-columns:repeat(var(--masonry-columns),minmax(0,1fr));
+  gap:clamp(12px,1.5vw,24px);
+  width:133.333333%;
   transform:translate3d(0,0,0);
   transform-origin:left top;
+  will-change:transform;
 }
 
-@media (hover:hover) and (pointer:fine) and (min-width:1101px) {
-  .masonry-grid.cursor-masonry__rail {
-    width:133.333333%;
-    column-count:4;
-    will-change:transform;
-  }
+.cursor-masonry__column {
+  display:flex;
+  flex-direction:column;
+  gap:clamp(28px,3vw,48px);
+  min-width:0;
+}
+
+/* ViV-style staggered skyline: each masonry column enters at a different height. */
+.cursor-masonry__column[data-column='1'] { padding-top:0; }
+.cursor-masonry__column[data-column='2'] { padding-top:clamp(58px,6.2vw,104px); }
+.cursor-masonry__column[data-column='3'] { padding-top:clamp(20px,2.8vw,48px); }
+.cursor-masonry__column[data-column='4'] { padding-top:clamp(92px,8.4vw,142px); }
+
+.cursor-masonry__column .masonry-card {
+  display:block;
+  margin-bottom:0;
 }
 
 @media (hover:hover) and (pointer:fine) and (min-width:701px) and (max-width:1100px) {
-  .masonry-grid.cursor-masonry__rail {
+  .cursor-masonry__rail {
     width:150%;
-    column-count:3;
-    will-change:transform;
+  }
+
+  .cursor-masonry__column[data-column='1'] { padding-top:0; }
+  .cursor-masonry__column[data-column='2'] { padding-top:clamp(50px,7vw,82px); }
+  .cursor-masonry__column[data-column='3'] { padding-top:clamp(18px,3.5vw,42px); }
+}
+
+@media (max-width:700px) {
+  .cursor-masonry {
+    overflow:visible;
+  }
+
+  .cursor-masonry__rail {
+    width:100%;
+    grid-template-columns:1fr;
+    transform:none !important;
+    will-change:auto;
+  }
+
+  .cursor-masonry__column {
+    gap:18px;
+    padding-top:0 !important;
   }
 }
+
 .masonry-card {
   display:inline-block;
   width:100%;
@@ -385,16 +422,7 @@ img { display:block; }
   html { scroll-behavior:auto; }
   .visual-img { transition:none; }
   .cursor-masonry__rail {
-    width:100%;
     transform:none !important;
     will-change:auto;
   }
-}
-
-@media (prefers-reduced-motion:reduce) and (min-width:1101px) {
-  .cursor-masonry__rail { column-count:3; }
-}
-
-@media (prefers-reduced-motion:reduce) and (min-width:701px) and (max-width:1100px) {
-  .cursor-masonry__rail { column-count:2; }
 }

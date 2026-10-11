@@ -4,10 +4,9 @@ import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { Visual } from '@/components/Visual'
 import {
-  fallbackProjects,
   getPortfolioData,
-  type MediaLike,
   getProjectBySlug,
+  type MediaLike,
 } from '@/lib/portfolio'
 
 export const revalidate = 300
@@ -19,11 +18,10 @@ export const dynamicParams = false
 export async function generateStaticParams() {
   try {
     const { projects } = await getPortfolioData()
-    if (projects.length) return projects.map((project) => ({ slug: project.slug }))
+    return projects.map((project) => ({ slug: project.slug }))
   } catch {
-    /* fall through to fallbacks */
+    return []
   }
-  return fallbackProjects.map((project) => ({ slug: project.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -37,8 +35,7 @@ export default async function WorkPage({ params }: Props) {
   const project = await getProjectBySlug(slug)
   if (!project) notFound()
 
-  const gallery = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
-  const images = gallery
+  const images = (project.gallery?.filter((item) => typeof item === 'object') || []) as MediaLike[]
 
   return (
     <main className="artist-page">
@@ -60,9 +57,6 @@ export default async function WorkPage({ params }: Props) {
         <nav className="artist-filters" aria-label="Portfolio filters">
           <span>All ({String(images.length).padStart(2, '0')})</span>
           <span>{project.category}</span>
-          <span>Portrait</span>
-          <span>Movement</span>
-          <span>Personal</span>
         </nav>
       </section>
 
@@ -70,11 +64,11 @@ export default async function WorkPage({ params }: Props) {
         {images.map((image, index) => (
           <figure
             className={`artist-masonry-item artist-masonry-item-${(index % 7) + 1} image-frame`}
-            key={index}
+            key={image.id ?? image.filename ?? index}
           >
             <Visual
               media={image}
-              alt={`${project.title} image ${index + 1}`}
+              alt={image.alt || `${project.title} image ${index + 1}`}
               sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
               variant={index + 1}
             />

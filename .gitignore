@@ -3,6 +3,7 @@ node_modules
 out
 .drop-payload-app
 .drop-portfolio.ts
+src/lib/.portfolio.drop.generated.ts
 .env
 .env.local
 *.log

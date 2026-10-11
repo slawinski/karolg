@@ -1,4 +1,4 @@
-import { access, copyFile, rename, rm } from 'node:fs/promises'
+import { access, rename, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
@@ -7,7 +7,7 @@ const root = process.cwd()
 const payloadApp = path.join(root, 'src', 'app', '(payload)')
 const parkedPayloadApp = path.join(root, '.drop-payload-app')
 const portfolioFile = path.join(root, 'src', 'lib', 'portfolio.ts')
-const staticPortfolioFile = path.join(root, 'src', 'lib', 'portfolio.static.ts')
+const generatedPortfolioFile = path.join(root, 'src', 'lib', '.portfolio.drop.generated.ts')
 const parkedPortfolioFile = path.join(root, '.drop-portfolio.ts')
 const outDir = path.join(root, 'out')
 const nextDir = path.join(root, '.next')
@@ -21,8 +21,23 @@ const exists = async (target) => {
   }
 }
 
+const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+
+const run = (args, env = process.env) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: root,
+      stdio: 'inherit',
+      env,
+    })
+
+    child.on('error', reject)
+    child.on('exit', (code) => resolve(code ?? 1))
+  })
+
 await rm(outDir, { recursive: true, force: true })
 await rm(nextDir, { recursive: true, force: true })
+await rm(generatedPortfolioFile, { force: true })
 
 let payloadWasParked = false
 let portfolioWasSwapped = false
@@ -40,31 +55,36 @@ try {
     )
   }
 
+  console.log('Snapshotting Payload CMS content for static export...')
+  const snapshotExitCode = await run([
+    'exec',
+    'tsx',
+    'scripts/snapshot-cms.ts',
+    generatedPortfolioFile,
+  ])
+
+  if (snapshotExitCode !== 0) {
+    process.exitCode = snapshotExitCode
+    throw new Error('Could not snapshot Payload CMS content.')
+  }
+
   if (await exists(payloadApp)) {
     await rename(payloadApp, parkedPayloadApp)
     payloadWasParked = true
   }
 
   await rename(portfolioFile, parkedPortfolioFile)
-  await copyFile(staticPortfolioFile, portfolioFile)
+  await rename(generatedPortfolioFile, portfolioFile)
   portfolioWasSwapped = true
 
-  const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
-
-  const exitCode = await new Promise((resolve, reject) => {
-    const child = spawn(command, ['exec', 'next', 'build'], {
-      cwd: root,
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        STATIC_EXPORT: '1',
-        NODE_OPTIONS: '--no-deprecation --max-old-space-size=4096',
-      },
-    })
-
-    child.on('error', reject)
-    child.on('exit', (code) => resolve(code ?? 1))
-  })
+  const exitCode = await run(
+    ['exec', 'next', 'build'],
+    {
+      ...process.env,
+      STATIC_EXPORT: '1',
+      NODE_OPTIONS: '--no-deprecation --max-old-space-size=4096',
+    },
+  )
 
   if (exitCode !== 0) {
     process.exitCode = exitCode
@@ -78,6 +98,8 @@ try {
       await rename(parkedPortfolioFile, portfolioFile)
     }
   }
+
+  await rm(generatedPortfolioFile, { force: true })
 
   if (payloadWasParked && (await exists(parkedPayloadApp))) {
     await rename(parkedPayloadApp, payloadApp)

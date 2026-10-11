@@ -1,6 +1,9 @@
 export type MediaLike = {
+  id?: string | number
   url?: string | null
   alt?: string | null
+  caption?: string | null
+  filename?: string | null
   width?: number | null
   height?: number | null
 }
@@ -33,60 +36,13 @@ export type SiteLike = {
   seoDescription?: string | null
 }
 
-export const sesjaMedia: MediaLike[] = [
-  { url: '/sesja/000729840002-Edit.jpg', alt: 'Sesja Karolg — 000729840002 Edit', width: 720, height: 960 },
-  { url: '/sesja/000729840004-Edit.jpg', alt: 'Sesja Karolg — 000729840004 Edit', width: 720, height: 960 },
-  { url: '/sesja/000729840006-Edit.jpg', alt: 'Sesja Karolg — 000729840006 Edit', width: 720, height: 960 },
-  { url: '/sesja/000729840007-Edit.jpg', alt: 'Sesja Karolg — 000729840007 Edit', width: 720, height: 960 },
-  { url: '/sesja/000729840008-2-Edit.jpg', alt: 'Sesja Karolg — 000729840008 2 Edit', width: 720, height: 960 },
-  { url: '/sesja/000729840012-Edit.jpg', alt: 'Sesja Karolg — 000729840012 Edit', width: 720, height: 960 },
-  { url: '/sesja/3N7A0290.jpg', alt: 'Sesja Karolg — 3N7A0290', width: 720, height: 960 },
-  { url: '/sesja/3N7A0293.jpg', alt: 'Sesja Karolg — 3N7A0293', width: 720, height: 960 },
-  { url: '/sesja/3N7A0295.jpg', alt: 'Sesja Karolg — 3N7A0295', width: 720, height: 960 },
-  { url: '/sesja/3N7A0304.jpg', alt: 'Sesja Karolg — 3N7A0304', width: 720, height: 960 },
-  { url: '/sesja/3N7A0352.jpg', alt: 'Sesja Karolg — 3N7A0352', width: 720, height: 960 },
-  { url: '/sesja/3N7A0369.jpg', alt: 'Sesja Karolg — 3N7A0369', width: 720, height: 960 },
-  { url: '/sesja/3N7A0407.jpg', alt: 'Sesja Karolg — 3N7A0407', width: 720, height: 960 },
-  { url: '/sesja/3N7A0416.jpg', alt: 'Sesja Karolg — 3N7A0416', width: 720, height: 960 },
-  { url: '/sesja/3N7A0433-2.jpg', alt: 'Sesja Karolg — 3N7A0433 2', width: 720, height: 960 },
-  { url: '/sesja/3N7A0440.jpg', alt: 'Sesja Karolg — 3N7A0440', width: 720, height: 960 },
-  { url: '/sesja/IMG_1178.jpg', alt: 'Sesja Karolg — IMG 1178', width: 720, height: 960 },
-  { url: '/sesja/IMG_8825.jpg', alt: 'Sesja Karolg — IMG 8825', width: 720, height: 960 },
-  { url: '/sesja/IMG_8831.jpg', alt: 'Sesja Karolg — IMG 8831', width: 720, height: 960 },
-  { url: '/sesja/IMG_8852.jpg', alt: 'Sesja Karolg — IMG 8852', width: 720, height: 960 },
-  { url: '/sesja/IMG_8855.jpg', alt: 'Sesja Karolg — IMG 8855', width: 720, height: 960 },
-  { url: '/sesja/IMG_8862.jpg', alt: 'Sesja Karolg — IMG 8862', width: 720, height: 960 },
-  { url: '/sesja/IMG_8865.jpg', alt: 'Sesja Karolg — IMG 8865', width: 720, height: 960 },
-  { url: '/sesja/IMG_8867.jpg', alt: 'Sesja Karolg — IMG 8867', width: 720, height: 960 },
-  { url: '/sesja/IMG_8885.jpg', alt: 'Sesja Karolg — IMG 8885', width: 720, height: 960 },
-  { url: '/sesja/IMG_8949.jpg', alt: 'Sesja Karolg — IMG 8949', width: 720, height: 960 },
-  { url: '/sesja/IMG_8987.jpg', alt: 'Sesja Karolg — IMG 8987', width: 720, height: 960 },
-  { url: '/sesja/IMG_9104.jpg', alt: 'Sesja Karolg — IMG 9104', width: 720, height: 960 },
-  { url: '/sesja/IMG_9109.jpg', alt: 'Sesja Karolg — IMG 9109', width: 720, height: 960 },
-  { url: '/sesja/IMG_9167.jpg', alt: 'Sesja Karolg — IMG 9167', width: 720, height: 960 },
-  { url: '/sesja/IMG_9304.jpg', alt: 'Sesja Karolg — IMG 9304', width: 720, height: 960 },
-  { url: '/sesja/IMG_9309.jpg', alt: 'Sesja Karolg — IMG 9309', width: 720, height: 960 },
-  { url: '/sesja/IMG_9331.jpg', alt: 'Sesja Karolg — IMG 9331', width: 720, height: 960 },
-  { url: '/sesja/IMG_9354.jpg', alt: 'Sesja Karolg — IMG 9354', width: 720, height: 960 },
-]
-
-const sesjaHero = sesjaMedia[3]
-const sesjaGallery = [...sesjaMedia.slice(0, 3), ...sesjaMedia.slice(4)]
-
-export const fallbackSite: Required<
-  Pick<
-    SiteLike,
-    'name' | 'roles' | 'heroEyebrow' | 'heroHeadline' | 'handwrittenLine' | 'intro' | 'instagram' | 'seoDescription'
-  >
-> &
-  SiteLike = {
+export const fallbackSite: SiteLike = {
   name: 'CARLA GORECKA',
   roles: 'MODEL / PILATES / CREATIVE',
   heroEyebrow: 'HONEST\nNATURAL\nAUTHENTIC\nIN MOTION',
   heroHeadline: 'A CREATIVE APPROACH TO MODELING',
   handwrittenLine: 'Movement · People · Stories',
   intro: 'Fashion, movement and natural portraiture — with a body-aware point of view.',
-  heroMedia: sesjaHero,
   instagram: 'https://www.instagram.com/carlagorecka/',
   seoDescription: 'Portfolio of Carla Gorecka — model, classical Pilates teacher and creative.',
   locations: [{ label: 'WARSAW' }, { label: 'WORLDWIDE' }],
@@ -96,34 +52,16 @@ export const fallbackSite: Required<
   ],
 }
 
-export const fallbackProjects: ProjectLike[] = [
-  {
-    title: 'Sesja Karolg',
-    slug: 'sesja-karolg',
-    category: 'portrait',
-    excerpt: 'Studio portraits — natural light, movement and quiet character.',
-    cover: sesjaHero,
-    gallery: sesjaGallery,
-    featured: true,
-    year: '2026',
-    order: 1,
-  },
-]
-
 const safeObject = <T>(value: unknown): T | null =>
   value && typeof value === 'object' ? (value as T) : null
 
 export function mediaUrl(media: MediaLike | string | number | null | undefined) {
-  const object = safeObject<MediaLike>(media)
-  return object?.url || null
+  return safeObject<MediaLike>(media)?.url || null
 }
 
 export function mediaAlt(media: MediaLike | string | number | null | undefined, fallback: string) {
-  const object = safeObject<MediaLike>(media)
-  return object?.alt || fallback
+  return safeObject<MediaLike>(media)?.alt || fallback
 }
-
-const isStaticExport = process.env.STATIC_EXPORT === '1'
 
 async function getPayloadClient() {
   const [{ default: configPromise }, { getPayload }] = await Promise.all([
@@ -135,10 +73,6 @@ async function getPayloadClient() {
 }
 
 export async function getProjectBySlug(slug: string): Promise<ProjectLike | null> {
-  if (isStaticExport) {
-    return fallbackProjects.find((project) => project.slug === slug) || null
-  }
-
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
@@ -148,37 +82,31 @@ export async function getProjectBySlug(slug: string): Promise<ProjectLike | null
       limit: 1,
     })
 
-    return (
-      (result.docs[0] as unknown as ProjectLike) ||
-      fallbackProjects.find((project) => project.slug === slug) ||
-      null
-    )
+    return (result.docs[0] as unknown as ProjectLike) || null
   } catch {
-    return fallbackProjects.find((project) => project.slug === slug) || null
+    return null
   }
 }
 
 export async function getPortfolioData() {
-  if (isStaticExport) {
-    return { site: fallbackSite, projects: fallbackProjects }
-  }
-
   try {
     const payload = await getPayloadClient()
-    const [site, projectResult] = await Promise.all([
+    const [site, projectResult, mediaResult] = await Promise.all([
       payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-      payload.find({ collection: 'projects', depth: 1, limit: 20, sort: 'order' }),
+      payload.find({ collection: 'projects', depth: 1, limit: 100, sort: 'order' }),
+      payload.find({ collection: 'media', depth: 0, limit: 500, sort: 'filename' }),
     ])
-
-    const projects = (projectResult.docs as unknown as ProjectLike[]).length
-      ? (projectResult.docs as unknown as ProjectLike[])
-      : fallbackProjects
 
     return {
       site: { ...fallbackSite, ...(site as unknown as SiteLike) },
-      projects,
+      projects: projectResult.docs as unknown as ProjectLike[],
+      media: mediaResult.docs as unknown as MediaLike[],
     }
   } catch {
-    return { site: fallbackSite, projects: fallbackProjects }
+    return {
+      site: fallbackSite,
+      projects: [] as ProjectLike[],
+      media: [] as MediaLike[],
+    }
   }
 }

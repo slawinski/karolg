@@ -29,14 +29,6 @@ export default async function HomePage() {
       </header>
 
       <section className="masonry-section" id="work">
-        <div className="masonry-head">
-          <h2>Work</h2>
-          <div>
-            <span>{String(featured.length).padStart(2, '0')} featured</span>
-            <span>Selected</span>
-          </div>
-        </div>
-
         <div className="masonry-stage">
           <h1 className="masonry-name" aria-label="Carla Gorecka">
             Carla Gorecka
@@ -57,10 +49,6 @@ export default async function HomePage() {
                     variant={index + 1}
                   />
                 </figure>
-                <div className="masonry-caption">
-                  <span>{photoshoot.title}</span>
-                  <span>{image.caption || photoshoot.year || 'View shoot'}</span>
-                </div>
               </Link>
             ))}
           </CursorMasonry>

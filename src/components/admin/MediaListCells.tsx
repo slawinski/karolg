@@ -147,8 +147,6 @@ export function PhotoshootCell({
 
     try {
       await updateMedia(id, {
-        // SQLite-backed Payload collections use numeric IDs. <select> values
-        // are always strings, so preserve the ID type returned by Payload.
         photoshoot: next ? selectedPhotoshoot?.id ?? null : null,
       })
     } catch (updateError) {
@@ -205,86 +203,5 @@ export function PhotoshootCell({
         <span aria-label="Save failed" title="Save failed">!</span>
       ) : null}
     </div>
-  )
-}
-
-export function FeaturedCell({
-  cellData,
-  rowData,
-}: DefaultCellComponentProps) {
-  const [featured, setFeatured] = useState(Boolean(cellData))
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(false)
-
-  useEffect(() => {
-    setFeatured(Boolean(cellData))
-  }, [cellData])
-
-  const handleToggle = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-
-    if (saving) return
-
-    const id = getRowID(rowData)
-    const previous = featured
-    const next = !previous
-
-    setFeatured(next)
-    setSaving(true)
-    setError(false)
-
-    if (id === null) {
-      setFeatured(previous)
-      setSaving(false)
-      setError(true)
-      return
-    }
-
-    try {
-      await updateMedia(id, { featured: next })
-    } catch (updateError) {
-      console.error(updateError)
-      setFeatured(previous)
-      setError(true)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  return (
-    <button
-      aria-label={featured ? 'Remove from homepage' : 'Feature on homepage'}
-      aria-pressed={featured}
-      disabled={saving}
-      onClick={handleToggle}
-      onMouseDown={stopRowNavigation}
-      title={
-        error
-          ? 'Save failed — click to retry'
-          : featured
-            ? 'Featured on homepage'
-            : 'Not featured'
-      }
-      type="button"
-      style={{
-        alignItems: 'center',
-        background: featured ? 'var(--theme-elevation-800)' : 'transparent',
-        border: '1px solid var(--theme-elevation-300)',
-        borderRadius: 999,
-        color: featured ? 'var(--theme-elevation-0)' : 'inherit',
-        cursor: saving ? 'wait' : 'pointer',
-        display: 'inline-flex',
-        font: 'inherit',
-        fontSize: 12,
-        gap: 6,
-        minHeight: 30,
-        padding: '4px 10px',
-      }}
-    >
-      <span aria-hidden="true">{featured ? '●' : '○'}</span>
-      {saving ? 'Saving…' : featured ? 'Featured' : 'Feature'}
-      {error ? ' !' : ''}
-    </button>
   )
 }

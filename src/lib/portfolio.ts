@@ -15,7 +15,6 @@ export type MediaLike = {
   filename?: string | null
   width?: number | null
   height?: number | null
-  featured?: boolean | null
   photoshoot?: PhotoshootLike | string | number | null
 }
 
@@ -112,12 +111,11 @@ export async function getPhotoshootMedia(
 export async function getPortfolioData() {
   try {
     const payload = await getPayloadClient()
-    const [site, photoshootResult, featuredResult] = await Promise.all([
+    const [site, photoshootResult, mediaResult] = await Promise.all([
       payload.findGlobal({ slug: 'site-settings', depth: 1 }),
       payload.find({ collection: 'projects', depth: 0, limit: 100, sort: 'order' }),
       payload.find({
         collection: 'media',
-        where: { featured: { equals: true } },
         depth: 1,
         limit: 500,
         sort: 'filename',
@@ -127,13 +125,13 @@ export async function getPortfolioData() {
     return {
       site: { ...fallbackSite, ...(site as unknown as SiteLike) },
       photoshoots: photoshootResult.docs as unknown as PhotoshootLike[],
-      featuredMedia: featuredResult.docs as unknown as MediaLike[],
+      media: mediaResult.docs as unknown as MediaLike[],
     }
   } catch {
     return {
       site: fallbackSite,
       photoshoots: [] as PhotoshootLike[],
-      featuredMedia: [] as MediaLike[],
+      media: [] as MediaLike[],
     }
   }
 }

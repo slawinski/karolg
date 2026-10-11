@@ -72,7 +72,6 @@ try {
       filename,
       width: typeof doc.width === 'number' ? doc.width : null,
       height: typeof doc.height === 'number' ? doc.height : null,
-      featured: doc.featured === true,
       photoshoot: normalizePhotoshoot(doc.photoshoot),
     }
   }
@@ -137,7 +136,6 @@ export type MediaLike = {
   filename?: string | null
   width?: number | null
   height?: number | null
-  featured?: boolean | null
   photoshoot?: PhotoshootLike | string | number | null
 }
 
@@ -182,11 +180,7 @@ export async function getPhotoshootMedia(photoshootId: string | number): Promise
 }
 
 export async function getPortfolioData() {
-  return {
-    site: snapshot.site,
-    photoshoots: snapshot.photoshoots,
-    featuredMedia: snapshot.media.filter((media) => media.featured && photoshootOf(media)),
-  }
+  return snapshot
 }
 `
 

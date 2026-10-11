@@ -13,9 +13,9 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Portfolio',
     useAsTitle: 'alt',
-    defaultColumns: ['filename', 'alt', 'photoshoot', 'featured'],
+    defaultColumns: ['filename', 'alt', 'photoshoot'],
     description:
-      'Assign photoshoots and homepage featured state directly from this list. Changes save immediately.',
+      'Assign each image to a photoshoot directly from this list. Homepage selections are automatic.',
   },
   upload: {
     mimeTypes: ['image/*'],
@@ -44,18 +44,6 @@ export const Media: CollectionConfig = {
         position: 'sidebar',
         components: {
           Cell: '/components/admin/MediaListCells#PhotoshootCell',
-        },
-      },
-    },
-    {
-      name: 'featured',
-      label: 'Featured on homepage',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: {
-        position: 'sidebar',
-        components: {
-          Cell: '/components/admin/MediaListCells#FeaturedCell',
         },
       },
     },

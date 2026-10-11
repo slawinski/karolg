@@ -2,7 +2,7 @@
 
 A fast, responsive fashion / movement portfolio built with **Next.js 16** and **Payload CMS 3**.
 
-The ViV variant uses a CMS-driven masonry portfolio. Media is organized into photoshoots, individual images can be featured, and the homepage links featured images into complete photoshoot galleries.
+The ViV variant uses a CMS-driven masonry portfolio. Media is organized into photoshoots; the homepage automatically creates a small set of live image slots for every photoshoot and cycles those slots through other images from the same shoot.
 
 ## Local development
 
@@ -17,30 +17,33 @@ Open:
 - Portfolio: http://localhost:3000
 - Payload admin: http://localhost:3000/admin
 
-## Photoshoots and featured images
+## Photoshoots and homepage
 
 Payload is the single source of truth for photography.
 
 In the admin:
 
 1. Create a **Photoshoot**.
-2. Open each image in **Media** and assign its **Photoshoot**.
-3. Check **Featured on homepage** for images that should appear on the homepage.
-4. Save.
+2. Upload images in **Media**.
+3. Assign each image to its Photoshoot directly from the Media list.
 
-The homepage queries only featured Media items. A featured image is rendered in the masonry wall and links to:
+There is no Featured flag.
+
+The homepage automatically creates up to **five image slots per photoshoot** (four when a shoot has four images). Those slots are interleaved across photoshoots instead of appearing as one block. Each slot cycles through images belonging to that same photoshoot with a staggered bounce/fade transition.
+
+Every homepage image links to:
 
 `/work/[photoshoot-slug]`
 
-The photoshoot page then queries every Media item assigned to that photoshoot and renders the complete masonry gallery.
+The photoshoot page renders the complete collection assigned to that shoot.
 
-Nothing in the frontend names individual image files. Adding, removing, featuring, or moving images between photoshoots is entirely CMS-driven.
+Nothing in the frontend names individual image files. Adding, removing, or moving images between photoshoots is entirely CMS-driven.
 
 ## CMS model
 
 - **Site settings** — identity copy, roles, locations, profile facts, Instagram/email and optional hero media.
 - **Photoshoots** — title, URL slug, description, year and ordering.
-- **Media** — uploaded image, alt text, optional caption, Photoshoot relationship and Featured flag.
+- **Media** — uploaded image, alt text, optional caption and Photoshoot relationship.
 - **Users** — Payload administrators.
 
 Internally the Photoshoots collection retains the historical Payload slug `projects` so existing SQLite records remain compatible; the admin UI and frontend treat those records as photoshoots.
@@ -54,7 +57,9 @@ pnpm install
 pnpm build:drop
 ~~~
 
-`build:drop` snapshots Site Settings, Photoshoots and Media, including each image's Photoshoot relationship and Featured flag. It rewrites media URLs to static `/media/...` paths and creates all `/work/[photoshoot-slug]` routes before exporting to `out/`.
+`build:drop` snapshots Site Settings, Photoshoots and Media, including each image's Photoshoot relationship. It rewrites media URLs to static `/media/...` paths and creates all `/work/[photoshoot-slug]` routes before exporting to `out/`.
+
+The homepage swap behavior remains client-side in the static export.
 
 Payload uploads in `public/media/` are copied into `out/media/` by Next's static export. Drag `out/` into Cloudflare Drop.
 

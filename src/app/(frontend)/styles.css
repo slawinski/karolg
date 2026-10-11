@@ -207,10 +207,49 @@ img { display:block; }
 }
 
 .cursor-masonry__column {
+  min-width:0;
+}
+
+.cursor-masonry__column-motion {
+  --bounce-down:clamp(70px,18vh,220px);
+  --bounce-up:clamp(-50px,-4vh,-16px);
+  --bounce-rebound:clamp(8px,2vh,25px);
+  --bounce-last-up:clamp(-8px,-.7vh,-3px);
   display:flex;
   flex-direction:column;
   gap:clamp(12px,1.5vw,24px);
-  min-width:0;
+  transform:translate3d(0,0,0);
+}
+
+.cursor-masonry__column-motion.is-swapping {
+  animation:gallery-column-bounce 1500ms both;
+  will-change:transform;
+}
+
+@keyframes gallery-column-bounce {
+  0% {
+    transform:translate3d(0,0,0);
+    animation-timing-function:cubic-bezier(.35,.00,.72,.64);
+  }
+  23% {
+    transform:translate3d(0,var(--bounce-down),0);
+    animation-timing-function:cubic-bezier(.18,.72,.28,1);
+  }
+  45% {
+    transform:translate3d(0,var(--bounce-up),0);
+    animation-timing-function:cubic-bezier(.25,.55,.35,1);
+  }
+  64% {
+    transform:translate3d(0,var(--bounce-rebound),0);
+    animation-timing-function:cubic-bezier(.25,.60,.40,1);
+  }
+  82% {
+    transform:translate3d(0,var(--bounce-last-up),0);
+    animation-timing-function:ease-out;
+  }
+  100% {
+    transform:translate3d(0,0,0);
+  }
 }
 
 /* ViV-style skyline: edge columns start high, inner columns drop to reveal the name. */

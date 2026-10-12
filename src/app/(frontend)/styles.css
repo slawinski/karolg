@@ -151,7 +151,7 @@ img { display:block; }
 }
 
 .masonry-section {
-  padding:clamp(132px,12vw,220px) 0 clamp(100px,12vw,190px);
+  padding:clamp(220px,18vw,360px) 0 clamp(100px,12vw,190px);
 }
 .masonry-grid {
   column-count:3;
@@ -266,7 +266,7 @@ img { display:block; }
 
 @media (max-width:700px) {
   .masonry-section {
-    padding-top:clamp(108px,24vw,142px);
+    padding-top:clamp(170px,36vw,240px);
   }
 
   .masonry-name {

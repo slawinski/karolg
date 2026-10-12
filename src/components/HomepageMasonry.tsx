@@ -29,8 +29,8 @@ type ActiveSwap = {
 
 const galleryMotion = {
   totalMs: 1500,
-  initialDelayMs: 3000,
-  betweenCyclesMs: 3000,
+  initialDelayMs: 6000,
+  betweenCyclesMs: 7000,
   minimumPoolSize: 2,
   maximumPoolSize: 5,
   preloadTimeoutMs: 5000,
@@ -166,6 +166,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
     let current = 0.5
     let target = 0.5
     let animationFrame = 0
+    let returningToCenter = false
 
     const apply = () => {
       const overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
@@ -174,13 +175,16 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
 
     const tick = () => {
       animationFrame = 0
-      current += (target - current) * 0.14
+
+      const easing = returningToCenter ? 0.045 : 0.14
+      current += (target - current) * easing
       apply()
 
-      if (Math.abs(target - current) > 0.001) {
+      if (Math.abs(target - current) > 0.00015) {
         animationFrame = window.requestAnimationFrame(tick)
       } else {
         current = target
+        returningToCenter = false
         apply()
       }
     }
@@ -191,11 +195,13 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
 
     const handlePointerMove = (event: PointerEvent) => {
       const bounds = viewport.getBoundingClientRect()
+      returningToCenter = false
       target = clamp((event.clientX - bounds.left) / bounds.width, 0, 1)
       animateToTarget()
     }
 
     const handlePointerLeave = () => {
+      returningToCenter = true
       target = 0.5
       animateToTarget()
     }

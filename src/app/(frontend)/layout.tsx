@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     template: '%s — Carla Gorecka',
   },
   description: 'Portfolio of Carla Gorecka — model, classical Pilates teacher and creative.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export const viewport: Viewport = {

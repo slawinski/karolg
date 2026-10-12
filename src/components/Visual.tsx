@@ -7,8 +7,6 @@ type VisualProps = {
   priority?: boolean
   sizes: string
   variant?: number
-  /** Marks the active pull: signal-red separation bed + stronger dot screen. */
-  select?: boolean
   className?: string
 }
 
@@ -18,37 +16,28 @@ export function Visual({
   priority = false,
   sizes,
   variant = 1,
-  select = false,
   className = '',
 }: VisualProps) {
   const src = mediaUrl(media)
-  const pullClass = `pull${select ? ' is-select' : ''}${className ? ` ${className}` : ''}`
 
   if (!src) {
     return (
-      <div className={pullClass}>
-        <div
-          className={`placeholder placeholder-${((variant - 1) % 6) + 1}`}
-          role="img"
-          aria-label={alt}
-        />
-        <span className="pull-dots" aria-hidden="true" />
-      </div>
+      <div
+        className={`visual-placeholder visual-placeholder-${((variant - 1) % 5) + 1} ${className}`.trim()}
+        role="img"
+        aria-label={alt}
+      />
     )
   }
 
   return (
-    <div className={pullClass}>
-      <span className="pull-bed" aria-hidden="true" />
-      <Image
-        src={src}
-        alt={mediaAlt(media, alt)}
-        fill
-        priority={priority}
-        sizes={sizes}
-        className="pull-img"
-      />
-      <span className="pull-dots" aria-hidden="true" />
-    </div>
+    <Image
+      src={src}
+      alt={mediaAlt(media, alt)}
+      fill
+      priority={priority}
+      sizes={sizes}
+      className={`visual-img ${className}`.trim()}
+    />
   )
 }

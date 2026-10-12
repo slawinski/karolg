@@ -5,7 +5,7 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Media } from './collections/Media'
-import { Projects } from './collections/Projects'
+import { Photoshoots } from './collections/Photoshoots'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
 
@@ -26,7 +26,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: ' — Carla Gorecka' },
   },
-  collections: [Users, Media, Projects],
+  collections: [Users, Media, Photoshoots],
   globals: [SiteSettings],
   db: sqliteAdapter({
     client: {

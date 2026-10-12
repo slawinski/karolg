@@ -13,6 +13,9 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Portfolio',
     useAsTitle: 'alt',
+    defaultColumns: ['filename', 'alt', 'photoshoot'],
+    description:
+      'Assign each image to a photoshoot directly from this list. Homepage selections are automatic.',
   },
   upload: {
     mimeTypes: ['image/*'],
@@ -31,6 +34,18 @@ export const Media: CollectionConfig = {
     {
       name: 'caption',
       type: 'text',
+    },
+    {
+      name: 'photoshoot',
+      label: 'Photoshoot',
+      type: 'relationship',
+      relationTo: 'projects',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Cell: '/components/admin/MediaListCells#PhotoshootCell',
+        },
+      },
     },
   ],
 }

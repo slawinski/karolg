@@ -2,47 +2,7 @@
 
 A fast, responsive fashion / movement portfolio built with **Next.js 16** and **Payload CMS 3**.
 
-The current visual direction is **editorial fashion minimalism + cinematic neo-luxury**: image-first, highly art-directed, typographically precise, and intentionally less like a conventional website.
-
-The experience should feel closer to a sequence of interactive fashion-editorial spreads than to a standard header → hero → cards → footer portfolio.
-
-## Design direction
-
-Core characteristics:
-
-- high-fashion editorial composition
-- cinematic, image-led layouts
-- controlled asymmetry rather than rigid grid-display aesthetics
-- high-contrast serif display type
-- neutral grotesk sans-serif for UI and metadata
-- extreme but controlled hierarchy: very large identity type + very small precise information
-- monochrome, charcoal, warm-white, and natural photographic tones
-- generous negative space
-- thin rules, numbering, measurements, and editorial indices
-- full-viewport or near-full-viewport scenes
-- restrained, cinematic motion
-
-Explicitly **not** part of the direction:
-
-- acid-lime branding
-- brutalism / neo-brutalism
-- Swiss / International Style as a visual direction
-- avant-garde typography as spectacle
-- handwritten/scribbled graphics
-- proof-wall, halftone, or misregistration effects
-- deliberately awkward layouts
-- loud color clashes
-- gimmick-first interactions
-
-See DESIGN.md for the full visual system and PRODUCT.md for product principles.
-
-## Stack
-
-- Next.js App Router / React Server Components
-- Payload CMS 3
-- SQLite via @payloadcms/db-sqlite
-- next/image + Sharp for responsive image delivery
-- CSS-first layout and interaction; client JavaScript should stay minimal
+The ViV variant uses a CMS-driven masonry portfolio. Media is organized into photoshoots; the homepage automatically creates a small set of live image slots for every photoshoot and cycles those slots through other images from the same shoot.
 
 ## Local development
 
@@ -57,57 +17,53 @@ Open:
 - Portfolio: http://localhost:3000
 - Payload admin: http://localhost:3000/admin
 
-On the first admin visit Payload will guide you through creating the first user.
+## Photoshoots and homepage
+
+Payload is the single source of truth for photography.
+
+In the admin:
+
+1. Create a **Photoshoot**.
+2. Upload images in **Media**.
+3. Assign each image to its Photoshoot directly from the Media list.
+
+There is no Featured flag.
+
+The homepage automatically creates up to **five image slots per photoshoot** (four when a shoot has four images). Those slots are interleaved across photoshoots instead of appearing as one block. Only the first card in each responsive column is eligible to swap. A single global scheduler changes one column at a time: after a 3 s idle period it preloads and decodes the next photo from the same photoshoot, runs a synchronized 1.5 s whole-column bounce plus outgoing → solid color → incoming image transition, then waits 3 s before choosing the next eligible column. The animation pauses immediately when both the title and first row leave the viewport, when the tab is hidden, or when reduced motion is enabled.
+
+Every homepage image links to:
+
+`/work/[photoshoot-slug]`
+
+The photoshoot page renders the complete collection assigned to that shoot.
+
+Nothing in the frontend names individual image files. Adding, removing, or moving images between photoshoots is entirely CMS-driven.
 
 ## CMS model
 
-- **Site settings** — hero copy, roles, locations, profile facts, Instagram/email and hero image.
-- **Projects** — editorial/campaign/personal/movement/portrait projects with a cover, gallery, featured flag and ordering.
-- **Media** — image uploads with generated card and hero sizes.
+- **Site settings** — identity copy, roles, locations, profile facts, Instagram/email and optional hero media.
+- **Photoshoots** — title, URL slug, description, year and ordering.
+- **Media** — uploaded image, alt text, optional caption and Photoshoot relationship.
 - **Users** — Payload administrators.
 
-## Temporary photo placeholders
+Internally the Photoshoots collection retains the historical Payload slug `projects` so existing SQLite records remain compatible; the admin UI and frontend treat those records as photoshoots.
 
-The public site currently uses a small set of WebP crops taken from the Instagram screenshot supplied during the design process.
+## Cloudflare Drop preview
 
-They are intentionally low-resolution **development placeholders only** and live in public/placeholders/.
+The static preview snapshots the current Payload data instead of falling back to repository images.
 
-Once original photographs are available, upload them to Payload Media and assign them to **Site Settings → Hero Media** and the relevant **Projects → Cover / Gallery** fields. CMS images automatically take precedence over the screenshot placeholders.
+~~~bash
+pnpm install
+pnpm build:drop
+~~~
 
-The final art direction should be reviewed against the full-resolution originals; photography is a structural part of the design, not interchangeable card content.
+`build:drop` snapshots Site Settings, Photoshoots and Media, including each image's Photoshoot relationship. It rewrites media URLs to static `/media/...` paths and creates all `/work/[photoshoot-slug]` routes before exporting to `out/`.
 
-## Experience structure
+The homepage swap behavior remains client-side in the static export.
 
-The intended sequence is approximately:
+Payload uploads in `public/media/` are copied into `out/media/` by Next's static export. Drag `out/` into Cloudflare Drop.
 
-1. opening portrait / identity
-2. editorial index / selected work
-3. immersive project spreads
-4. profile / measurements / representation
-5. contact
-
-This is guidance rather than a mandatory component list. Sections may merge into each other as long as the information remains clear.
-
-## Performance decisions
-
-- Server Components by default; the public site should ship very little custom client JavaScript.
-- Five-minute ISR (revalidate = 300) for public pages.
-- Optimized responsive image delivery through Next Image.
-- Motion should be CSS-native or otherwise lightweight unless a richer implementation is strongly justified.
-- Reduced-motion support and semantic navigation are required.
-- Visual richness must not come at the cost of sluggish interaction or unstable layout.
-
-## Responsive philosophy
-
-The project uses five responsive tiers:
-
-- mobile ≤640
-- tablet 641–1024
-- laptop 1025–1440
-- desktop base
-- wide ≥1720
-
-Responsive design should preserve the editorial composition rather than simply stack desktop modules. Mobile should still feel deliberately art-directed.
+The normal `pnpm dev` and `pnpm build` commands remain fully CMS-backed.
 
 ## Production
 
@@ -119,4 +75,4 @@ DATABASE_URL=file:./data/karolg.db
 NEXT_PUBLIC_SITE_URL=https://your-domain.example
 ~~~
 
-SQLite and local media are a good fit for a persistent single-server/container deployment. Mount both ./data and ./public/media as persistent volumes. For serverless/multi-instance hosting, move the database to Postgres and media to object storage before launch.
+For a persistent single-server/container deployment, mount both `./data` and `./public/media`. For serverless or multi-instance production, move the database and media to persistent external services.

@@ -1,24 +1,21 @@
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-
-export type MediaLike = {
-  url?: string | null
-  alt?: string | null
-  width?: number | null
-  height?: number | null
-}
-
-export type ProjectLike = {
+export type PhotoshootLike = {
   id?: string | number
   title: string
   slug: string
-  category: string
   excerpt?: string | null
-  cover?: MediaLike | string | number | null
-  gallery?: Array<MediaLike | string | number> | null
-  featured?: boolean | null
   year?: string | null
   order?: number | null
+}
+
+export type MediaLike = {
+  id?: string | number
+  url?: string | null
+  alt?: string | null
+  caption?: string | null
+  filename?: string | null
+  width?: number | null
+  height?: number | null
+  photoshoot?: PhotoshootLike | string | number | null
 }
 
 export type SiteLike = {
@@ -36,58 +33,13 @@ export type SiteLike = {
   seoDescription?: string | null
 }
 
-export const placeholderMedia: MediaLike[] = [
-  {
-    url: '/placeholders/instagram-01.webp',
-    alt: 'Carla Gorecka in a Pilates movement pose — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-02.webp',
-    alt: 'Carla Gorecka seated in black — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-04.webp',
-    alt: 'Black and white fashion portrait of Carla Gorecka — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-05.webp',
-    alt: 'Playful close portrait of Carla Gorecka — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-  {
-    url: '/placeholders/instagram-06.webp',
-    alt: 'Carla Gorecka in a brown top and denim — temporary screenshot crop',
-    width: 320,
-    height: 320,
-  },
-]
-
-const rotatePlaceholders = (offset: number) =>
-  Array.from({ length: placeholderMedia.length }, (_, index) =>
-    placeholderMedia[(index + offset) % placeholderMedia.length],
-  )
-
-export const fallbackSite: Required<
-  Pick<
-    SiteLike,
-    'name' | 'roles' | 'heroEyebrow' | 'heroHeadline' | 'handwrittenLine' | 'intro' | 'instagram' | 'seoDescription'
-  >
-> &
-  SiteLike = {
+export const fallbackSite: SiteLike = {
   name: 'CARLA GORECKA',
   roles: 'MODEL / PILATES / CREATIVE',
   heroEyebrow: 'HONEST\nNATURAL\nAUTHENTIC\nIN MOTION',
   heroHeadline: 'A CREATIVE APPROACH TO MODELING',
   handwrittenLine: 'Movement · People · Stories',
   intro: 'Fashion, movement and natural portraiture — with a body-aware point of view.',
-  heroMedia: placeholderMedia[1],
   instagram: 'https://www.instagram.com/carlagorecka/',
   seoDescription: 'Portfolio of Carla Gorecka — model, classical Pilates teacher and creative.',
   locations: [{ label: 'WARSAW' }, { label: 'WORLDWIDE' }],
@@ -97,76 +49,89 @@ export const fallbackSite: Required<
   ],
 }
 
-export const fallbackProjects: ProjectLike[] = [
-  {
-    title: 'Editorials',
-    slug: 'editorials',
-    category: 'editorial',
-    excerpt: 'Graphic portraits, studio light and character-led fashion frames.',
-    cover: placeholderMedia[2],
-    gallery: rotatePlaceholders(2),
-    order: 1,
-  },
-  {
-    title: 'Movement',
-    slug: 'movement',
-    category: 'movement',
-    excerpt: 'Classical Pilates, line, control and motion translated into image.',
-    cover: placeholderMedia[0],
-    gallery: rotatePlaceholders(0),
-    featured: true,
-    order: 2,
-  },
-  {
-    title: 'Personal',
-    slug: 'personal',
-    category: 'personal',
-    excerpt: 'Unpolished, playful and close — the person between assignments.',
-    cover: placeholderMedia[3],
-    gallery: rotatePlaceholders(3),
-    order: 3,
-  },
-  {
-    title: 'Portraits',
-    slug: 'portraits',
-    category: 'portrait',
-    excerpt: 'Natural portraits with a direct, modern casting-book feel.',
-    cover: placeholderMedia[4],
-    gallery: rotatePlaceholders(4),
-    order: 4,
-  },
-]
-
 const safeObject = <T>(value: unknown): T | null =>
   value && typeof value === 'object' ? (value as T) : null
 
 export function mediaUrl(media: MediaLike | string | number | null | undefined) {
-  const object = safeObject<MediaLike>(media)
-  return object?.url || null
+  return safeObject<MediaLike>(media)?.url || null
 }
 
 export function mediaAlt(media: MediaLike | string | number | null | undefined, fallback: string) {
-  const object = safeObject<MediaLike>(media)
-  return object?.alt || fallback
+  return safeObject<MediaLike>(media)?.alt || fallback
+}
+
+export function photoshootOf(media: MediaLike) {
+  return safeObject<PhotoshootLike>(media.photoshoot)
+}
+
+async function getPayloadClient() {
+  const [{ default: configPromise }, { getPayload }] = await Promise.all([
+    import('@payload-config'),
+    import('payload'),
+  ])
+
+  return getPayload({ config: configPromise })
+}
+
+export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike | null> {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'projects',
+      where: { slug: { equals: slug } },
+      depth: 0,
+      limit: 1,
+    })
+
+    return (result.docs[0] as unknown as PhotoshootLike) || null
+  } catch {
+    return null
+  }
+}
+
+export async function getPhotoshootMedia(
+  photoshootId: string | number,
+): Promise<MediaLike[]> {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'media',
+      where: { photoshoot: { equals: photoshootId } },
+      depth: 0,
+      limit: 500,
+      sort: 'filename',
+    })
+
+    return result.docs as unknown as MediaLike[]
+  } catch {
+    return []
+  }
 }
 
 export async function getPortfolioData() {
   try {
-    const payload = await getPayload({ config: configPromise })
-    const [site, projectResult] = await Promise.all([
+    const payload = await getPayloadClient()
+    const [site, photoshootResult, mediaResult] = await Promise.all([
       payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-      payload.find({ collection: 'projects', depth: 1, limit: 20, sort: 'order' }),
+      payload.find({ collection: 'projects', depth: 0, limit: 100, sort: 'order' }),
+      payload.find({
+        collection: 'media',
+        depth: 1,
+        limit: 500,
+        sort: 'filename',
+      }),
     ])
-
-    const projects = (projectResult.docs as unknown as ProjectLike[]).length
-      ? (projectResult.docs as unknown as ProjectLike[])
-      : fallbackProjects
 
     return {
       site: { ...fallbackSite, ...(site as unknown as SiteLike) },
-      projects,
+      photoshoots: photoshootResult.docs as unknown as PhotoshootLike[],
+      media: mediaResult.docs as unknown as MediaLike[],
     }
   } catch {
-    return { site: fallbackSite, projects: fallbackProjects }
+    return {
+      site: fallbackSite,
+      photoshoots: [] as PhotoshootLike[],
+      media: [] as MediaLike[],
+    }
   }
 }

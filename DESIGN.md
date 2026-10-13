@@ -74,7 +74,6 @@ Dark and light editorial spreads may alternate. The transition between them shou
 
 Use an elegant high-contrast serif for:
 
-- Carla Gorecka identity
 - project titles
 - editorial statements
 - large section transitions
@@ -86,6 +85,10 @@ Characteristics:
 - tight but controlled spacing
 - allowed to overlap photography where legibility survives
 - never used as a shock device
+
+The two-line “Carla Gorecka” homepage identity is an explicit exception: both
+rows use the same grotesk sans-serif family, size, weight, style, line-height,
+and letter-spacing. Positional offsets may differ to preserve the composition.
 
 ### Interface / metadata
 

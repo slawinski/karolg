@@ -11,73 +11,73 @@ import {
   useRef,
   useState,
 } from 'react'
-import type { MediaLike } from '@/lib/portfolio'
-
-export type HomepageMasonrySlot = {
-  id: string
-  photoshootSlug: string
-  photoshootTitle: string
-  images: MediaLike[]
-  startIndex: number
-}
-
-type ActiveSwap = {
-  slotId: string
-  nextIndex: number
-  frameColor: string
-}
+import {
+  acceptReadySwap,
+  type ActiveMediaSwap,
+  arrangeSlotsInColumns,
+  columnsForWidth,
+  commitActiveSwap,
+  createActiveSwap,
+  clearFailedCandidates,
+  type HomepageMasonrySlot,
+  type HomepageMediaPool,
+  initialIndexForSlot,
+  scheduleNextSwap,
+  recordFailedCandidate,
+  shouldResetSchedulerTopology,
+  type SwapSchedulerState,
+  transitionColorOf,
+} from '@/lib/homepage'
+import {
+  inferMediaKind,
+  mediaPosterUrl,
+  mediaPresentationUrl,
+  readinessKindForMedia,
+  type MediaLike,
+} from '@/lib/media'
 
 const galleryMotion = {
   totalMs: 1500,
   initialDelayMs: 6000,
   betweenCyclesMs: 7000,
-  minimumPoolSize: 2,
-  maximumPoolSize: 5,
   preloadTimeoutMs: 5000,
 } as const
-
-const transitionPalette = [
-  '#b8afa5',
-  '#c9c4ba',
-  '#a9a49b',
-  '#d8d3ca',
-  '#948d84',
-]
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
 
-const columnsForWidth = (width: number) => {
-  if (width <= 700) return 2
-  if (width <= 1100) return 3
-  return 5
-}
+const sourceOf = (image: HomepageMediaPool['media'][number] | undefined) =>
+  mediaPresentationUrl(image)
 
-const sourceOf = (image: MediaLike | undefined) => image?.url || null
-
-const usablePool = (slot: HomepageMasonrySlot) =>
-  slot.images
-    .filter((image) => Boolean(sourceOf(image)))
-    .slice(0, galleryMotion.maximumPoolSize)
-
-const initialIndex = (slot: HomepageMasonrySlot) => {
-  const pool = usablePool(slot)
-  return pool.length ? slot.startIndex % pool.length : 0
-}
-
-const paletteIndex = (image: MediaLike | undefined, fallback: number) => {
-  const key = String(image?.id ?? image?.filename ?? fallback)
-  let hash = 0
-
-  for (let index = 0; index < key.length; index += 1) {
-    hash = (hash * 31 + key.charCodeAt(index)) >>> 0
-  }
-
-  return hash % transitionPalette.length
-}
-
-const preloadAndDecode = (src: string, timeoutMs: number) =>
+const preloadUntilReady = (media: MediaLike, timeoutMs: number) =>
   new Promise<boolean>((resolve) => {
+    const src = mediaPresentationUrl(media)
+    if (!src) {
+      resolve(false)
+      return
+    }
+
+    if (readinessKindForMedia(media) === 'canplay') {
+      const video = document.createElement('video')
+      let settled = false
+      const finish = (result: boolean) => {
+        if (settled) return
+        settled = true
+        window.clearTimeout(timeout)
+        video.removeAttribute('src')
+        video.load()
+        resolve(result)
+      }
+      const timeout = window.setTimeout(() => finish(false), timeoutMs)
+      video.preload = 'metadata'
+      video.muted = true
+      video.oncanplay = () => finish(true)
+      video.onerror = () => finish(false)
+      video.src = src
+      video.load()
+      return
+    }
+
     const image = new window.Image()
     let settled = false
 
@@ -105,31 +105,180 @@ const preloadAndDecode = (src: string, timeoutMs: number) =>
     image.src = src
   })
 
-export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
+type HomepageVideoProps = {
+  active: boolean
+  alt: string
+  className: string
+  media: MediaLike
+  hidden?: boolean
+}
+
+export function HomepageVideo({
+  active,
+  alt,
+  className,
+  media,
+  hidden = false,
+}: HomepageVideoProps) {
+  const ref = useRef<HTMLVideoElement>(null)
+  const [visible, setVisible] = useState(false)
+  const [pageVisible, setPageVisible] = useState(true)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const video = ref.current
+    if (!video) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting && entry.intersectionRatio >= 0.1),
+      { threshold: [0, 0.1, 1] },
+    )
+    observer.observe(video)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const updateVisibility = () => setPageVisible(document.visibilityState === 'visible')
+    const updateMotion = () => setReducedMotion(motion.matches)
+
+    updateVisibility()
+    updateMotion()
+    document.addEventListener('visibilitychange', updateVisibility)
+    motion.addEventListener('change', updateMotion)
+    return () => {
+      document.removeEventListener('visibilitychange', updateVisibility)
+      motion.removeEventListener('change', updateMotion)
+    }
+  }, [])
+
+  useEffect(() => {
+    const video = ref.current
+    if (!video) return
+
+    if (active && visible && pageVisible && !reducedMotion) {
+      void video.play().catch(() => undefined)
+    } else {
+      video.pause()
+    }
+  }, [active, pageVisible, reducedMotion, visible])
+
+  return (
+    <video
+      ref={ref}
+      src={mediaPresentationUrl(media) || undefined}
+      poster={mediaPosterUrl(media) || undefined}
+      aria-label={hidden ? undefined : alt}
+      aria-hidden={hidden || undefined}
+      className={className}
+      controls={reducedMotion}
+      loop
+      muted
+      playsInline
+      preload="metadata"
+    >
+      Your browser does not support video playback.
+    </video>
+  )
+}
+
+type HomepageVisualProps = {
+  active: boolean
+  alt: string
+  className: string
+  media: MediaLike
+  priority?: boolean
+  hidden?: boolean
+}
+
+function HomepageVisual({
+  active,
+  alt,
+  className,
+  media,
+  priority = false,
+  hidden = false,
+}: HomepageVisualProps) {
+  const src = mediaPresentationUrl(media)
+  if (!src) return null
+
+  if (inferMediaKind(media) === 'video') {
+    return (
+      <HomepageVideo
+        active={active}
+        alt={alt}
+        className={className}
+        hidden={hidden}
+        media={media}
+      />
+    )
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={hidden ? '' : alt}
+      aria-hidden={hidden || undefined}
+      fill
+      priority={priority}
+      sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
+      className={className}
+    />
+  )
+}
+
+type HomepageMasonryProps = {
+  pools: HomepageMediaPool[]
+  slots: HomepageMasonrySlot[]
+}
+
+export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const currentIndexesRef = useRef<Record<string, number>>({})
-  const activeSwapRef = useRef<ActiveSwap | null>(null)
+  const activeSwapRef = useRef<ActiveMediaSwap | null>(null)
   const generationRef = useRef(0)
-  const roundRobinRef = useRef(0)
+  const previousTopologyRef = useRef<string | null>(null)
+  const schedulerStateRef = useRef<SwapSchedulerState>({
+    poolCursor: 0,
+    slotCursors: {},
+    failedCandidates: {},
+  })
 
   const [columnCount, setColumnCount] = useState(5)
   const [currentIndexes, setCurrentIndexes] = useState<Record<string, number>>({})
-  const [activeSwap, setActiveSwap] = useState<ActiveSwap | null>(null)
+  const [activeSwap, setActiveSwap] = useState<ActiveMediaSwap | null>(null)
   const [heroEligible, setHeroEligible] = useState(false)
   const [cycle, setCycle] = useState(0)
 
-  const columns = useMemo(
+  const usablePools = useMemo(
     () =>
-      Array.from({ length: columnCount }, (_, columnIndex) =>
-        slots.filter((_, slotIndex) => slotIndex % columnCount === columnIndex),
-      ),
-    [columnCount, slots],
+      pools.map((pool) => ({
+        ...pool,
+        media: pool.media.filter((image) => Boolean(sourceOf(image))),
+      })),
+    [pools],
   )
 
-  const leadingSlots = useMemo(
-    () => columns.map((column) => column[0]).filter(Boolean),
-    [columns],
+  const poolsById = useMemo(
+    () => new Map(usablePools.map((pool) => [pool.id, pool])),
+    [usablePools],
+  )
+
+  const topologyKey = useMemo(
+    () => JSON.stringify({
+      pools: usablePools.map((pool) => ({
+        id: pool.id,
+        media: pool.media.map((item) => sourceOf(item)),
+      })),
+      slots: slots.map((slot) => [slot.id, slot.poolId, slot.initialMediaIndex]),
+    }),
+    [slots, usablePools],
+  )
+
+  const columns = useMemo(
+    () => arrangeSlotsInColumns(slots, columnCount),
+    [columnCount, slots],
   )
 
   useEffect(() => {
@@ -139,6 +288,27 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
   useEffect(() => {
     activeSwapRef.current = activeSwap
   }, [activeSwap])
+
+  useEffect(() => {
+    const shouldReset = shouldResetSchedulerTopology(
+      previousTopologyRef.current,
+      topologyKey,
+    )
+    previousTopologyRef.current = topologyKey
+    if (!shouldReset) return
+
+    generationRef.current += 1
+    currentIndexesRef.current = {}
+    activeSwapRef.current = null
+    schedulerStateRef.current = {
+      poolCursor: 0,
+      slotCursors: {},
+      failedCandidates: {},
+    }
+    setCurrentIndexes({})
+    setActiveSwap(null)
+    setCycle((value) => value + 1)
+  }, [topologyKey])
 
   useEffect(() => {
     const updateColumns = () => setColumnCount(columnsForWidth(window.innerWidth))
@@ -301,7 +471,7 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
 
     if (commitIncoming) {
       setCurrentIndexes((current) => {
-        const next = { ...current, [active.slotId]: active.nextIndex }
+        const next = commitActiveSwap(current, active)
         currentIndexesRef.current = next
         return next
       })
@@ -329,51 +499,62 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
   useEffect(() => {
     if (!heroEligible || activeSwap) return
 
-    const eligible = leadingSlots.filter(
-      (slot) => usablePool(slot).length >= galleryMotion.minimumPoolSize,
-    )
-
-    if (!eligible.length) return
-
     const generation = ++generationRef.current
     const delay =
       cycle === 0 ? galleryMotion.initialDelayMs : galleryMotion.betweenCyclesMs
 
     const timer = window.setTimeout(() => {
-      const slot = eligible[roundRobinRef.current % eligible.length]
-      roundRobinRef.current += 1
+      const scheduled = scheduleNextSwap({
+        pools: usablePools,
+        slots,
+        currentIndexes: currentIndexesRef.current,
+        schedulerState: schedulerStateRef.current,
+      })
+      schedulerStateRef.current = scheduled.schedulerState
 
-      const pool = usablePool(slot)
-      const currentIndex =
-        currentIndexesRef.current[slot.id] ?? initialIndex(slot)
-      const nextIndex = (currentIndex + 1) % pool.length
-      const nextSrc = sourceOf(pool[nextIndex])
+      if (!scheduled.swap) return
+
+      const pool = poolsById.get(scheduled.swap.poolId)
+      if (!pool) return
+
+      const nextMedia = pool.media[scheduled.swap.nextIndex]
+      const nextSrc = sourceOf(nextMedia)
 
       if (!nextSrc) {
         setCycle((value) => value + 1)
         return
       }
 
-      void preloadAndDecode(nextSrc, galleryMotion.preloadTimeoutMs).then((decoded) => {
-        if (!decoded || generation !== generationRef.current) {
+      const preparedSwap = createActiveSwap(scheduled.swap, pool)
+
+      void preloadUntilReady(nextMedia, galleryMotion.preloadTimeoutMs).then((decoded) => {
+        const readySwap = acceptReadySwap(
+          preparedSwap,
+          decoded,
+          generation,
+          generationRef.current,
+        )
+
+        if (!readySwap) {
           if (generation === generationRef.current) {
+            if (!decoded) {
+              schedulerStateRef.current = recordFailedCandidate(
+                schedulerStateRef.current,
+                scheduled.swap!,
+              )
+              console.warn(`Homepage media preload failed: ${nextSrc}`)
+            }
             setCycle((value) => value + 1)
           }
           return
         }
 
-        const currentImage = pool[currentIndex]
-        const nextSwap = {
-          slotId: slot.id,
-          nextIndex,
-          frameColor:
-            transitionPalette[
-              paletteIndex(currentImage, roundRobinRef.current)
-            ],
-        }
-
-        activeSwapRef.current = nextSwap
-        setActiveSwap(nextSwap)
+        schedulerStateRef.current = clearFailedCandidates(
+          schedulerStateRef.current,
+          scheduled.swap!,
+        )
+        activeSwapRef.current = readySwap
+        setActiveSwap(readySwap)
       })
     }, delay)
 
@@ -381,17 +562,19 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
       window.clearTimeout(timer)
       generationRef.current += 1
     }
-  }, [activeSwap, cycle, heroEligible, leadingSlots])
+  }, [activeSwap, columnCount, cycle, heroEligible, poolsById, slots, usablePools])
 
   const handleColumnAnimationEnd = (
     event: AnimationEvent<HTMLDivElement>,
-    firstSlot: HomepageMasonrySlot | undefined,
+    column: HomepageMasonrySlot[],
   ) => {
+    const activeSlotId = activeSwapRef.current?.slotId
+
     if (
       event.target !== event.currentTarget ||
       event.animationName !== 'gallery-column-move' ||
-      !firstSlot ||
-      activeSwapRef.current?.slotId !== firstSlot.id
+      !activeSlotId ||
+      !column.some((slot) => slot.id === activeSlotId)
     ) {
       return
     }
@@ -407,9 +590,9 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
         style={{ '--masonry-columns': columnCount } as CSSProperties}
       >
         {columns.map((column, columnIndex) => {
-          const firstSlot = column[0]
-          const columnIsSwapping =
-            Boolean(firstSlot) && activeSwap?.slotId === firstSlot.id
+          const columnIsSwapping = column.some(
+            (slot) => activeSwap?.slotId === slot.id,
+          )
 
           return (
             <div
@@ -420,35 +603,39 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
               <div
                 className={`cursor-masonry__column-motion${columnIsSwapping ? ' is-swapping' : ''}`}
                 onAnimationEnd={(event) =>
-                  handleColumnAnimationEnd(event, firstSlot)
+                  handleColumnAnimationEnd(event, column)
                 }
               >
                 {column.map((slot, rowIndex) => {
-                  const pool = usablePool(slot)
+                  const pool = poolsById.get(slot.poolId)
+                  if (!pool) return null
+
                   const currentIndex =
-                    currentIndexes[slot.id] ?? initialIndex(slot)
-                  const currentImage = pool[currentIndex]
-                  const currentSrc = sourceOf(currentImage)
+                    currentIndexes[slot.id] ??
+                    initialIndexForSlot(slot, pool.media.length)
+                  const currentMedia = pool.media[currentIndex]
+                  const currentSrc = sourceOf(currentMedia)
                   const isFirstRow = rowIndex === 0
-                  const isSwapping =
-                    isFirstRow && activeSwap?.slotId === slot.id
-                  const incomingImage = isSwapping
-                    ? pool[activeSwap.nextIndex]
-                    : currentImage
-                  const incomingSrc = sourceOf(incomingImage)
+                  const isSwapping = activeSwap?.slotId === slot.id
+                  const incomingMedia = isSwapping
+                    ? pool.media[activeSwap.nextIndex]
+                    : currentMedia
+                  const incomingSrc = sourceOf(incomingMedia)
                   const frameColor = isSwapping
                     ? activeSwap.frameColor
-                    : transitionPalette[paletteIndex(currentImage, rowIndex)]
+                    : transitionColorOf(currentMedia)
+                  const alt = currentMedia?.alt ||
+                    `${pool.photoshootTitle} portfolio ${inferMediaKind(currentMedia)}`
+                  const isVideo = inferMediaKind(currentMedia) === 'video'
 
                   return (
-                    <Link
+                    <article
                       className={`masonry-card masonry-card-${((slots.indexOf(slot) % 7) + 1)}`}
                       data-first-row={isFirstRow ? 'true' : undefined}
-                      href={`/work/${slot.photoshootSlug}`}
                       key={slot.id}
                     >
                       <figure className="image-frame">
-                        {isFirstRow && currentSrc ? (
+                        {(isFirstRow || isSwapping) && currentSrc ? (
                           <div
                             className={`gallery-stage${isSwapping ? ' is-swapping' : ''}`}
                             style={{ '--frame-color': frameColor } as CSSProperties}
@@ -457,48 +644,47 @@ export function HomepageMasonry({ slots }: { slots: HomepageMasonrySlot[] }) {
                               className="gallery-stage__color"
                               aria-hidden="true"
                             />
-                            <Image
-                              src={currentSrc}
-                              alt={
-                                currentImage?.alt ||
-                                `${slot.photoshootTitle} portfolio image`
-                              }
-                              fill
+                            <HomepageVisual
+                              active={!isSwapping}
+                              alt={alt}
+                              media={currentMedia}
                               priority={columnIndex < 4}
-                              sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
                               className="gallery-stage__outgoing"
                             />
                             {incomingSrc ? (
-                              <Image
-                                src={incomingSrc}
-                                alt=""
-                                fill
-                                sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
+                              <HomepageVisual
+                                active={false}
+                                alt={`${pool.photoshootTitle} portfolio ${inferMediaKind(incomingMedia)}`}
+                                media={incomingMedia}
                                 className="gallery-stage__incoming"
-                                aria-hidden="true"
+                                hidden
                               />
                             ) : null}
                           </div>
                         ) : currentSrc ? (
-                          <Image
-                            src={currentSrc}
-                            alt={
-                              currentImage?.alt ||
-                              `${slot.photoshootTitle} portfolio image`
-                            }
-                            fill
-                            sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
+                          <HomepageVisual
+                            active
+                            alt={alt}
+                            media={currentMedia}
                             className="gallery-static-image"
                           />
                         ) : (
                           <div
                             className="visual-placeholder"
                             role="img"
-                            aria-label={`${slot.photoshootTitle} portfolio image`}
+                            aria-label={`${pool.photoshootTitle} portfolio image`}
                           />
                         )}
                       </figure>
-                    </Link>
+                      <Link
+                        className={`masonry-card__link${isVideo ? ' masonry-card__link--video' : ''}`}
+                        href={`/work/${pool.photoshootSlug}`}
+                      >
+                        <span className={isVideo ? undefined : 'sr-only'}>
+                          View {pool.photoshootTitle}
+                        </span>
+                      </Link>
+                    </article>
                   )
                 })}
               </div>

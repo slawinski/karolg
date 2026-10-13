@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      PAYLOAD_SECRET: ci-only-secret
+      PAYLOAD_SECRET: ci-only-secret-0123456789abcdef0123456789abcdef0123456789abcdef
       DATABASE_URL: file:./data/ci.db
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
     steps:
@@ -22,7 +22,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: pnpm install --no-frozen-lockfile
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pnpm install --frozen-lockfile
+      - run: mkdir -p data
+      - run: pnpm test
+      - run: pnpm exec playwright install --with-deps chromium webkit
+      - run: pnpm test:browser
+      - run: pnpm test:browser:webkit
       - run: pnpm typecheck
+      - run: pnpm exec payload migrate
       - run: pnpm build
       - run: pnpm build:drop

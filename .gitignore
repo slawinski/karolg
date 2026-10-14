@@ -12,7 +12,7 @@ src/lib/.portfolio.drop.generated.ts
 .DS_Store
 data/*.db
 data/*.db-*
+data/upload-tmp/
+/media/
 public/media/*
 !public/media/.gitkeep
-payload-types.ts
-src/payload-types.ts

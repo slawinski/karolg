@@ -1,79 +1,29 @@
 import Link from 'next/link'
-import {
-  HomepageMasonry,
-  type HomepageMasonrySlot,
-} from '@/components/HomepageMasonry'
-import {
-  getPortfolioData,
-  photoshootOf,
-  type MediaLike,
-  type PhotoshootLike,
-} from '@/lib/portfolio'
+import { HomepageMasonry } from '@/components/HomepageMasonry'
+import { PortfolioHeader } from '@/components/PortfolioHeader'
+import { composeHomepage } from '@/lib/homepage'
+import { getPortfolioData } from '@/lib/portfolio'
 
 export const revalidate = 300
-
-type PhotoshootGroup = {
-  photoshoot: PhotoshootLike
-  images: MediaLike[]
-  slots: number
-}
 
 export default async function HomePage() {
   const { site, photoshoots, media } = await getPortfolioData()
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
-
-  const grouped = new Map<string, MediaLike[]>()
-
-  for (const image of media) {
-    const photoshoot = photoshootOf(image)
-    if (!photoshoot?.id) continue
-
-    const key = String(photoshoot.id)
-    const images = grouped.get(key) || []
-    images.push(image)
-    grouped.set(key, images)
-  }
-
-  const groups: PhotoshootGroup[] = photoshoots
-    .map((photoshoot) => {
-      const images = photoshoot.id ? grouped.get(String(photoshoot.id)) || [] : []
-      const slots = images.length >= 5 ? 5 : images.length >= 4 ? 4 : images.length
-
-      return { photoshoot, images, slots }
-    })
-    .filter((group) => group.slots > 0)
-
-  // Interleave photoshoots instead of placing five images from one shoot together.
-  // Every slot gets the full shoot as its swap pool, but starts on a different image.
-  const homeSlots: HomepageMasonrySlot[] = Array.from({ length: 5 }, (_, slotIndex) =>
-    groups.flatMap((group) =>
-      slotIndex < group.slots
-        ? [{
-            id: `${group.photoshoot.id ?? group.photoshoot.slug}-${slotIndex}`,
-            photoshootSlug: group.photoshoot.slug,
-            photoshootTitle: group.photoshoot.title,
-            images: group.images.slice(0, 5),
-            startIndex: slotIndex % Math.min(group.images.length, 5),
-          }]
-        : [],
-    ),
-  ).flat()
+  const homepage = composeHomepage(photoshoots, media)
 
   return (
     <main className="site" id="top">
-      <header className="header header--home">
-        <a className="menu-link" href={instagram} target="_blank" rel="noreferrer">Instagram</a>
-      </header>
+      <PortfolioHeader instagram={instagram} />
 
       <section className="masonry-section" id="work">
         <div className="masonry-stage">
-          <h1 className="masonry-name" aria-label="Karo Gorecka">
-            <span className="masonry-name__first">Karo</span>
+          <h1 className="masonry-name" aria-label="Carla Gorecka">
+            <span className="masonry-name__first">Carla</span>{' '}
             <span className="masonry-name__last">Gorecka</span>
           </h1>
 
-          <HomepageMasonry slots={homeSlots} />
+          <HomepageMasonry pools={homepage.pools} slots={homepage.slots} />
         </div>
       </section>
 

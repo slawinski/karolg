@@ -2,6 +2,13 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { loadEnvFile } from 'node:process'
 import { getPayload } from 'payload'
+import {
+  documentsById,
+  normalizeSnapshotMedia,
+  normalizeSnapshotPhotoshoot,
+  type SnapshotDocument,
+} from '../src/lib/snapshot'
+import { loadAllDocuments } from '../src/lib/payload-pagination'
 
 const root = process.cwd()
 
@@ -18,6 +25,7 @@ if (dbUrl.startsWith('file:./')) {
   await mkdir(path.dirname(path.resolve(root, dbUrl.slice('file:./'.length))), { recursive: true })
 }
 
+process.env.DISABLE_MEDIA_JOB_AUTORUN = '1'
 const { default: config } = await import('../src/payload.config')
 
 const outputFile = process.argv[2]
@@ -27,64 +35,50 @@ if (!outputFile || !metaFile) {
   throw new Error('Usage: tsx scripts/snapshot-cms.ts <output-file> <meta-file>')
 }
 
-type AnyDoc = Record<string, unknown>
-
 const payload = await getPayload({ config })
 
 try {
-  const [site, photoshootsResult, mediaResult] = await Promise.all([
-    payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-    payload.find({ collection: 'projects', depth: 0, limit: 100, sort: 'order' }),
-    payload.find({ collection: 'media', depth: 1, limit: 500, sort: 'filename' }),
+  const [site, photoshootDocs, photographerDocs, mediaDocs] = await Promise.all([
+    payload.findGlobal({ slug: 'site-settings', depth: 2 }),
+    loadAllDocuments((pagination) => payload.find({
+      collection: 'projects',
+      depth: 0,
+      ...pagination,
+      sort: 'order',
+    })),
+    loadAllDocuments((pagination) => payload.find({
+      collection: 'photographers',
+      depth: 0,
+      ...pagination,
+      sort: 'displayName',
+    })),
+    loadAllDocuments((pagination) => payload.find({
+      collection: 'media',
+      depth: 2,
+      ...pagination,
+      sort: 'filename',
+      overrideAccess: false,
+    })),
   ])
 
-  const photoshootDocs = photoshootsResult.docs as unknown as AnyDoc[]
-  const photoshootsById = new Map(photoshootDocs.map((doc) => [String(doc.id), doc]))
+  const snapshotPhotoshoots = photoshootDocs as unknown as SnapshotDocument[]
+  const snapshotPhotographers = photographerDocs as unknown as SnapshotDocument[]
+  const photoshootsById = documentsById(snapshotPhotoshoots)
+  const photographersById = documentsById(snapshotPhotographers)
+  const normalizePhotoshoot = (value: unknown) =>
+    normalizeSnapshotPhotoshoot(value, photoshootsById)
+  const normalizeMedia = (value: unknown) =>
+    normalizeSnapshotMedia(value, photoshootsById, photographersById)
 
-  const normalizePhotoshoot = (value: unknown) => {
-    const doc =
-      value && typeof value === 'object'
-        ? (value as AnyDoc)
-        : photoshootsById.get(String(value))
-
-    if (!doc) return null
-
-    return {
-      id: doc.id as string | number | undefined,
-      title: typeof doc.title === 'string' ? doc.title : '',
-      slug: typeof doc.slug === 'string' ? doc.slug : '',
-      excerpt: typeof doc.excerpt === 'string' ? doc.excerpt : null,
-      year: typeof doc.year === 'string' ? doc.year : null,
-      order: typeof doc.order === 'number' ? doc.order : null,
-    }
-  }
-
-  const normalizeMedia = (value: unknown) => {
-    if (!value || typeof value !== 'object') return null
-    const doc = value as AnyDoc
-    const filename = typeof doc.filename === 'string' ? doc.filename : null
-
-    return {
-      id: doc.id as string | number | undefined,
-      url: filename ? `/media/${filename}` : null,
-      alt: typeof doc.alt === 'string' ? doc.alt : null,
-      caption: typeof doc.caption === 'string' ? doc.caption : null,
-      filename,
-      width: typeof doc.width === 'number' ? doc.width : null,
-      height: typeof doc.height === 'number' ? doc.height : null,
-      photoshoot: normalizePhotoshoot(doc.photoshoot),
-    }
-  }
-
-  const photoshoots = photoshootDocs
+  const photoshoots = snapshotPhotoshoots
     .map(normalizePhotoshoot)
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
 
-  const media = (mediaResult.docs as unknown as AnyDoc[])
+  const media = (mediaDocs as unknown as SnapshotDocument[])
     .map(normalizeMedia)
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
 
-  const siteDoc = site as unknown as AnyDoc
+  const siteDoc = site as unknown as SnapshotDocument
   const siteSnapshot = {
     name: siteDoc.name,
     roles: siteDoc.roles,
@@ -95,13 +89,13 @@ try {
     heroMedia: normalizeMedia(siteDoc.heroMedia),
     locations: Array.isArray(siteDoc.locations)
       ? siteDoc.locations.map((item) => {
-          const row = item as AnyDoc
+          const row = item as SnapshotDocument
           return { label: typeof row.label === 'string' ? row.label : null }
         })
       : [],
     profileFacts: Array.isArray(siteDoc.profileFacts)
       ? siteDoc.profileFacts.map((item) => {
-          const row = item as AnyDoc
+          const row = item as SnapshotDocument
           return {
             label: typeof row.label === 'string' ? row.label : null,
             value: typeof row.value === 'string' ? row.value : null,
@@ -119,7 +113,13 @@ try {
     media,
   }
 
-  const source = `export type PhotoshootLike = {
+  const source = `import {
+  isUsableMedia,
+  mediaPresentationUrl,
+  type MediaLike,
+} from './media'
+
+export type PhotoshootLike = {
   id?: string | number
   title: string
   slug: string
@@ -128,16 +128,7 @@ try {
   order?: number | null
 }
 
-export type MediaLike = {
-  id?: string | number
-  url?: string | null
-  alt?: string | null
-  caption?: string | null
-  filename?: string | null
-  width?: number | null
-  height?: number | null
-  photoshoot?: PhotoshootLike | string | number | null
-}
+export type { MediaLike, PhotographerLike } from './media'
 
 export type SiteLike = {
   name?: string | null
@@ -157,7 +148,7 @@ export type SiteLike = {
 const snapshot: { site: SiteLike; photoshoots: PhotoshootLike[]; media: MediaLike[] } = ${JSON.stringify(snapshot, null, 2)}
 
 export function mediaUrl(media: MediaLike | string | number | null | undefined) {
-  return media && typeof media === 'object' ? media.url || null : null
+  return media && typeof media === 'object' ? mediaPresentationUrl(media) : null
 }
 
 export function mediaAlt(media: MediaLike | string | number | null | undefined, fallback: string) {
@@ -175,7 +166,7 @@ export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike 
 export async function getPhotoshootMedia(photoshootId: string | number): Promise<MediaLike[]> {
   return snapshot.media.filter((media) => {
     const photoshoot = photoshootOf(media)
-    return photoshoot && String(photoshoot.id) === String(photoshootId)
+    return photoshoot && String(photoshoot.id) === String(photoshootId) && isUsableMedia(media)
   })
 }
 
@@ -187,15 +178,25 @@ export async function getPortfolioData() {
   await writeFile(path.resolve(outputFile), source, 'utf8')
   await writeFile(
     path.resolve(metaFile),
-    JSON.stringify({ photoshoots: photoshoots.length, media: media.length }),
+    JSON.stringify({ photoshoots: photoshoots.length, media }),
     'utf8',
   )
 
   payload.logger.info(
     `Static snapshot: media=${media.length}, photoshoots=${photoshoots.length}`,
   )
+} catch (error) {
+  payload.logger.error({ err: error, msg: 'Static CMS snapshot failed' })
+  throw error
 } finally {
   if (typeof payload.destroy === 'function') {
-    await payload.destroy()
+    await Promise.race([
+      payload.destroy(),
+      new Promise<void>((resolve) => setTimeout(resolve, 1_000)),
+    ])
   }
 }
+
+// Payload's jobs infrastructure can retain timers after the one-shot snapshot.
+// Every required write above is awaited, so terminate the successful CLI explicitly.
+process.exit(0)

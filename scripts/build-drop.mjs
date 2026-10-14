@@ -2,6 +2,7 @@ import { access, readFile, rename, rm } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
+import { copyStaticAssets, createAssetManifest } from './static-assets.mjs'
 
 const root = process.cwd()
 const payloadApp = path.join(root, 'src', 'app', '(payload)')
@@ -13,6 +14,7 @@ const workRoutes = path.join(root, 'src', 'app', '(frontend)', 'work')
 const parkedWorkRoutes = path.join(root, '.drop-work-routes')
 const snapshotMetaFile = path.join(root, '.drop-snapshot-meta.json')
 const outDir = path.join(root, 'out')
+const mediaDir = path.resolve(process.env.MEDIA_STATIC_DIR || path.join(root, 'media'))
 const nextDir = path.join(root, '.next')
 
 const exists = async (target) => {
@@ -108,6 +110,9 @@ try {
   if (exitCode !== 0) {
     process.exitCode = exitCode
   } else {
+    const manifest = createAssetManifest(snapshotMeta.media || [])
+    await copyStaticAssets({ manifest, sourceDir: mediaDir, outDir })
+    console.log(`Copied ${manifest.length} referenced media asset(s) into ./out/media`)
     console.log('\nStatic Cloudflare Drop build ready in ./out')
   }
 } finally {

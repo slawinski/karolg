@@ -1,3 +1,11 @@
+import {
+  isUsableMedia,
+  mediaPresentationUrl,
+  normalizeMediaLike,
+  type MediaLike,
+} from './media'
+import { loadAllDocuments } from './payload-pagination'
+
 export type PhotoshootLike = {
   id?: string | number
   title: string
@@ -7,16 +15,7 @@ export type PhotoshootLike = {
   order?: number | null
 }
 
-export type MediaLike = {
-  id?: string | number
-  url?: string | null
-  alt?: string | null
-  caption?: string | null
-  filename?: string | null
-  width?: number | null
-  height?: number | null
-  photoshoot?: PhotoshootLike | string | number | null
-}
+export type { MediaLike, PhotographerLike } from './media'
 
 export type SiteLike = {
   name?: string | null
@@ -53,7 +52,7 @@ const safeObject = <T>(value: unknown): T | null =>
   value && typeof value === 'object' ? (value as T) : null
 
 export function mediaUrl(media: MediaLike | string | number | null | undefined) {
-  return safeObject<MediaLike>(media)?.url || null
+  return mediaPresentationUrl(safeObject<MediaLike>(media))
 }
 
 export function mediaAlt(media: MediaLike | string | number | null | undefined, fallback: string) {
@@ -84,8 +83,9 @@ export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike 
     })
 
     return (result.docs[0] as unknown as PhotoshootLike) || null
-  } catch {
-    return null
+  } catch (error) {
+    console.error(`Could not load photoshoot slug ${JSON.stringify(slug)}`, error)
+    throw error
   }
 }
 
@@ -94,44 +94,53 @@ export async function getPhotoshootMedia(
 ): Promise<MediaLike[]> {
   try {
     const payload = await getPayloadClient()
-    const result = await payload.find({
+    const docs = await loadAllDocuments((pagination) => payload.find({
       collection: 'media',
       where: { photoshoot: { equals: photoshootId } },
-      depth: 0,
-      limit: 500,
+      depth: 2,
+      ...pagination,
       sort: 'filename',
-    })
+      overrideAccess: false,
+    }))
 
-    return result.docs as unknown as MediaLike[]
-  } catch {
-    return []
+    return docs
+      .map((doc) => normalizeMediaLike(doc))
+      .filter((doc): doc is MediaLike => Boolean(doc) && isUsableMedia(doc))
+  } catch (error) {
+    console.error(`Could not load media for photoshoot ${String(photoshootId)}`, error)
+    throw error
   }
 }
 
 export async function getPortfolioData() {
   try {
     const payload = await getPayloadClient()
-    const [site, photoshootResult, mediaResult] = await Promise.all([
-      payload.findGlobal({ slug: 'site-settings', depth: 1 }),
-      payload.find({ collection: 'projects', depth: 0, limit: 100, sort: 'order' }),
-      payload.find({
+    const [site, photoshoots, media] = await Promise.all([
+      payload.findGlobal({ slug: 'site-settings', depth: 2 }),
+      loadAllDocuments((pagination) => payload.find({
+        collection: 'projects',
+        depth: 0,
+        ...pagination,
+        sort: 'order',
+      })),
+      loadAllDocuments((pagination) => payload.find({
         collection: 'media',
-        depth: 1,
-        limit: 500,
+        depth: 2,
+        ...pagination,
         sort: 'filename',
-      }),
+        overrideAccess: false,
+      })),
     ])
 
     return {
       site: { ...fallbackSite, ...(site as unknown as SiteLike) },
-      photoshoots: photoshootResult.docs as unknown as PhotoshootLike[],
-      media: mediaResult.docs as unknown as MediaLike[],
+      photoshoots: photoshoots as unknown as PhotoshootLike[],
+      media: media
+        .map((doc) => normalizeMediaLike(doc))
+        .filter((doc): doc is MediaLike => Boolean(doc)),
     }
-  } catch {
-    return {
-      site: fallbackSite,
-      photoshoots: [] as PhotoshootLike[],
-      media: [] as MediaLike[],
-    }
+  } catch (error) {
+    console.error('Could not load portfolio data', error)
+    throw error
   }
 }

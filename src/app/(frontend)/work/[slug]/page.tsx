@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
+import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
 import {
   getPhotoshootBySlug,
@@ -30,38 +31,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function WorkPage({ params }: Props) {
   const { slug } = await params
-  const photoshoot = await getPhotoshootBySlug(slug)
+  const [photoshoot, { site }] = await Promise.all([
+    getPhotoshootBySlug(slug),
+    getPortfolioData(),
+  ])
   if (!photoshoot?.id) notFound()
 
   const images = await getPhotoshootMedia(photoshoot.id)
+  const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
 
   return (
-    <main className="artist-page">
-      <header className="header">
-        <Link className="brand" href="/">Carla Gorecka</Link>
-        <nav className="nav" aria-label="Primary navigation">
-          <Link href="/#work">Work</Link>
-          <Link href="/#about">About</Link>
-          <Link href="/#contact">Contact</Link>
-        </nav>
-        <Link className="menu-link" href="/#work">Close</Link>
-      </header>
+    <main className="photoshoot-page">
+      <PortfolioHeader instagram={instagram} />
 
-      <section className="artist-head">
-        <div>
-          <h1>{photoshoot.title}</h1>
-          <p className="artist-count">({String(images.length).padStart(2, '0')}) All</p>
-        </div>
-        <nav className="artist-filters" aria-label="Photoshoot information">
-          <span>All ({String(images.length).padStart(2, '0')})</span>
-          {photoshoot.year ? <span>{photoshoot.year}</span> : null}
-        </nav>
+      <section className="photoshoot-head">
+        <h1>{photoshoot.title}</h1>
       </section>
 
-      <section className="artist-masonry" aria-label={`${photoshoot.title} portfolio`}>
+      <section className="photoshoot-gallery" aria-label={`${photoshoot.title} portfolio`}>
         {images.map((image, index) => (
           <figure
-            className={`artist-masonry-item artist-masonry-item-${(index % 7) + 1} image-frame`}
+            className={`photoshoot-gallery-item photoshoot-gallery-item-${(index % 7) + 1} image-frame`}
             key={image.id ?? image.filename ?? index}
           >
             <Visual
@@ -74,7 +64,7 @@ export default async function WorkPage({ params }: Props) {
         ))}
       </section>
 
-      <section className="artist-info">
+      <section className="photoshoot-info">
         <div>
           <h2>{photoshoot.title}</h2>
           {photoshoot.excerpt ? <p>{photoshoot.excerpt}</p> : null}

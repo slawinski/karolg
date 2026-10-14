@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render } from 'vitest-browser-react'
+import { act } from 'react'
 import { HomepageMasonry, HomepageVideo } from './HomepageMasonry'
 import type { HomepageMediaPool, HomepageMasonrySlot } from '@/lib/homepage'
 
@@ -16,15 +17,21 @@ let pendingPreloads: HTMLVideoElement[] = []
 let autoResolvePreloads = false
 
 const emitIntersection = async (element: Element, ratio: number) => {
-  await vi.waitFor(() => {
-    expect(observers.some((candidate) => candidate.elements.has(element))).toBe(true)
+  let observer = observers.find((candidate) => candidate.elements.has(element))
+  if (!observer) {
+    await vi.waitFor(() => {
+      expect(observers.some((candidate) => candidate.elements.has(element))).toBe(true)
+    })
+    observer = observers.find((candidate) => candidate.elements.has(element))
+  }
+
+  await act(async () => {
+    observer!.callback([{
+      target: element,
+      isIntersecting: ratio > 0,
+      intersectionRatio: ratio,
+    } as IntersectionObserverEntry], {} as IntersectionObserver)
   })
-  const observer = observers.find((candidate) => candidate.elements.has(element))!
-  observer.callback([{
-    target: element,
-    isIntersecting: ratio > 0,
-    intersectionRatio: ratio,
-  } as IntersectionObserverEntry], {} as IntersectionObserver)
 }
 
 const pools: HomepageMediaPool[] = [{
@@ -55,6 +62,7 @@ beforeEach(() => {
   pendingPreloads = []
   autoResolvePreloads = false
   const createElement = document.createElement.bind(document)
+  vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true)
   reducedMotion = false
   pageVisible = 'visible'
   motionListeners = new Set()
@@ -104,10 +112,7 @@ beforeEach(() => {
       Object.defineProperty(video, 'load', {
         configurable: true,
         value: () => {
-          if (
-            !video.isConnected &&
-            video.hasAttribute('src')
-          ) {
+          if (!video.isConnected && video.hasAttribute('src')) {
             pendingPreloads.push(video)
             if (autoResolvePreloads) {
               queueMicrotask(() => video.oncanplay?.(new Event('canplay')))

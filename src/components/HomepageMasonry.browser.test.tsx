@@ -15,6 +15,7 @@ let reducedMotion = false
 let pageVisible: DocumentVisibilityState = 'visible'
 let motionListeners = new Set<(event: MediaQueryListEvent) => void>()
 let pendingPreloads: HTMLVideoElement[] = []
+let preloadSources: string[] = []
 let autoResolvePreloads = false
 
 const emitIntersection = async (element: Element, ratio: number) => {
@@ -101,6 +102,7 @@ const waveSlots: HomepageMasonrySlot[] = wavePools.map((pool, index) => ({
 beforeEach(() => {
   observers = []
   pendingPreloads = []
+  preloadSources = []
   autoResolvePreloads = false
   const createElement = document.createElement.bind(document)
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true)
@@ -155,6 +157,7 @@ beforeEach(() => {
         value: () => {
           if (!video.isConnected && video.hasAttribute('src')) {
             pendingPreloads.push(video)
+            preloadSources.push(video.getAttribute('src') || '')
             if (autoResolvePreloads) {
               queueMicrotask(() => video.oncanplay?.(new Event('canplay')))
             }
@@ -387,12 +390,12 @@ describe('Homepage browser lifecycle', () => {
     expect(document.querySelector('.is-swapping')).toBeNull()
 
     await emitIntersection(title, 1)
+    const preloadCount = preloadSources.length
     await vi.advanceTimersByTimeAsync(6_999)
-    expect(document.querySelector('.is-swapping')).toBeNull()
+    expect(preloadSources).toHaveLength(preloadCount)
     await vi.advanceTimersByTimeAsync(1)
-    await vi.waitFor(() => {
-      expect(column(5).querySelector('.is-swapping')).not.toBeNull()
-    })
+    expect(preloadSources.length).toBeGreaterThan(preloadCount)
+    expect(preloadSources[preloadCount]).toContain('AAAA4')
   })
 
   it('cancels a wave for reduced motion and waits before restarting', async () => {
@@ -426,12 +429,12 @@ describe('Homepage browser lifecycle', () => {
     await act(async () => {
       motionListeners.forEach((listener) => listener({ matches: false } as MediaQueryListEvent))
     })
+    const preloadCount = preloadSources.length
     await vi.advanceTimersByTimeAsync(6_999)
-    expect(document.querySelector('.is-swapping')).toBeNull()
+    expect(preloadSources).toHaveLength(preloadCount)
     await vi.advanceTimersByTimeAsync(1)
-    await vi.waitFor(() => {
-      expect(document.querySelector('.is-swapping')).not.toBeNull()
-    })
+    expect(preloadSources.length).toBeGreaterThan(preloadCount)
+    expect(preloadSources[preloadCount]).toContain('AAAA4')
   })
 
   it('cancels an in-flight preload at a breakpoint and restarts scheduling', async () => {

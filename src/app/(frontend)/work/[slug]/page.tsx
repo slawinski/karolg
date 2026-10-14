@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
+import { normalizeInstagramUrl } from '@/lib/instagram'
 import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
@@ -38,7 +39,7 @@ export default async function WorkPage({ params }: Props) {
   if (!photoshoot?.id) notFound()
 
   const images = await getPhotoshootMedia(photoshoot.id)
-  const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
+  const instagram = normalizeInstagramUrl(site.instagram)
 
   return (
     <main className="photoshoot-page">
@@ -70,21 +71,15 @@ export default async function WorkPage({ params }: Props) {
           {photoshoot.excerpt ? <p>{photoshoot.excerpt}</p> : null}
         </div>
         <div>
-          <p className="eyebrow">Work / Bio / Contact</p>
+          <p className="eyebrow">Work / Profile / Contact</p>
           <Link href="/#contact">Bookings <Arrow /></Link>
         </div>
       </section>
 
-      <footer className="footer compact-footer">
-        <div className="footer-signoff">
-          <p>Carla is model.</p>
-          <p>Carla is movement.</p>
-          <p>Come create with her.</p>
-        </div>
-        <div className="footer-bottom">
-          <Link href="/#work">Selected work</Link>
-          <span>© {new Date().getFullYear()} Carla Gorecka</span>
-        </div>
+      <footer className="project-footer">
+        <Link href="/#work">Selected work</Link>
+        <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
+        <Link href="/#contact">Contact</Link>
       </footer>
     </main>
   )

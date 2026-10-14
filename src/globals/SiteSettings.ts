@@ -17,7 +17,7 @@ export const SiteSettings: GlobalConfig = {
     { name: 'heroEyebrow', type: 'textarea', defaultValue: 'HONEST\nNATURAL\nAUTHENTIC\nIN MOTION' },
     { name: 'heroHeadline', type: 'textarea', required: true, defaultValue: 'A CREATIVE APPROACH TO MODELING' },
     { name: 'handwrittenLine', type: 'text', defaultValue: 'Movement · People · Stories' },
-    { name: 'intro', type: 'textarea', defaultValue: 'A portfolio built around fashion, movement and natural portraiture.' },
+    { name: 'intro', type: 'textarea', defaultValue: 'Model and classical Pilates teacher.' },
     { name: 'heroMedia', type: 'upload', relationTo: 'media' },
     {
       name: 'locations',

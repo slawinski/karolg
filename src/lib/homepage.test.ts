@@ -15,6 +15,7 @@ import {
   scheduleNextSwap,
   selectNextMediaIndex,
   shouldResetSchedulerTopology,
+  topRowSlotsForWave,
   type SwapSchedulerState,
   transitionColorOf,
 } from './homepage'
@@ -278,6 +279,25 @@ const slot = (
 ): HomepageMasonrySlot => ({ id, poolId, initialMediaIndex })
 
 describe('scheduleNextSwap', () => {
+  it('only schedules slots included in the eligible set', () => {
+    const pools = [pool('shoot', 4)]
+    const slots = [
+      slot('top', 'shoot', 0),
+      slot('lower-a', 'shoot', 1),
+      slot('lower-b', 'shoot', 1),
+    ]
+
+    const result = scheduleNextSwap({
+      pools,
+      slots,
+      currentIndexes: {},
+      schedulerState: schedulerState(),
+      eligibleSlotIds: new Set(['top']),
+    })
+
+    expect(result.swap?.slotId).toBe('top')
+  })
+
   it('skips illegal slots and prioritizes a duplicated assignment', () => {
     const pools = [pool('shoot', 3)]
     const slots = [
@@ -408,6 +428,42 @@ describe('scheduleNextSwap', () => {
     })
 
     expect(afterFailure.swap).toMatchObject({ currentIndex: 0, nextIndex: 2 })
+  })
+})
+
+describe('topRowSlotsForWave', () => {
+  const slots = Array.from({ length: 10 }, (_, index) =>
+    slot(`slot-${index}`, `pool-${index}`),
+  )
+
+  it.each([
+    { columnCount: 2, expected: ['slot-0', 'slot-1'] },
+    { columnCount: 3, expected: ['slot-0', 'slot-1', 'slot-2'] },
+    { columnCount: 5, expected: ['slot-0', 'slot-1', 'slot-2', 'slot-3', 'slot-4'] },
+  ])('returns only the responsive top row for $columnCount columns', ({
+    columnCount,
+    expected,
+  }) => {
+    expect(topRowSlotsForWave(slots, columnCount, 'left-to-right').map(({ id }) => id))
+      .toEqual(expected)
+  })
+
+  it('orders a wave from right to left', () => {
+    expect(topRowSlotsForWave(slots, 5, 'right-to-left').map(({ id }) => id))
+      .toEqual(['slot-4', 'slot-3', 'slot-2', 'slot-1', 'slot-0'])
+  })
+
+  it.each([
+    { columnCount: 2, expected: ['slot-0', 'slot-1'] },
+    { columnCount: 3, expected: ['slot-1', 'slot-0', 'slot-2'] },
+    { columnCount: 4, expected: ['slot-1', 'slot-2', 'slot-0', 'slot-3'] },
+    { columnCount: 5, expected: ['slot-2', 'slot-1', 'slot-3', 'slot-0', 'slot-4'] },
+  ])('orders $columnCount columns from the middle outward', ({
+    columnCount,
+    expected,
+  }) => {
+    expect(topRowSlotsForWave(slots, columnCount, 'middle-out').map(({ id }) => id))
+      .toEqual(expected)
   })
 })
 

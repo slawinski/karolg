@@ -68,7 +68,7 @@ img { display:block; }
 .gallery-stage__incoming,
 .gallery-static-image {
   display:block;
-  object-fit:cover;
+  object-fit:contain;
   object-position:center;
   pointer-events:none;
 }
@@ -199,7 +199,7 @@ img { display:block; }
 .masonry-name__last {
   display:block;
   white-space:nowrap;
-  font-family:var(--sans);
+  font-family:var(--serif);
   font-size:clamp(100px,12.6vw,244px);
   font-weight:500;
   font-style:normal;
@@ -352,7 +352,14 @@ img { display:block; }
   z-index:3;
 }
 .masonry-card__link--video {
-  inset:8px 8px auto auto;
+  inset:0;
+  padding:0;
+  background:none;
+}
+.masonry-card__link--video span {
+  position:absolute;
+  top:8px;
+  right:8px;
   padding:7px 9px;
   background:rgba(16,16,15,.76);
   color:#fff;
@@ -360,7 +367,7 @@ img { display:block; }
   letter-spacing:.04em;
 }
 .gallery-stage video,
-video.gallery-static-image { pointer-events:auto; }
+video.gallery-static-image { pointer-events:none; }
 .masonry-card .image-frame { width:100%; }
 .masonry-card-1 .image-frame { aspect-ratio:3/4; }
 .masonry-card-2 .image-frame { aspect-ratio:4/5; }

@@ -266,6 +266,7 @@ type ScheduleNextSwap = {
   slots: readonly HomepageMasonrySlot[]
   currentIndexes: Readonly<Record<string, number>>
   schedulerState: SwapSchedulerState
+  eligibleSlotIds?: ReadonlySet<string>
 }
 
 const failureKey = (poolId: string, slotId: string) => `${poolId}:${slotId}`
@@ -299,6 +300,7 @@ export function scheduleNextSwap({
   slots,
   currentIndexes,
   schedulerState,
+  eligibleSlotIds,
 }: ScheduleNextSwap): {
   swap: ScheduledMediaSwap | null
   schedulerState: SwapSchedulerState
@@ -310,8 +312,11 @@ export function scheduleNextSwap({
     const pool = pools[poolIndex]
     const poolSize = pool.media.length
     const poolSlots = slots.filter((slot) => slot.poolId === pool.id)
+    const eligiblePoolSlots = eligibleSlotIds
+      ? poolSlots.filter((slot) => eligibleSlotIds.has(slot.id))
+      : poolSlots
 
-    if (poolSize <= 1 || !poolSlots.length) continue
+    if (poolSize <= 1 || !eligiblePoolSlots.length) continue
 
     const assignedIndexes = poolSlots.map((slot) =>
       indexForSlot(slot, poolSize, currentIndexes),
@@ -323,10 +328,9 @@ export function scheduleNextSwap({
     }
 
     const slotCursor = schedulerState.slotCursors[pool.id] || 0
-    const orderedSlots = Array.from(
-      { length: poolSlots.length },
-      (_, offset) => poolSlots[(slotCursor + offset) % poolSlots.length],
-    )
+    const orderedSlots = Array.from({ length: poolSlots.length }, (_, offset) =>
+      poolSlots[(slotCursor + offset) % poolSlots.length],
+    ).filter((slot) => !eligibleSlotIds || eligibleSlotIds.has(slot.id))
     const exhaustedFailureKeys = new Set<string>()
     const options = orderedSlots.flatMap((slot) => {
       const currentIndex = indexForSlot(slot, poolSize, currentIndexes)
@@ -397,6 +401,43 @@ export const arrangeSlotsInColumns = (
   Array.from({ length: columnCount }, (_, columnIndex) =>
     slots.filter((_, slotIndex) => slotIndex % columnCount === columnIndex),
   )
+
+export type HomepageWaveDirection =
+  | 'left-to-right'
+  | 'right-to-left'
+  | 'middle-out'
+
+export function topRowSlotsForWave(
+  slots: readonly HomepageMasonrySlot[],
+  columnCount: number,
+  direction: HomepageWaveDirection,
+) {
+  const topRow = arrangeSlotsInColumns(slots, columnCount)
+    .map((column) => column[0])
+    .filter((slot): slot is HomepageMasonrySlot => Boolean(slot))
+
+  if (direction === 'right-to-left') return topRow.reverse()
+  if (direction === 'left-to-right') return topRow
+
+  const ordered: HomepageMasonrySlot[] = []
+  let left = Math.floor((topRow.length - 1) / 2)
+  let right = Math.ceil((topRow.length - 1) / 2)
+
+  if (left === right) {
+    ordered.push(topRow[left])
+    left -= 1
+    right += 1
+  }
+
+  while (left >= 0 || right < topRow.length) {
+    if (left >= 0) ordered.push(topRow[left])
+    if (right < topRow.length) ordered.push(topRow[right])
+    left -= 1
+    right += 1
+  }
+
+  return ordered
+}
 
 export function normalizeTransitionColor(
   color: string | null | undefined,

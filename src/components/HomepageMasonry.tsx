@@ -21,15 +21,19 @@ import {
   clearFailedCandidates,
   type HomepageMasonrySlot,
   type HomepageMediaPool,
+  type HomepageWaveDirection,
   initialIndexForSlot,
   scheduleNextSwap,
   recordFailedCandidate,
+  type ScheduledMediaSwap,
   shouldResetSchedulerTopology,
+  topRowSlotsForWave,
   type SwapSchedulerState,
   transitionColorOf,
 } from '@/lib/homepage'
 import {
   inferMediaKind,
+  mediaDimensions,
   mediaPosterUrl,
   mediaPresentationUrl,
   readinessKindForMedia,
@@ -41,7 +45,16 @@ const galleryMotion = {
   initialDelayMs: 6000,
   betweenCyclesMs: 7000,
   preloadTimeoutMs: 5000,
+  waveStaggerMs: 240,
 } as const
+
+const waveDirections: readonly HomepageWaveDirection[] = [
+  'left-to-right',
+  'right-to-left',
+  'middle-out',
+]
+
+type ActiveMediaSwaps = Record<string, ActiveMediaSwap>
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
@@ -49,10 +62,14 @@ const clamp = (value: number, min: number, max: number) =>
 const sourceOf = (image: HomepageMediaPool['media'][number] | undefined) =>
   mediaPresentationUrl(image)
 
-const preloadUntilReady = (media: MediaLike, timeoutMs: number) =>
+const preloadUntilReady = (
+  media: MediaLike,
+  timeoutMs: number,
+  signal: AbortSignal,
+) =>
   new Promise<boolean>((resolve) => {
     const src = mediaPresentationUrl(media)
-    if (!src) {
+    if (!src || signal.aborted) {
       resolve(false)
       return
     }
@@ -64,15 +81,20 @@ const preloadUntilReady = (media: MediaLike, timeoutMs: number) =>
         if (settled) return
         settled = true
         window.clearTimeout(timeout)
+        signal.removeEventListener('abort', handleAbort)
+        video.oncanplay = null
+        video.onerror = null
         video.removeAttribute('src')
         video.load()
         resolve(result)
       }
+      const handleAbort = () => finish(false)
       const timeout = window.setTimeout(() => finish(false), timeoutMs)
       video.preload = 'metadata'
       video.muted = true
       video.oncanplay = () => finish(true)
       video.onerror = () => finish(false)
+      signal.addEventListener('abort', handleAbort, { once: true })
       video.src = src
       video.load()
       return
@@ -81,14 +103,19 @@ const preloadUntilReady = (media: MediaLike, timeoutMs: number) =>
     const image = new window.Image()
     let settled = false
 
-    const finish = (result: boolean) => {
+    const finish = (result: boolean, cancelRequest = false) => {
       if (settled) return
       settled = true
       window.clearTimeout(timeout)
+      signal.removeEventListener('abort', handleAbort)
+      image.onload = null
+      image.onerror = null
+      if (cancelRequest) image.src = ''
       resolve(result)
     }
 
-    const timeout = window.setTimeout(() => finish(false), timeoutMs)
+    const handleAbort = () => finish(false, true)
+    const timeout = window.setTimeout(() => finish(false, true), timeoutMs)
 
     image.onload = () => {
       if (typeof image.decode !== 'function') {
@@ -102,6 +129,7 @@ const preloadUntilReady = (media: MediaLike, timeoutMs: number) =>
       )
     }
     image.onerror = () => finish(false)
+    signal.addEventListener('abort', handleAbort, { once: true })
     image.src = src
   })
 
@@ -121,6 +149,7 @@ export function HomepageVideo({
   hidden = false,
 }: HomepageVideoProps) {
   const ref = useRef<HTMLVideoElement>(null)
+  const src = mediaPresentationUrl(media) || undefined
   const [visible, setVisible] = useState(false)
   const [pageVisible, setPageVisible] = useState(true)
   const [reducedMotion, setReducedMotion] = useState(false)
@@ -161,17 +190,18 @@ export function HomepageVideo({
     } else {
       video.pause()
     }
-  }, [active, pageVisible, reducedMotion, visible])
+
+    return () => video.pause()
+  }, [active, pageVisible, reducedMotion, src, visible])
 
   return (
     <video
       ref={ref}
-      src={mediaPresentationUrl(media) || undefined}
+      src={src}
       poster={mediaPosterUrl(media) || undefined}
       aria-label={hidden ? undefined : alt}
       aria-hidden={hidden || undefined}
       className={className}
-      controls={reducedMotion}
       loop
       muted
       playsInline
@@ -236,7 +266,9 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const currentIndexesRef = useRef<Record<string, number>>({})
-  const activeSwapRef = useRef<ActiveMediaSwap | null>(null)
+  const activeSwapsRef = useRef<ActiveMediaSwaps>({})
+  const pendingWaveSwapsRef = useRef(0)
+  const waveLaunchCompleteRef = useRef(false)
   const generationRef = useRef(0)
   const previousTopologyRef = useRef<string | null>(null)
   const schedulerStateRef = useRef<SwapSchedulerState>({
@@ -247,7 +279,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
 
   const [columnCount, setColumnCount] = useState(5)
   const [currentIndexes, setCurrentIndexes] = useState<Record<string, number>>({})
-  const [activeSwap, setActiveSwap] = useState<ActiveMediaSwap | null>(null)
+  const [activeSwaps, setActiveSwaps] = useState<ActiveMediaSwaps>({})
   const [heroEligible, setHeroEligible] = useState(false)
   const [cycle, setCycle] = useState(0)
 
@@ -280,14 +312,14 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     () => arrangeSlotsInColumns(slots, columnCount),
     [columnCount, slots],
   )
+  const topRowSlotIds = useMemo(
+    () => new Set(columns.flatMap((column) => column[0]?.id || [])),
+    [columns],
+  )
 
   useEffect(() => {
     currentIndexesRef.current = currentIndexes
   }, [currentIndexes])
-
-  useEffect(() => {
-    activeSwapRef.current = activeSwap
-  }, [activeSwap])
 
   useEffect(() => {
     const shouldReset = shouldResetSchedulerTopology(
@@ -299,14 +331,16 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
 
     generationRef.current += 1
     currentIndexesRef.current = {}
-    activeSwapRef.current = null
+    activeSwapsRef.current = {}
+    pendingWaveSwapsRef.current = 0
+    waveLaunchCompleteRef.current = false
     schedulerStateRef.current = {
       poolCursor: 0,
       slotCursors: {},
       failedCandidates: {},
     }
     setCurrentIndexes({})
-    setActiveSwap(null)
+    setActiveSwaps({})
     setCycle((value) => value + 1)
   }, [topologyKey])
 
@@ -463,112 +497,214 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       document.removeEventListener('visibilitychange', handleVisibility)
       reducedMotion.removeEventListener('change', handleMotionPreference)
     }
-  }, [columnCount, slots.length])
+  }, [columnCount, topologyKey])
 
-  const settleActiveSwap = useCallback((commitIncoming = true) => {
-    const active = activeSwapRef.current
-    if (!active) return
+  const settleActiveWave = useCallback((commitIncoming = true) => {
+    const active = Object.values(activeSwapsRef.current)
+    const hadWave = pendingWaveSwapsRef.current > 0
 
-    if (commitIncoming) {
+    if (commitIncoming && active.length) {
       setCurrentIndexes((current) => {
-        const next = commitActiveSwap(current, active)
+        const next = active.reduce(
+          (indexes, swap) => commitActiveSwap(indexes, swap),
+          current,
+        )
         currentIndexesRef.current = next
         return next
       })
     }
 
-    activeSwapRef.current = null
-    setActiveSwap(null)
-    setCycle((value) => value + 1)
+    activeSwapsRef.current = {}
+    pendingWaveSwapsRef.current = 0
+    waveLaunchCompleteRef.current = false
+    setActiveSwaps({})
+    if (hadWave) setCycle((value) => value + 1)
   }, [])
 
   useEffect(() => {
     if (heroEligible) return
 
     generationRef.current += 1
-    settleActiveSwap(true)
-  }, [heroEligible, settleActiveSwap])
+    settleActiveWave(true)
+  }, [heroEligible, settleActiveWave])
 
   useEffect(() => {
     // A responsive column-count change can redefine which cards are first-row cards.
     // Always settle before allowing the scheduler to use the new topology.
     generationRef.current += 1
-    settleActiveSwap(true)
-  }, [columnCount, settleActiveSwap])
+    settleActiveWave(true)
+  }, [columnCount, settleActiveWave])
 
   useEffect(() => {
-    if (!heroEligible || activeSwap) return
+    if (!heroEligible) return
 
     const generation = ++generationRef.current
     const delay =
       cycle === 0 ? galleryMotion.initialDelayMs : galleryMotion.betweenCyclesMs
+    const launchTimers = new Set<number>()
+    const preloadController = new AbortController()
 
     const timer = window.setTimeout(() => {
-      const scheduled = scheduleNextSwap({
-        pools: usablePools,
-        slots,
-        currentIndexes: currentIndexesRef.current,
-        schedulerState: schedulerStateRef.current,
-      })
-      schedulerStateRef.current = scheduled.schedulerState
+      const direction = waveDirections[cycle % waveDirections.length]
+      const waveSlots = topRowSlotsForWave(slots, columnCount, direction)
 
-      if (!scheduled.swap) return
+      void (async () => {
+        const plannedSwaps: Array<{
+          activeSwap: ActiveMediaSwap
+          media: MediaLike
+          scheduledSwap: ScheduledMediaSwap
+          src: string
+        }> = []
+        let provisionalIndexes = { ...currentIndexesRef.current }
 
-      const pool = poolsById.get(scheduled.swap.poolId)
-      if (!pool) return
+        for (const slot of waveSlots) {
+          if (generation !== generationRef.current) return
 
-      const nextMedia = pool.media[scheduled.swap.nextIndex]
-      const nextSrc = sourceOf(nextMedia)
+          const scheduled = scheduleNextSwap({
+            pools: usablePools,
+            slots,
+            currentIndexes: provisionalIndexes,
+            schedulerState: schedulerStateRef.current,
+            eligibleSlotIds: new Set([slot.id]),
+          })
+          schedulerStateRef.current = scheduled.schedulerState
 
-      if (!nextSrc) {
-        setCycle((value) => value + 1)
-        return
-      }
+          if (!scheduled.swap) continue
 
-      const preparedSwap = createActiveSwap(scheduled.swap, pool)
+          const pool = poolsById.get(scheduled.swap.poolId)
+          if (!pool) continue
 
-      void preloadUntilReady(nextMedia, galleryMotion.preloadTimeoutMs).then((decoded) => {
-        const readySwap = acceptReadySwap(
-          preparedSwap,
-          decoded,
-          generation,
-          generationRef.current,
-        )
+          const nextMedia = pool.media[scheduled.swap.nextIndex]
+          const nextSrc = sourceOf(nextMedia)
+          if (!nextSrc) continue
 
-        if (!readySwap) {
-          if (generation === generationRef.current) {
-            if (!decoded) {
-              schedulerStateRef.current = recordFailedCandidate(
-                schedulerStateRef.current,
-                scheduled.swap!,
-              )
-              console.warn(`Homepage media preload failed: ${nextSrc}`)
-            }
-            setCycle((value) => value + 1)
-          }
+          const preparedSwap = createActiveSwap(scheduled.swap, pool)
+          plannedSwaps.push({
+            activeSwap: preparedSwap,
+            media: nextMedia,
+            scheduledSwap: scheduled.swap,
+            src: nextSrc,
+          })
+          provisionalIndexes = commitActiveSwap(provisionalIndexes, preparedSwap)
+        }
+
+        if (generation !== generationRef.current) return
+        if (!plannedSwaps.length) {
+          setCycle((value) => value + 1)
           return
         }
 
-        schedulerStateRef.current = clearFailedCandidates(
-          schedulerStateRef.current,
-          scheduled.swap!,
+        const readiness = await Promise.all(
+          plannedSwaps.map(({ media }) =>
+            preloadUntilReady(
+              media,
+              galleryMotion.preloadTimeoutMs,
+              preloadController.signal,
+            ),
+          ),
         )
-        activeSwapRef.current = readySwap
-        setActiveSwap(readySwap)
-      })
+
+        if (generation !== generationRef.current) return
+
+        const failedPools = new Set<string>()
+        const preparedSwaps = plannedSwaps.flatMap((planned, index) => {
+          const decoded = readiness[index]
+          const readySwap = acceptReadySwap(
+            planned.activeSwap,
+            decoded,
+            generation,
+            generationRef.current,
+          )
+
+          if (!readySwap) {
+            failedPools.add(planned.scheduledSwap.poolId)
+            schedulerStateRef.current = recordFailedCandidate(
+              schedulerStateRef.current,
+              planned.scheduledSwap,
+            )
+            console.warn(`Homepage media preload failed: ${planned.src}`)
+            return []
+          }
+
+          if (failedPools.has(planned.scheduledSwap.poolId)) return []
+
+          schedulerStateRef.current = clearFailedCandidates(
+            schedulerStateRef.current,
+            planned.scheduledSwap,
+          )
+          return [readySwap]
+        })
+
+        if (!preparedSwaps.length) {
+          setCycle((value) => value + 1)
+          return
+        }
+
+        pendingWaveSwapsRef.current = preparedSwaps.length
+        waveLaunchCompleteRef.current = false
+
+        preparedSwaps.forEach((swap, index) => {
+          const launch = () => {
+            if (generation !== generationRef.current) return
+
+            const next = { ...activeSwapsRef.current, [swap.slotId]: swap }
+            activeSwapsRef.current = next
+            setActiveSwaps(next)
+            if (index === preparedSwaps.length - 1) {
+              waveLaunchCompleteRef.current = true
+            }
+          }
+
+          if (index === 0) {
+            launch()
+          } else {
+            const launchTimer = window.setTimeout(
+              launch,
+              index * galleryMotion.waveStaggerMs,
+            )
+            launchTimers.add(launchTimer)
+          }
+        })
+      })()
     }, delay)
 
     return () => {
       window.clearTimeout(timer)
+      launchTimers.forEach((launchTimer) => window.clearTimeout(launchTimer))
       generationRef.current += 1
+      preloadController.abort()
     }
-  }, [activeSwap, columnCount, cycle, heroEligible, poolsById, slots, usablePools])
+  }, [columnCount, cycle, heroEligible, poolsById, slots, usablePools])
+
+  const settleActiveSwap = useCallback((slotId: string) => {
+    const active = activeSwapsRef.current[slotId]
+    if (!active) return
+
+    setCurrentIndexes((current) => {
+      const next = commitActiveSwap(current, active)
+      currentIndexesRef.current = next
+      return next
+    })
+
+    const next = { ...activeSwapsRef.current }
+    delete next[slotId]
+    activeSwapsRef.current = next
+    setActiveSwaps(next)
+    pendingWaveSwapsRef.current = Math.max(0, pendingWaveSwapsRef.current - 1)
+
+    if (pendingWaveSwapsRef.current === 0 && waveLaunchCompleteRef.current) {
+      waveLaunchCompleteRef.current = false
+      setCycle((value) => value + 1)
+    }
+  }, [])
 
   const handleColumnAnimationEnd = (
     event: AnimationEvent<HTMLDivElement>,
     column: HomepageMasonrySlot[],
   ) => {
-    const activeSlotId = activeSwapRef.current?.slotId
+    const activeSlotId = column.find(
+      (slot) => activeSwapsRef.current[slot.id],
+    )?.id
 
     if (
       event.target !== event.currentTarget ||
@@ -579,7 +715,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       return
     }
 
-    settleActiveSwap(true)
+    settleActiveSwap(activeSlotId)
   }
 
   return (
@@ -591,7 +727,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       >
         {columns.map((column, columnIndex) => {
           const columnIsSwapping = column.some(
-            (slot) => activeSwap?.slotId === slot.id,
+            (slot) => topRowSlotIds.has(slot.id) && Boolean(activeSwaps[slot.id]),
           )
 
           return (
@@ -616,25 +752,35 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                   const currentMedia = pool.media[currentIndex]
                   const currentSrc = sourceOf(currentMedia)
                   const isFirstRow = rowIndex === 0
-                  const isSwapping = activeSwap?.slotId === slot.id
+                  const activeSwap = topRowSlotIds.has(slot.id)
+                    ? activeSwaps[slot.id]
+                    : undefined
+                  const isSwapping = Boolean(activeSwap)
                   const incomingMedia = isSwapping
-                    ? pool.media[activeSwap.nextIndex]
+                    ? pool.media[activeSwap!.nextIndex]
                     : currentMedia
                   const incomingSrc = sourceOf(incomingMedia)
                   const frameColor = isSwapping
-                    ? activeSwap.frameColor
+                    ? activeSwap!.frameColor
                     : transitionColorOf(currentMedia)
                   const alt = currentMedia?.alt ||
                     `${pool.photoshootTitle} portfolio ${inferMediaKind(currentMedia)}`
                   const isVideo = inferMediaKind(currentMedia) === 'video'
+                  const dimensions = mediaDimensions(currentMedia)
 
                   return (
                     <article
                       className={`masonry-card masonry-card-${((slots.indexOf(slot) % 7) + 1)}`}
                       data-first-row={isFirstRow ? 'true' : undefined}
+                      data-slot={slot.id}
                       key={slot.id}
                     >
-                      <figure className="image-frame">
+                      <figure
+                        className="image-frame"
+                        style={dimensions
+                          ? { aspectRatio: `${dimensions.width} / ${dimensions.height}` }
+                          : undefined}
+                      >
                         {(isFirstRow || isSwapping) && currentSrc ? (
                           <div
                             className={`gallery-stage${isSwapping ? ' is-swapping' : ''}`}

@@ -54,6 +54,7 @@ beforeEach(() => {
   observers = []
   pendingPreloads = []
   autoResolvePreloads = false
+  const createElement = document.createElement.bind(document)
   reducedMotion = false
   pageVisible = 'visible'
   motionListeners = new Set()
@@ -96,16 +97,26 @@ beforeEach(() => {
   }))
   vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
   vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
-  vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(function (
-    this: HTMLMediaElement,
-  ) {
-    const video = this as HTMLVideoElement
-    if (!video.isConnected && video.hasAttribute('src')) {
-      pendingPreloads.push(video)
-      if (autoResolvePreloads) {
-        queueMicrotask(() => video.oncanplay?.(new Event('canplay')))
-      }
+  vi.spyOn(document, 'createElement').mockImplementation((tagName, options) => {
+    const element = createElement(tagName, options)
+    if (tagName.toLowerCase() === 'video') {
+      const video = element as HTMLVideoElement
+      Object.defineProperty(video, 'load', {
+        configurable: true,
+        value: () => {
+          if (
+            !video.isConnected &&
+            video.hasAttribute('src')
+          ) {
+            pendingPreloads.push(video)
+            if (autoResolvePreloads) {
+              queueMicrotask(() => video.oncanplay?.(new Event('canplay')))
+            }
+          }
+        },
+      })
     }
+    return element
   })
   Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1200 })
 })

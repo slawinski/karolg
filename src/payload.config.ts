@@ -57,6 +57,7 @@ export default buildConfig({
   collections: [Users, Photographers, Media, Photoshoots],
   globals: [SiteSettings],
   db: sqliteAdapter({
+    push: false,
     client: {
       url: dbUrl,
     },

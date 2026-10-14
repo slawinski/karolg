@@ -10,8 +10,14 @@ Payload is the source of truth for photoshoots and mixed image/video media. The 
 cp .env.example .env
 # Replace PAYLOAD_SECRET with at least 32 random characters.
 pnpm install
+pnpm exec payload migrate
 pnpm dev
 ~~~
+
+Development schema pushing is disabled; local, CI, and production databases use
+the checked-in migrations. If Payload reports that the database was modified by
+development-mode schema pushes and warns that migration will lose data, answer
+**No** and back up the database before reconciling its migration state.
 
 Open:
 
@@ -74,7 +80,7 @@ The checked-in SQLite migrations bootstrap the full schema on an empty database 
 pnpm exec payload migrate
 ~~~
 
-Generate future migrations against a disposable database first. Never use migration generation or test processing against production/local portfolio data.
+Run pending migrations before starting an updated application. Automatic development schema pushing is disabled so that it cannot be mixed with this migration workflow. Generate future migrations against a disposable database first. Never use migration generation or test processing against production/local portfolio data.
 
 ## Homepage behavior
 

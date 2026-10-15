@@ -30,12 +30,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="profile" id="about" aria-labelledby="profile-title">
-        <div className="profile-folio">
-          <h2 id="profile-title">Profile</h2>
-          <span>01</span>
-        </div>
-
+      <section className="profile" id="about">
         <dl className="profile-facts">
           {facts.map((fact, index) => (
             <div key={`${fact.label}-${index}`}>

@@ -66,7 +66,7 @@ try {
   const photoshootsById = documentsById(snapshotPhotoshoots)
   const photographersById = documentsById(snapshotPhotographers)
   const normalizePhotoshoot = (value: unknown) =>
-    normalizeSnapshotPhotoshoot(value, photoshootsById)
+    normalizeSnapshotPhotoshoot(value, photoshootsById, photographersById)
   const normalizeMedia = (value: unknown) =>
     normalizeSnapshotMedia(value, photoshootsById, photographersById)
 
@@ -113,20 +113,14 @@ try {
     media,
   }
 
-  const source = `import {
+const source = `import {
   isUsableMedia,
   mediaPresentationUrl,
   type MediaLike,
+  type PhotoshootReference,
 } from './media'
 
-export type PhotoshootLike = {
-  id?: string | number
-  title: string
-  slug: string
-  excerpt?: string | null
-  year?: string | null
-  order?: number | null
-}
+export type PhotoshootLike = PhotoshootReference
 
 export type { MediaLike, PhotographerLike } from './media'
 

@@ -52,17 +52,23 @@ describe('canonical media model', () => {
     })).toBe(false)
   })
 
-  it('normalizes expanded photographers and static derivative URLs', () => {
+  it('normalizes photoshoot photographers and static derivative URLs', () => {
     const normalized = normalizeMediaLike(
       {
         id: 4,
         filename: 'original.mov',
         mimeType: 'video/quicktime',
-        photographers: [
-          { id: 1, displayName: '  Alex Smith  ' },
-          2,
-          { id: 3, displayName: '' },
-        ],
+        photographers: [99],
+        photoshoot: {
+          id: 7,
+          title: 'Movement',
+          slug: 'movement',
+          photographers: [
+            { id: 1, displayName: '  Alex Smith  ' },
+            2,
+            { id: 3, displayName: '' },
+          ],
+        },
         playbackFilename: 'generated/4/r2/playback.mp4',
         posterFilename: 'generated/4/r2/poster.jpg',
         processingStatus: 'ready',
@@ -76,7 +82,11 @@ describe('canonical media model', () => {
       url: null,
       playbackUrl: '/media/generated/4/r2/playback.mp4',
       posterUrl: '/media/generated/4/r2/poster.jpg',
-      photographers: [{ id: 1, displayName: '  Alex Smith  ' }, 2],
+      photoshoot: {
+        id: 7,
+        photographers: [{ id: 1, displayName: '  Alex Smith  ' }, 2],
+      },
     })
+    expect(normalized).not.toHaveProperty('photographers')
   })
 })

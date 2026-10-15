@@ -30,10 +30,10 @@ Payload stores originals and generated files in the root `media/` directory. SQL
 
 1. Create a **Photoshoot**.
 2. Optionally create one or more **Photographers**.
-3. Upload an image or video in **Media**.
-4. Assign its Photoshoot and optional Photographers.
+3. Assign the Photoshoot's optional Photographers from its edit screen or directly in the Photoshoots list.
+4. Upload an image or video in **Media** and assign its Photoshoot.
 
-Photographer provenance is stored in the CMS and static snapshot but is not rendered as a public credit.
+Media inherit photographer attribution from their Photoshoot. The provenance is stored in the CMS and static snapshot but is not rendered as a public credit.
 
 Images retain Payload's existing card/hero image generation. On a new or replaced image, the server also derives a deterministic transition color after EXIF orientation and alpha flattening. SVG uploads are not accepted. Existing images remain valid while this value is null.
 
@@ -74,7 +74,7 @@ The command prints the last processed ID for `--after-id` resumption. Do not run
 
 ## Database schema
 
-The checked-in SQLite migrations bootstrap the full schema on an empty database or conditionally upgrade the legacy portfolio schema with photographers, media metadata, relationships, and Payload jobs tables. Existing media rows default to `image` / `ready`.
+The checked-in SQLite migrations bootstrap the full schema on an empty database or conditionally upgrade the legacy portfolio schema with photographers, media metadata, relationships, and Payload jobs tables. Existing media rows default to `image` / `ready`. The photographer migration promotes each Photoshoot's matching nonempty per-media assignment; previously unassigned media then inherit that Photoshoot attribution. It stops with identified records if one Photoshoot contains conflicting nonempty attribution sets.
 
 ~~~bash
 pnpm exec payload migrate

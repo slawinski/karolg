@@ -9,6 +9,7 @@ src/lib/.portfolio.drop.generated.ts
 .env
 .env.local
 *.log
+*.tsbuildinfo
 .DS_Store
 data/*.db
 data/*.db-*

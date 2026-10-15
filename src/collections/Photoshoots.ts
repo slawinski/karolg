@@ -25,7 +25,7 @@ export const Photoshoots: CollectionConfig = {
   admin: {
     group: 'Portfolio',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'year', 'order'],
+    defaultColumns: ['title', 'photographers', 'year', 'order'],
   },
   defaultSort: 'order',
   fields: [
@@ -44,6 +44,18 @@ export const Photoshoots: CollectionConfig = {
       },
     },
     { name: 'excerpt', type: 'textarea', maxLength: 220 },
+    {
+      name: 'photographers',
+      type: 'relationship',
+      relationTo: 'photographers',
+      hasMany: true,
+      admin: {
+        position: 'sidebar',
+        components: {
+          Cell: '/components/admin/PhotoshootListCells#PhotographersCell',
+        },
+      },
+    },
     { name: 'year', type: 'text', admin: { position: 'sidebar' } },
     { name: 'order', type: 'number', defaultValue: 10, min: 0, admin: { position: 'sidebar' } },
   ],

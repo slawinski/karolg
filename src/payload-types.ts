@@ -181,7 +181,6 @@ export interface Media {
   alt: string;
   caption?: string | null;
   photoshoot?: (number | null) | Project;
-  photographers?: (number | Photographer)[] | null;
   transitionColor?: string | null;
   kind: 'image' | 'video';
   processingStatus: 'pending' | 'processing' | 'ready' | 'failed';
@@ -238,6 +237,7 @@ export interface Project {
   title: string;
   slug?: string | null;
   excerpt?: string | null;
+  photographers?: (number | Photographer)[] | null;
   year?: string | null;
   order?: number | null;
   updatedAt: string;
@@ -462,7 +462,6 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   photoshoot?: T;
-  photographers?: T;
   transitionColor?: T;
   kind?: T;
   processingStatus?: T;
@@ -524,6 +523,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   excerpt?: T;
+  photographers?: T;
   year?: T;
   order?: T;
   updatedAt?: T;

@@ -251,13 +251,6 @@ export const Media: CollectionConfig = {
       },
     },
     {
-      name: 'photographers',
-      type: 'relationship',
-      relationTo: 'photographers',
-      hasMany: true,
-      admin: { position: 'sidebar' },
-    },
-    {
       name: 'transitionColor',
       type: 'text',
       access: systemFieldAccess,

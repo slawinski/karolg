@@ -2,18 +2,13 @@ import {
   isUsableMedia,
   mediaPresentationUrl,
   normalizeMediaLike,
+  normalizePhotoshootReference,
   type MediaLike,
+  type PhotoshootReference,
 } from './media'
 import { loadAllDocuments } from './payload-pagination'
 
-export type PhotoshootLike = {
-  id?: string | number
-  title: string
-  slug: string
-  excerpt?: string | null
-  year?: string | null
-  order?: number | null
-}
+export type PhotoshootLike = PhotoshootReference
 
 export type { MediaLike, PhotographerLike } from './media'
 
@@ -78,11 +73,12 @@ export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike 
     const result = await payload.find({
       collection: 'projects',
       where: { slug: { equals: slug } },
-      depth: 0,
+      depth: 1,
       limit: 1,
     })
 
-    return (result.docs[0] as unknown as PhotoshootLike) || null
+    const photoshoot = normalizePhotoshootReference(result.docs[0])
+    return photoshoot && typeof photoshoot === 'object' ? photoshoot : null
   } catch (error) {
     console.error(`Could not load photoshoot slug ${JSON.stringify(slug)}`, error)
     throw error
@@ -119,7 +115,7 @@ export async function getPortfolioData() {
       payload.findGlobal({ slug: 'site-settings', depth: 2 }),
       loadAllDocuments((pagination) => payload.find({
         collection: 'projects',
-        depth: 0,
+        depth: 1,
         ...pagination,
         sort: 'order',
       })),
@@ -134,7 +130,10 @@ export async function getPortfolioData() {
 
     return {
       site: { ...fallbackSite, ...(site as unknown as SiteLike) },
-      photoshoots: photoshoots as unknown as PhotoshootLike[],
+      photoshoots: photoshoots
+        .map((photoshoot) => normalizePhotoshootReference(photoshoot))
+        .filter((photoshoot): photoshoot is PhotoshootLike =>
+          Boolean(photoshoot) && typeof photoshoot === 'object'),
       media: media
         .map((doc) => normalizeMediaLike(doc))
         .filter((doc): doc is MediaLike => Boolean(doc)),

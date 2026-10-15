@@ -2,13 +2,14 @@ import { describe, expect, it } from 'vitest'
 import {
   documentsById,
   normalizeSnapshotMedia,
+  normalizeSnapshotPhotoshoot,
   type SnapshotDocument,
 } from './snapshot'
 
 describe('static snapshot media normalization', () => {
   it('retains published video metadata without exposing the private original', () => {
     const photoshoots = documentsById([
-      { id: 4, title: 'Motion', slug: 'motion' },
+      { id: 4, title: 'Motion', slug: 'motion', photographers: [8] },
     ])
     const photographers = documentsById([
       { id: 8, displayName: 'A. Camera' },
@@ -18,7 +19,6 @@ describe('static snapshot media normalization', () => {
       filename: 'clip.mov',
       mimeType: 'video/quicktime',
       filesize: 400,
-      photographers: [8],
       photoshoot: 4,
       transitionColor: '#AABBCC',
       kind: 'video',
@@ -40,13 +40,21 @@ describe('static snapshot media normalization', () => {
       filename: null,
       url: null,
       transitionColor: '#aabbcc',
-      photographers: [{ id: 8, displayName: 'A. Camera' }],
-      photoshoot: { id: 4, slug: 'motion' },
+      photoshoot: {
+        id: 4,
+        slug: 'motion',
+        photographers: [{ id: 8, displayName: 'A. Camera' }],
+      },
       playbackUrl: '/media/generated/2/r3/playback.mp4',
       posterUrl: '/media/generated/2/r3/poster.jpg',
       duration: 4.2,
       videoWidth: 1080,
       videoHeight: 1920,
+    })
+    expect(media).not.toHaveProperty('photographers')
+    expect(normalizeSnapshotPhotoshoot(4, photoshoots, photographers)).toMatchObject({
+      id: 4,
+      photographers: [{ id: 8, displayName: 'A. Camera' }],
     })
   })
 })

@@ -17,7 +17,6 @@ export type MediaLike = {
   filesize?: number | null
   width?: number | null
   height?: number | null
-  photographers?: Array<PhotographerLike | string | number> | null
   photoshoot?: PhotoshootReference | string | number | null
   kind?: MediaKind | null
   processingStatus?: MediaProcessingStatus | null
@@ -44,6 +43,7 @@ export type PhotoshootReference = {
   excerpt?: string | null
   year?: string | null
   order?: number | null
+  photographers?: Array<PhotographerLike | string | number> | null
 }
 
 const objectValue = (value: unknown): Record<string, unknown> | null =>
@@ -68,6 +68,34 @@ export function normalizePhotographer(value: unknown): PhotographerLike | string
         ? doc.id
         : undefined,
     displayName,
+  }
+}
+
+export function normalizePhotoshootReference(
+  value: unknown,
+): PhotoshootReference | string | number | null {
+  if (typeof value === 'string' || typeof value === 'number') return value
+
+  const doc = objectValue(value)
+  if (!doc) return null
+
+  const photographers = Array.isArray(doc.photographers)
+    ? doc.photographers
+        .map(normalizePhotographer)
+        .filter((item): item is PhotographerLike | string | number => item !== null)
+    : []
+
+  return {
+    id:
+      typeof doc.id === 'string' || typeof doc.id === 'number'
+        ? doc.id
+        : undefined,
+    title: stringValue(doc.title) || '',
+    slug: stringValue(doc.slug) || '',
+    excerpt: stringValue(doc.excerpt),
+    year: stringValue(doc.year),
+    order: numberValue(doc.order),
+    photographers,
   }
 }
 
@@ -153,12 +181,6 @@ export function normalizeMediaLike(
   const playbackFilename = stringValue(doc.playbackFilename)
   const posterFilename = stringValue(doc.posterFilename)
   const urlForFilename = options.urlForFilename
-  const photographers = Array.isArray(doc.photographers)
-    ? doc.photographers
-        .map(normalizePhotographer)
-        .filter((item): item is PhotographerLike | string | number => item !== null)
-    : []
-
   const media: MediaLike = {
     id:
       typeof doc.id === 'string' || typeof doc.id === 'number'
@@ -173,10 +195,9 @@ export function normalizeMediaLike(
     filesize: numberValue(doc.filesize),
     width: numberValue(doc.width),
     height: numberValue(doc.height),
-    photographers,
     photoshoot: options.normalizePhotoshoot
       ? options.normalizePhotoshoot(doc.photoshoot)
-      : ((doc.photoshoot as MediaLike['photoshoot']) ?? null),
+      : normalizePhotoshootReference(doc.photoshoot),
     kind: doc.kind === 'video' || doc.kind === 'image' ? doc.kind : null,
     processingStatus:
       doc.processingStatus === 'pending' ||

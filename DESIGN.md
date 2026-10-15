@@ -15,8 +15,8 @@ Each major viewport should feel intentionally art-directed rather than assembled
 1. opening portrait / identity
 2. editorial index or portfolio navigation
 3. immersive project spreads
-4. profile / measurements / representation
-5. contact
+4. one compact profile-facts section
+5. a restrained utility footer
 
 The site may scroll normally, horizontally, or use composed transitions where appropriate, but it should never feel like a generic header → hero → cards → footer template.
 
@@ -170,7 +170,8 @@ The site must remain fully understandable with prefers-reduced-motion enabled.
 
 Navigation should be quiet, obvious, and secondary to the work.
 
-- contact is always easy to find
+- Instagram remains a quiet utility link in the sticky header
+- the homepage ends with one compact profile-facts section and a utility footer
 - project navigation may feel like an editorial index
 - horizontal galleries must still work naturally on touch
 - no interaction may depend on hover

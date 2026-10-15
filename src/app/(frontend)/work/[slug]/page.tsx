@@ -70,21 +70,15 @@ export default async function WorkPage({ params }: Props) {
           {photoshoot.excerpt ? <p>{photoshoot.excerpt}</p> : null}
         </div>
         <div>
-          <p className="eyebrow">Work / Bio / Contact</p>
-          <Link href="/#contact">Bookings <Arrow /></Link>
+          <p className="eyebrow">Work / Profile</p>
+          <Link href="/#about">Profile <Arrow /></Link>
         </div>
       </section>
 
-      <footer className="footer compact-footer">
-        <div className="footer-signoff">
-          <p>Carla is model.</p>
-          <p>Carla is movement.</p>
-          <p>Come create with her.</p>
-        </div>
-        <div className="footer-bottom">
-          <Link href="/#work">Selected work</Link>
-          <span>© {new Date().getFullYear()} Carla Gorecka</span>
-        </div>
+      <footer className="project-footer">
+        <Link href="/#work">Selected work</Link>
+        <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
+        <Link href="/#about">Profile</Link>
       </footer>
     </main>
   )

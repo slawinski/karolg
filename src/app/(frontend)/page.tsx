@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { HomepageMasonry } from '@/components/HomepageMasonry'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { composeHomepage } from '@/lib/homepage'
@@ -10,6 +9,10 @@ export default async function HomePage() {
   const { site, photoshoots, media } = await getPortfolioData()
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)
+  const locations = (site.locations || [])
+    .map((location) => location.label?.trim())
+    .filter((location): location is string => Boolean(location))
+  const locationLine = locations.join(' / ') || 'WARSAW / WORLDWIDE'
   const homepage = composeHomepage(photoshoots, media)
 
   return (
@@ -27,62 +30,25 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="about" id="about">
-        <div className="about-statement">
-          <p>Carla is model.</p>
-          <p>Carla is movement.</p>
-          <p>Carla is portraiture.</p>
-          <p>Carla is presence.</p>
-          <p>Come create together.</p>
-        </div>
-
-        <div className="about-detail">
-          <div className="about-copy">
-            <p>{site.intro}</p>
-            <p>{site.handwrittenLine}</p>
+      <section className="profile" id="about">
+        <dl className="profile-facts">
+          {facts.map((fact, index) => (
+            <div key={`${fact.label}-${index}`}>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+          <div>
+            <dt>Location</dt>
+            <dd>{locationLine}</dd>
           </div>
-          <dl className="facts">
-            {facts.map((fact, index) => (
-              <div key={`${fact.label}-${index}`}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+        </dl>
       </section>
 
-      <footer className="footer" id="contact">
-        <div className="footer-col">
-          <h2>Work</h2>
-          {photoshoots.slice(0, 6).map((photoshoot) => (
-            <Link href={`/work/${photoshoot.slug}`} key={photoshoot.slug}>
-              {photoshoot.title}
-            </Link>
-          ))}
-        </div>
-        <div className="footer-col">
-          <h2>Explore</h2>
-          <a href="#about">About</a>
-          <a href="#work">Selected work</a>
-          <a href="/admin">CMS</a>
-        </div>
-        <div className="footer-col">
-          <h2>Connect</h2>
-          {site.email ? <a href={`mailto:${site.email}`}>{site.email}</a> : null}
-          <a href={instagram} target="_blank" rel="noreferrer">@carlagorecka</a>
-        </div>
-
-        <div className="footer-signoff">
-          <p>Carla is model.</p>
-          <p>Carla is movement.</p>
-          <p>Come create with her.</p>
-        </div>
-
-        <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Carla Gorecka</span>
-          <span>Warsaw / Worldwide</span>
-        </div>
+      <footer className="site-footer">
+        <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
+        <span>{locationLine}</span>
+        <a href="#top">Back to top</a>
       </footer>
     </main>
   )

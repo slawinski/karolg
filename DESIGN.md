@@ -15,8 +15,8 @@ Each major viewport should feel intentionally art-directed rather than assembled
 1. opening portrait / identity
 2. editorial index or portfolio navigation
 3. immersive project spreads
-4. a text-led profile spread
-5. an Instagram-first contact finale with an integrated utility footer
+4. one compact profile-facts section
+5. a restrained utility footer
 
 The site may scroll normally, horizontally, or use composed transitions where appropriate, but it should never feel like a generic header → hero → cards → footer template.
 
@@ -86,9 +86,9 @@ Characteristics:
 - allowed to overlap photography where legibility survives
 - never used as a shock device
 
-The two-line “Carla Gorecka” homepage identity uses the same high-contrast serif
-family as project titles. Both rows share one typographic treatment; positional
-offsets may differ to preserve the composition.
+The two-line “Carla Gorecka” homepage identity is an explicit exception: both
+rows use the same grotesk sans-serif family, size, weight, style, line-height,
+and letter-spacing. Positional offsets may differ to preserve the composition.
 
 ### Interface / metadata
 
@@ -170,9 +170,8 @@ The site must remain fully understandable with prefers-reduced-motion enabled.
 
 Navigation should be quiet, obvious, and secondary to the work.
 
-- contact is always easy to find
-- the homepage ends with one prominent Instagram contact action
-- the utility footer is integrated into the contact scene rather than treated as another content section
+- Instagram remains a quiet utility link in the sticky header
+- the homepage ends with one compact profile-facts section and a utility footer
 - project navigation may feel like an editorial index
 - horizontal galleries must still work naturally on touch
 - no interaction may depend on hover

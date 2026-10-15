@@ -38,7 +38,7 @@ export const fallbackSite: SiteLike = {
   heroEyebrow: 'HONEST\nNATURAL\nAUTHENTIC\nIN MOTION',
   heroHeadline: 'A CREATIVE APPROACH TO MODELING',
   handwrittenLine: 'Movement · People · Stories',
-  intro: 'Model and classical Pilates teacher.',
+  intro: 'Fashion, movement and natural portraiture — with a body-aware point of view.',
   instagram: 'https://www.instagram.com/carlagorecka/',
   seoDescription: 'Portfolio of Carla Gorecka — model, classical Pilates teacher and creative.',
   locations: [{ label: 'WARSAW' }, { label: 'WORLDWIDE' }],

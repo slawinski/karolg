@@ -378,7 +378,6 @@ video.gallery-static-image { pointer-events:none; }
 .masonry-card-7 .image-frame { aspect-ratio:4/3; }
 .profile {
   padding:clamp(72px,8vw,120px) clamp(18px,2.8vw,46px);
-  border-top:1px solid var(--line);
 }
 .profile-facts {
   display:grid;

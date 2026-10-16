@@ -178,7 +178,10 @@ export interface Photographer {
  */
 export interface Media {
   id: number;
-  alt: string;
+  /**
+   * Optional. Leave blank to use the photoshoot title as a fallback.
+   */
+  alt?: string | null;
   caption?: string | null;
   photoshoot?: (number | null) | Project;
   transitionColor?: string | null;

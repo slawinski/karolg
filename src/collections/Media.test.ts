@@ -48,3 +48,15 @@ describe('media reprocess endpoint', () => {
     })
   })
 })
+
+describe('media metadata', () => {
+  it('allows uploads without alt text and titles records by filename', () => {
+    const altField = Media.fields.find(
+      (field) => 'name' in field && field.name === 'alt',
+    )
+
+    expect(altField).toMatchObject({ name: 'alt', type: 'text' })
+    expect(altField).not.toHaveProperty('required', true)
+    expect(Media.admin?.useAsTitle).toBe('filename')
+  })
+})

@@ -1,44 +1,44 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { Arrow } from '@/components/Arrow'
-import { PortfolioHeader } from '@/components/PortfolioHeader'
-import { Visual } from '@/components/Visual'
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Arrow } from "@/components/Arrow";
+import { PortfolioHeader } from "@/components/PortfolioHeader";
+import { Visual } from "@/components/Visual";
 import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
   getPortfolioData,
-} from '@/lib/portfolio'
+} from "@/lib/portfolio";
 
-export const revalidate = 300
+export const revalidate = 60;
 
-type Props = { params: Promise<{ slug: string }> }
+type Props = { params: Promise<{ slug: string }> };
 
-export const dynamicParams = true
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const { photoshoots } = await getPortfolioData()
-  return photoshoots.map((photoshoot) => ({ slug: photoshoot.slug }))
+  const { photoshoots } = await getPortfolioData();
+  return photoshoots.map((photoshoot) => ({ slug: photoshoot.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-  const photoshoot = await getPhotoshootBySlug(slug)
+  const { slug } = await params;
+  const photoshoot = await getPhotoshootBySlug(slug);
   return photoshoot
     ? { title: photoshoot.title, description: photoshoot.excerpt || undefined }
-    : {}
+    : {};
 }
 
 export default async function WorkPage({ params }: Props) {
-  const { slug } = await params
+  const { slug } = await params;
   const [photoshoot, { site }] = await Promise.all([
     getPhotoshootBySlug(slug),
     getPortfolioData(),
-  ])
-  if (!photoshoot?.id) notFound()
+  ]);
+  if (!photoshoot?.id) notFound();
 
-  const images = await getPhotoshootMedia(photoshoot.id)
-  const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
+  const images = await getPhotoshootMedia(photoshoot.id);
+  const instagram = site.instagram || "https://www.instagram.com/carlagorecka/";
 
   return (
     <main className="photoshoot-page">
@@ -48,7 +48,10 @@ export default async function WorkPage({ params }: Props) {
         <h1>{photoshoot.title}</h1>
       </section>
 
-      <section className="photoshoot-gallery" aria-label={`${photoshoot.title} portfolio`}>
+      <section
+        className="photoshoot-gallery"
+        aria-label={`${photoshoot.title} portfolio`}
+      >
         {images.map((image, index) => (
           <figure
             className={`photoshoot-gallery-item photoshoot-gallery-item-${(index % 7) + 1} image-frame`}
@@ -71,15 +74,19 @@ export default async function WorkPage({ params }: Props) {
         </div>
         <div>
           <p className="eyebrow">Work / Profile</p>
-          <Link href="/#about">Profile <Arrow /></Link>
+          <Link href="/#about">
+            Profile <Arrow />
+          </Link>
         </div>
       </section>
 
       <footer className="project-footer">
         <Link href="/#work">Selected work</Link>
-        <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
+        <span>
+          © {new Date().getFullYear()} {site.name || "Carla Gorecka"}
+        </span>
         <Link href="/#about">Profile</Link>
       </footer>
     </main>
-  )
+  );
 }

@@ -3,7 +3,7 @@ import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { composeHomepage } from '@/lib/homepage'
 import { getPortfolioData } from '@/lib/portfolio'
 
-export const revalidate = 300
+export const revalidate = 60
 
 export default async function HomePage() {
   const { site, photoshoots, media } = await getPortfolioData()

@@ -63,7 +63,7 @@ export const Media: CollectionConfig = {
   },
   admin: {
     group: 'Portfolio',
-    useAsTitle: 'alt',
+    useAsTitle: 'filename',
     defaultColumns: ['filename', 'alt', 'kind', 'processingStatus', 'photoshoot'],
     description:
       'Assign images or ready processed videos to photoshoots. Video derivatives are generated asynchronously.',
@@ -232,7 +232,9 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      required: true,
+      admin: {
+        description: 'Optional. Leave blank to use the photoshoot title as a fallback.',
+      },
     },
     {
       name: 'caption',

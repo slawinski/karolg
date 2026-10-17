@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import { mediaAlt, mediaUrl, type MediaLike } from '@/lib/portfolio'
-import { inferMediaKind, isUsableMedia, mediaPosterUrl } from '@/lib/media'
+import { inferMediaKind, isUsableMedia } from '@/lib/media'
 import { mediaRevision } from '@/lib/media-revision'
+import { PhotoshootVideo } from './PhotoshootVideo'
 
 type VisualProps = {
   media?: MediaLike | string | number | null
@@ -24,7 +25,7 @@ export function Visual({
 
   const normalizedMedia = media && typeof media === 'object' ? media : null
 
-  if (!src || !isUsableMedia(normalizedMedia)) {
+  if (!src || !normalizedMedia || !isUsableMedia(normalizedMedia)) {
     return (
       <div
         className={`visual-placeholder visual-placeholder-${((variant - 1) % 5) + 1} ${className}`.trim()}
@@ -36,17 +37,11 @@ export function Visual({
 
   if (inferMediaKind(normalizedMedia) === 'video') {
     return (
-      <video
-        src={src}
-        poster={mediaPosterUrl(normalizedMedia) || undefined}
-        aria-label={mediaAlt(media, alt)}
-        controls
-        playsInline
-        preload="metadata"
+      <PhotoshootVideo
+        alt={mediaAlt(media, alt)}
         className={`visual-img visual-video ${className}`.trim()}
-      >
-        Your browser does not support video playback.
-      </video>
+        media={normalizedMedia}
+      />
     )
   }
 

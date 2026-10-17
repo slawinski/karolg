@@ -12,7 +12,7 @@ describe('Visual', () => {
       expect(render(revision)).not.toContain('/_next/image')
     }
   })
-  it('renders ready video as semantic manual playback with a poster', () => {
+  it('renders deferred video as semantic manual playback with a poster', () => {
     const markup = renderToStaticMarkup(
       <Visual
         media={{
@@ -32,8 +32,9 @@ describe('Visual', () => {
     expect(markup).toContain('<video')
     expect(markup).toContain('controls=""')
     expect(markup).toContain('playsInline=""')
-    expect(markup).toContain('preload="metadata"')
+    expect(markup).toContain('preload="none"')
     expect(markup).toContain('poster="/media/clip.jpg"')
+    expect(markup).not.toContain('media/clip.mp4')
     expect(markup).not.toContain('<img')
   })
 

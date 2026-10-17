@@ -17,7 +17,7 @@ async function gallery(media: MediaLike[], title = regressionPhotoshoot.title) {
       {media.map((item, index) => <figure key={index}
         className={`photoshoot-gallery-item photoshoot-gallery-item-${index % 7 + 1} image-frame`}>
         {item.kind === 'video'
-          ? <video className="visual-img visual-video" src={item.playbackUrl!} poster={item.posterUrl!} controls playsInline preload="metadata" />
+          ? <video className="visual-img visual-video" poster={item.posterUrl!} controls playsInline preload="none" />
           : <img className="visual-img" alt={`Slot ${index}`} src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style={{ position: 'absolute', width: '100%', height: '100%', inset: 0 }} />}
       </figure>)}
     </section>
@@ -63,8 +63,9 @@ it('characterizes lengths, breakpoints, title clipping and full-slot video geome
         videos.forEach((video) => {
           expect(video.controls).toBe(true)
           expect(video.playsInline).toBe(true)
-          expect(video.preload).toBe('metadata')
+          expect(video.preload).toBe('none')
           expect(video.autoplay).toBe(false)
+          expect(video.hasAttribute('src')).toBe(false)
         })
         if (title.length > 100 && count) expect(rects[0].top).toBeGreaterThan(900)
         await cleanup()

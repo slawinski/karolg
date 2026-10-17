@@ -8,6 +8,7 @@ import '@/app/(frontend)/styles.css'
 type ObserverRecord = {
   callback: IntersectionObserverCallback
   elements: Set<Element>
+  rootMargin: string
 }
 
 let observers: ObserverRecord[] = []
@@ -38,7 +39,7 @@ const expectIdleCards = () => {
   expect(incomingNodes()).toHaveLength(0)
   expect(document.querySelector('.is-swapping')).toBeNull()
   document.querySelectorAll('.masonry-card').forEach((card) => {
-    expect(card.querySelectorAll('img, video')).toHaveLength(1)
+    expect(card.querySelectorAll('video, img:not(.media-poster)')).toHaveLength(1)
   })
 }
 const ignoreNativeFixtureEvent = (event: Event) => {
@@ -46,20 +47,40 @@ const ignoreNativeFixtureEvent = (event: Event) => {
     event.target.getAttribute('src')?.includes('/__controlled__/')) event.stopImmediatePropagation()
 }
 
+const observerFor = (element: Element, nearViewport: boolean) =>
+  observers.find((candidate) => candidate.elements.has(element) &&
+    (candidate.rootMargin !== '0px') === nearViewport)
+
 const emitIntersection = async (element: Element, ratio: number) => {
-  let observer = observers.find((candidate) => candidate.elements.has(element))
-  if (!observer) {
+  if (!observerFor(element, false)) {
     await vi.waitFor(() => {
-      expect(observers.some((candidate) => candidate.elements.has(element))).toBe(true)
+      expect(observerFor(element, false)).toBeDefined()
     })
-    observer = observers.find((candidate) => candidate.elements.has(element))
   }
+  const observer = observerFor(element, false)!
 
   await act(async () => {
-    observer!.callback([{
+    observer.callback([{
       target: element,
       isIntersecting: ratio > 0,
       intersectionRatio: ratio,
+    } as IntersectionObserverEntry], {} as IntersectionObserver)
+  })
+}
+
+const emitNearIntersection = async (element: Element) => {
+  if (!observerFor(element, true)) {
+    await vi.waitFor(() => {
+      expect(observerFor(element, true)).toBeDefined()
+    })
+  }
+  const observer = observerFor(element, true)!
+
+  await act(async () => {
+    observer.callback([{
+      target: element,
+      isIntersecting: true,
+      intersectionRatio: 0,
     } as IntersectionObserverEntry], {} as IntersectionObserver)
   })
 }
@@ -166,9 +187,11 @@ beforeEach(() => {
     get: () => pageVisible,
   })
   vi.stubGlobal('IntersectionObserver', class {
+    rootMargin: string
     private record: ObserverRecord
-    constructor(callback: IntersectionObserverCallback) {
-      this.record = { callback, elements: new Set() }
+    constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+      this.rootMargin = options?.rootMargin ?? '0px'
+      this.record = { callback, elements: new Set(), rootMargin: this.rootMargin }
       observers.push(this.record)
     }
     observe = (element: Element) => this.record.elements.add(element)
@@ -176,7 +199,6 @@ beforeEach(() => {
     disconnect = () => this.record.elements.clear()
     takeRecords = () => []
     root = null
-    rootMargin = '0px'
     thresholds = [0]
   })
   vi.stubGlobal('ResizeObserver', class {
@@ -425,7 +447,7 @@ describe('Homepage browser lifecycle', () => {
     expect(preloadSources).toEqual([])
   })
 
-  it('reports mounted video failure and retains metadata preload outside preparation', async () => {
+  it('reports mounted video failure and defers metadata preload until the video nears the viewport', async () => {
     const onReady = vi.fn()
     const onError = vi.fn()
     await render(<HomepageVideo
@@ -437,7 +459,13 @@ describe('Homepage browser lifecycle', () => {
       onError={onError}
     />)
     const video = document.querySelector('video')!
+    expect(video.preload).toBe('none')
+    expect(video.hasAttribute('src')).toBe(false)
+
+    await emitNearIntersection(video)
     expect(video.preload).toBe('metadata')
+    expect(video.getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
+
     await act(async () => {
       const callsBeforeError = onError.mock.calls.length
       video.dispatchEvent(new Event('error'))
@@ -964,11 +992,14 @@ describe('Homepage browser lifecycle', () => {
         stale.forEach((node) => node.dispatchEvent(new Event('canplay')))
       })
       expectIdleCards()
-      const currentSources = () => waveSlots.map((slot) => document.querySelector(
-        `[data-slot="${slot.id}"] img, [data-slot="${slot.id}"] video`,
-      )?.getAttribute('src'))
+      const currentSources = () => waveSlots.map((slot) => {
+        const node = document.querySelector(
+          `[data-slot="${slot.id}"] video, [data-slot="${slot.id}"] img:not(.media-poster)`,
+        )
+        return node instanceof HTMLVideoElement ? 'video' : node?.getAttribute('src')
+      })
       const expected = waveSlots.map((_, index) => index < launched
-        ? `/__controlled__/clip-${index}.mp4` : `/__controlled__/still-${index}.jpg`)
+        ? 'video' : `/__controlled__/still-${index}.jpg`)
       expect(currentSources()).toEqual(expected)
       await finishAnimations()
       if (phase === 'resize-stagger') {
@@ -1159,5 +1190,45 @@ describe('Homepage browser lifecycle', () => {
       expectIdleCards()
     }
     expect(preloadSources).toEqual([])
+  })
+
+  it('defers video sources to the near viewport behind a decorative optimized poster layer', async () => {
+    const pool: HomepageMediaPool = {
+      ...pools[0],
+      media: [
+        { ...pools[0].media[1], processingRevision: 3 },
+        pools[0].media[1],
+      ],
+    }
+    await render(
+      <div className="masonry-stage">
+        <h1 className="masonry-name">Carla</h1>
+        <HomepageMasonry pools={[pool]} slots={[
+          { ...slots[0], id: 'versioned-video', initialMediaIndex: 0 },
+          { ...slots[0], id: 'legacy-video', initialMediaIndex: 1 },
+        ]} />
+      </div>,
+    )
+
+    const posters = Array.from(document.querySelectorAll<HTMLImageElement>('.media-poster'))
+    const videos = Array.from(document.querySelectorAll('video'))
+    expect(posters).toHaveLength(2)
+    expect(videos).toHaveLength(2)
+    expect(posters.every((poster) => poster.getAttribute('alt') === '')).toBe(true)
+    expect(posters.every((poster) => poster.getAttribute('aria-hidden') === 'true')).toBe(true)
+    expect(posters.map((poster) => poster.hasAttribute('data-unoptimized'))).toEqual([false, true])
+    expect(videos.every((video) => !video.hasAttribute('src'))).toBe(true)
+    expect(videos.map((video) => video.preload)).toEqual(['none', 'none'])
+
+    await emitNearIntersection(videos[0])
+    expect(videos[0].getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
+    expect(videos[0].preload).toBe('metadata')
+    expect(videos[1].hasAttribute('src')).toBe(false)
+    expect(videos[1].preload).toBe('none')
+    posters[0].dispatchEvent(new Event('error'))
+    expect(getComputedStyle(posters[0]).display).toBe('none')
+    expect(document.querySelector('.gallery-stage__color')).not.toBeNull()
+    posters[0].dispatchEvent(new Event('load'))
+    expect(getComputedStyle(posters[0]).display).toBe('block')
   })
 })

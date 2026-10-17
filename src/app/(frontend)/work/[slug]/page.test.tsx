@@ -20,7 +20,7 @@ vi.mock('@/lib/portfolio', async (importOriginal) => ({
 }))
 
 describe('photoshoot image delivery', () => {
-  it('selects visible stills after a video without changing video delivery', async () => {
+  it('selects visible stills after a video while deferring video playback', async () => {
     const markup = renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'portraits' }) }))
     const images = markup.match(/<img\b[^>]*>/g)!
     expect(images).toHaveLength(2)
@@ -31,11 +31,12 @@ describe('photoshoot image delivery', () => {
     expect(images[0]).toContain('(max-width: 700px) calc(50vw - 4px)')
     expect(markup.match(/<link\b[^>]*as="image"[^>]*>/g) || []).toHaveLength(1)
     const video = markup.match(/<video\b[^>]*>/)![0]
-    expect(video).toContain('preload="metadata"')
+    expect(video).toContain('preload="none"')
     expect(video).toContain('controls=""')
     expect(video).toContain('playsInline=""')
     expect(video).toContain('poster="/media/poster.jpg"')
     expect(video).not.toContain('autoPlay')
+    expect(video).not.toContain('src=')
   })
 
   it('delivers the retained later mobile LCP in initial SSR and bounds the entire hint/image union', async () => {

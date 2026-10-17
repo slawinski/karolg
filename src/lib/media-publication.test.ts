@@ -10,8 +10,8 @@ import type { PayloadRequest } from 'payload'
 describe('media admin thumbnail', () => {
   it('uses the image card size URL', () => {
     expect(mediaAdminThumbnail({
-      doc: { kind: 'image', sizes: { card: { url: '/api/media/file/card.jpg' } } },
-    })).toBe('/api/media/file/card.jpg')
+      doc: { kind: 'image', processingRevision: 2, sizes: { card: { url: '/api/media/file/card.jpg' } } },
+    })).toBe('/api/media/file/card.jpg?v=2')
   })
 
   it('uses the controlled poster endpoint only for published video derivatives', () => {
@@ -25,7 +25,7 @@ describe('media admin thumbnail', () => {
         posterFilename: 'generated/9/r1/poster.jpg',
         posterUrl: videoDerivativeURL(9, 'poster'),
       },
-    })).toBe('/api/media/9/poster')
+    })).toBe('/api/media/9/poster?v=1')
     expect(mediaAdminThumbnail({
       doc: { id: 10, kind: 'video', processingStatus: 'pending' },
     })).toBe(false)

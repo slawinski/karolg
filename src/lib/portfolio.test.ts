@@ -25,6 +25,7 @@ const media = {
   id: 2,
   alt: 'Motion still',
   filename: 'motion.jpg',
+  processingRevision: 2,
   url: '/api/media/file/motion.jpg',
   photoshoot,
 }
@@ -44,6 +45,15 @@ beforeEach(() => {
 })
 
 describe('public portfolio photographer attribution', () => {
+  it('normalizes hero and collection identities through both loaders', async () => {
+    payload.findGlobal.mockResolvedValue({ heroMedia: media })
+    const result = await getPortfolioData()
+    expect(result.site.heroMedia).toMatchObject({ url: '/api/media/file/motion.jpg?v=2' })
+    expect(result.media[0]?.url).toBe('/api/media/file/motion.jpg?v=2')
+    expect((await getPhotoshootMedia(4))[0]?.url).toBe('/api/media/file/motion.jpg?v=2')
+    payload.findGlobal.mockResolvedValue({ heroMedia: 2 })
+    expect((await getPortfolioData()).site.heroMedia).toBe(2)
+  })
   it('loads expanded photographers on photoshoots and inherited media references', async () => {
     const result = await getPortfolioData()
 

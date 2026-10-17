@@ -117,6 +117,8 @@ describe('atomic video processing publication', () => {
       processingRevision: 2,
       playbackFilename: processed.playbackFilename,
       posterFilename: processed.posterFilename,
+      playbackUrl: '/api/media/7/playback?v=2',
+      posterUrl: '/api/media/7/poster?v=2',
     })
     expect(cleanupFn).toHaveBeenCalledWith(
       state.payload,

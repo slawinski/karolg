@@ -10,7 +10,11 @@ const nextConfig: NextConfig = {
   images: {
     minimumCacheTTL: 604800,
     formats: ['image/avif', 'image/webp'],
-    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/media/**' }],
+    localPatterns: [
+      { pathname: '/api/media/file/**' },
+      { pathname: '/api/media/*/poster' },
+      { pathname: '/media/**' },
+    ],
   },
   poweredByHeader: false,
   webpack: (webpackConfig) => {

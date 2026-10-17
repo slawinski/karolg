@@ -38,6 +38,7 @@ import {
   mediaPresentationUrl,
   type MediaLike,
 } from '@/lib/media'
+import { useDeferredVideoSource } from './useDeferredVideoSource'
 
 const galleryMotion = {
   totalMs: 1500,
@@ -46,6 +47,9 @@ const galleryMotion = {
   preloadTimeoutMs: 5000,
   waveStaggerMs: 240,
 } as const
+
+const homepageCardSizes =
+  '(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)'
 
 const waveDirections: readonly HomepageWaveDirection[] = [
   'left-to-right',
@@ -98,28 +102,17 @@ export function HomepageVideo({
 }: HomepageVideoProps) {
   const ref = useRef<HTMLVideoElement>(null)
   const src = mediaPresentationUrl(media) || undefined
+  const { attachedSrc, nearViewport } = useDeferredVideoSource(ref, src, preparing)
   const [visible, setVisible] = useState(false)
   const [pageVisible, setPageVisible] = useState(true)
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
     const video = ref.current
-    if (!video) return
-    if (src) video.setAttribute('src', src)
-
-    return () => {
-      video.pause()
-      video.removeAttribute('src')
-      video.load()
-    }
-  }, [src])
-
-  useEffect(() => {
-    const video = ref.current
     if (video && video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
       onReady?.()
     }
-  }, [onReady, src])
+  }, [onReady, attachedSrc])
 
   useEffect(() => {
     const video = ref.current
@@ -159,20 +152,19 @@ export function HomepageVideo({
     }
 
     return () => video.pause()
-  }, [active, pageVisible, reducedMotion, src, visible])
+  }, [active, attachedSrc, pageVisible, reducedMotion, visible])
 
   return (
     <video
       ref={ref}
-      src={src}
-      poster={mediaPosterUrl(media) || undefined}
+      src={attachedSrc}
       aria-label={hidden ? undefined : alt}
       aria-hidden={hidden || undefined}
       className={className}
       loop
       muted
       playsInline
-      preload={preparing ? 'auto' : 'metadata'}
+      preload={preparing ? 'auto' : nearViewport ? 'metadata' : 'none'}
       onCanPlay={onReady}
       onError={onError}
     >
@@ -208,17 +200,35 @@ function HomepageVisual({
   if (!src) return null
 
   if (inferMediaKind(media) === 'video') {
+    const poster = mediaPosterUrl(media)
     return (
-      <HomepageVideo
-        active={active}
-        alt={alt}
-        className={className}
-        hidden={hidden}
-        media={media}
-        preparing={preparing}
-        onReady={onReady}
-        onError={onError}
-      />
+      <>
+        {poster && !hidden ? (
+          <Image
+            src={poster}
+            unoptimized={mediaRevision(media.processingRevision) === null}
+            alt=""
+            aria-hidden="true"
+            fill
+            loading={eager || preparing ? 'eager' : 'lazy'}
+            fetchPriority={eager ? 'high' : undefined}
+            sizes={homepageCardSizes}
+            className="media-poster"
+            onError={(event) => { event.currentTarget.style.display = 'none' }}
+            onLoad={(event) => { event.currentTarget.style.display = '' }}
+          />
+        ) : null}
+        <HomepageVideo
+          active={active}
+          alt={alt}
+          className={className}
+          hidden={hidden}
+          media={media}
+          preparing={preparing}
+          onReady={onReady}
+          onError={onError}
+        />
+      </>
     )
   }
 
@@ -233,7 +243,7 @@ function HomepageVisual({
       fetchPriority={eager ? 'high' : undefined}
       onLoad={onReady}
       onError={onError}
-      sizes="(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)"
+      sizes={homepageCardSizes}
       className={className}
     />
   )

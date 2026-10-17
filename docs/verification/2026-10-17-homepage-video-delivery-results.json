@@ -1,0 +1,226 @@
+{
+  "base": "http://localhost:3108",
+  "browser": "156.0.8078.4",
+  "generatedAt": "2026-10-17T20:46:40.607Z",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "dpr": 2
+  },
+  "loadsAttempted": 10,
+  "attempts": [
+    {
+      "attempt": 0,
+      "sampledAfterMs": 1419,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        1206,
+        1554
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 1,
+      "sampledAfterMs": 1534,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        2396,
+        1501
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 2,
+      "sampledAfterMs": 1505,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        1311,
+        2249
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 3,
+      "sampledAfterMs": 1561,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        2330,
+        1366
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 4,
+      "sampledAfterMs": 1520,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        1016,
+        1366
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 5,
+      "sampledAfterMs": 21955,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        1311,
+        777
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 6,
+      "sampledAfterMs": 1421,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        1567,
+        2209
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 7,
+      "sampledAfterMs": 10973,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        722,
+        1071
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 8,
+      "sampledAfterMs": 1461,
+      "videos": 2,
+      "deferred": 0,
+      "videoTops": [
+        1648,
+        2290
+      ],
+      "bandBottom": 1624
+    },
+    {
+      "attempt": 9,
+      "sampledAfterMs": 1546,
+      "videos": 2,
+      "deferred": 1,
+      "videoTops": [
+        1605,
+        3184
+      ],
+      "bandBottom": 1624
+    }
+  ],
+  "failures": [],
+  "initial": {
+    "sampledAfterMs": 1546,
+    "documentHeight": 3987,
+    "bandBottom": 1624,
+    "videos": [
+      {
+        "index": 0,
+        "top": 1605,
+        "src": "/api/media/61/playback?v=1",
+        "preload": "metadata",
+        "poster": null,
+        "paused": true,
+        "posterUrl": "/api/media/61/poster?v=1",
+        "acquisitionEntries": [
+          {
+            "isIntersecting": true,
+            "top": 1605.359375,
+            "rootBottom": 2532
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "top": 3184,
+        "src": null,
+        "preload": "none",
+        "poster": null,
+        "paused": true,
+        "posterUrl": "/api/media/62/poster?v=1",
+        "acquisitionEntries": [
+          {
+            "isIntersecting": false,
+            "top": 3183.984375,
+            "rootBottom": 2532
+          }
+        ]
+      }
+    ],
+    "posters": [
+      {
+        "currentSrc": "http://localhost:3108/_next/image?url=%2Fapi%2Fmedia%2F61%2Fposter%3Fv%3D1&w=384&q=75",
+        "loading": "lazy",
+        "naturalWidth": 191,
+        "top": 1605
+      },
+      {
+        "currentSrc": "http://localhost:3108/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75",
+        "loading": "lazy",
+        "naturalWidth": 191,
+        "top": 3184
+      }
+    ],
+    "opening": [
+      {
+        "src": "http://localhost:3108/api/media/file/3N7A0369.JPEG",
+        "loading": "eager",
+        "priority": "high",
+        "naturalWidth": 3619
+      },
+      {
+        "src": "http://localhost:3108/api/media/file/IMG_3912.JPG",
+        "loading": "eager",
+        "priority": "high",
+        "naturalWidth": 1600
+      }
+    ],
+    "posterWidths": [
+      384,
+      384
+    ],
+    "rawPosterRequests": [],
+    "playbackRequests": [
+      "/api/media/61/playback?v=1",
+      "/api/media/61/playback?v=1"
+    ],
+    "requestCount": 40,
+    "documentVideoSource": false,
+    "documentVideoPoster": false
+  },
+  "nearViewport": {
+    "expectedPlayback": "/api/media/62/playback?v=1",
+    "src": "/api/media/62/playback?v=1",
+    "preload": "metadata",
+    "top": 1266,
+    "paused": true,
+    "playbackRequests": [
+      "/api/media/61/playback?v=1",
+      "/api/media/61/playback?v=1",
+      "/api/media/62/playback?v=1",
+      "/api/media/62/playback?v=1",
+      "/api/media/61/playback?v=1"
+    ]
+  },
+  "inView": {
+    "src": "/api/media/62/playback?v=1",
+    "top": 252,
+    "paused": false,
+    "muted": true,
+    "loop": true,
+    "playsInline": true,
+    "controls": false
+  }
+}

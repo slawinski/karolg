@@ -105,6 +105,10 @@ URLs, phase, cache flags and encoded length; no sensitive request headers.
 - Complete suite and typecheck pass; final totals are recorded in the JSON.
 - Complete Chromium browser suite: **48/48** in three files.
 - `pnpm build`: **PASS**, both public routes reported `ƒ` (on-demand rendering).
+- Additional isolated static-image SSR smoke: **1/1 PASS**. The actual `Visual`
+  and Next Image, with the static-export image configuration, render the
+  normalized source directly as `/media/portrait.jpg?v=2`, without an optimizer
+  URL. The markup is retained in the JSON. This is not a complete export build.
 - `pnpm build:drop`: **BLOCKED**, described below.
 - No lint script is configured. No `release:validate` script exists.
 
@@ -180,3 +184,9 @@ uses a valid MP4 and the supported worker dimension limit; no upload validation
 was weakened. An initial temporary `.ts` harness caused a TypeScript error;
 moving the harness to `.mjs` restored normal build validation. These were harness
 failures, not suppressed application checks.
+
+The additional static-image smoke lives only in the isolated clone at
+`src/test/issue30-static-smoke.test.tsx` and runs with
+`pnpm test src/test/issue30-static-smoke.test.tsx`. A standalone TSX script first
+hit Next Image's CJS/ESM default-export interop; the existing Vitest runner
+resolved that harness problem without changing application code.

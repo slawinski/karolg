@@ -1792,6 +1792,12 @@
       "tests": 48
     },
     "productionBuild": "passed",
+    "staticImageSSR": {
+      "status": "passed",
+      "mode": "actual Next Image SSR with static-export image config",
+      "source": "/media/portrait.jpg?v=2",
+      "markup": "<img alt=\"Snapshot portrait\" loading=\"lazy\" decoding=\"async\" data-nimg=\"fill\" class=\"visual-img\" style=\"position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent\" src=\"/media/portrait.jpg?v=2\"/>"
+    },
     "staticDrop": {
       "result": "blocked",
       "compiled": true,

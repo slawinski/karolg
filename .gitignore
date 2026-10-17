@@ -17,3 +17,4 @@ data/upload-tmp/
 /media/
 public/media/*
 !public/media/.gitkeep
+.context/compound-engineering/

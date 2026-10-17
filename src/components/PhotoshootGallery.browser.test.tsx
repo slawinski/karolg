@@ -4,6 +4,7 @@ import { cleanup, render } from 'vitest-browser-react'
 import { PortfolioHeader } from './PortfolioHeader'
 import { candidateViewports, controlledMedia, controlledVideo, regressionMedia, regressionPhotoshoot } from '@/test/fixtures/photoshoot-candidates'
 import type { MediaLike } from '@/lib/media'
+import { selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import '@/app/(frontend)/styles.css'
 
 afterEach(cleanup)
@@ -66,6 +67,32 @@ it('characterizes lengths, breakpoints, title clipping and full-slot video geome
           expect(video.autoplay).toBe(false)
         })
         if (title.length > 100 && count) expect(rects[0].top).toBeGreaterThan(900)
+        await cleanup()
+      }
+    }
+  }
+}, 60000)
+
+it('covers actual largest clipped stills with the same bounded responsive identity set', async () => {
+  const galleries = [1, 2, 6, 7, 14].map(controlledMedia)
+  galleries.push(regressionMedia)
+  const mixed = controlledMedia(14)
+  mixed[0] = controlledVideo
+  mixed[5] = { ...controlledVideo, id: 'interleaved-video' }
+  galleries.push(mixed)
+  for (const media of galleries) {
+    const selected = selectPhotoshootCandidates(media)
+    expect(selected.size).toBeLessThanOrEqual(4)
+    for (const { width, height } of candidateViewports) {
+      await page.viewport(width, height)
+      for (const title of ['A', 'Editorial Portraits', 'Editorial Portraits in Natural Light', Array(60).fill('Portraits').join(' ')]) {
+        const rects = await gallery(media, title)
+        const areas = rects.map((rect, index) => media[index].kind === 'video' ? 0
+          : rect.width * Math.max(0, Math.min(rect.bottom, height) - Math.max(0, rect.top)))
+        const max = Math.max(0, ...areas)
+        const winners = areas.flatMap((area, index) => area > 0 && Math.abs(area - max) < 1 ? [index] : [])
+        expect(winners.length === 0 || winners.some((index) => selected.has(media[index].url!)),
+          JSON.stringify({ width, height, title, count: media.length, winners, selected: [...selected], areas })).toBe(true)
         await cleanup()
       }
     }

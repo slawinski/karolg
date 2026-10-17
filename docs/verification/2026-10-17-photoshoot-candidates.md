@@ -39,3 +39,28 @@ executing tests. The caller's prior runtime diagnosis is a bundled native mac14
 protocol mismatch (`Unknown setting: PushAPIEnabled`), not an application failure.
 No cross-engine layout/LCP parity is claimed. A compatible WebKit CI run remains
 required for complete verification; no unbounded runtime-install attempts made.
+
+## U2 — geometry-derived SSR selection
+
+Before implementation, the strengthened actual Next Image SSR test failed because
+index 5 was `loading="lazy"` with no high priority. The new helper test initially
+failed on its absent module. After integration, `pnpm test` passes 122 tests in
+22 files, `pnpm typecheck` passes, and `pnpm test:browser` passes 47 tests in
+3 files, including unchanged homepage lifecycle coverage.
+
+The helper uses contiguous minimum-maximum balancing, full-slot ratios including
+videos/placeholders, clipped visible area, and marginal normalized-area coverage
+over the plan's width/height/title-line envelope. Source URL identities are
+deduplicated before allocating the global four-slot budget. No filename, slug,
+or fixed-index selection exceptions exist. The route computes one set, and
+`Visual`, stylesheet, sizes, map order, and manual video delivery are unchanged.
+
+Tests replace the obsolete first-still-only policy assertion with the retained
+regression's urgent SSR/preload union. The short video-plus-two-stills fixture
+still selects just its dominant first still: selecting the later smaller still
+would add zero coverage, so unused budget is deliberately not filled.
+
+Browser coverage tests compare the selected set with independently measured
+clipped rectangles across all six required viewports, 1/2/6/7/9/14-slot galleries,
+leading/interleaved videos, and short/wrapping/below-viewport titles. They pass
+without relaxing the four-identity budget. Production LCP is a separate U3 gate.

@@ -4,11 +4,12 @@ import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
-import { inferMediaKind } from '@/lib/media'
+import { selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
   getPortfolioData,
+  mediaUrl,
 } from '@/lib/portfolio'
 
 export const revalidate = 60
@@ -39,7 +40,7 @@ export default async function WorkPage({ params }: Props) {
   if (!photoshoot?.id) notFound()
 
   const images = await getPhotoshootMedia(photoshoot.id)
-  const firstImageIndex = images.findIndex((media) => inferMediaKind(media) === 'image')
+  const candidates = selectPhotoshootCandidates(images)
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
 
   return (
@@ -59,7 +60,7 @@ export default async function WorkPage({ params }: Props) {
             <Visual
               media={image}
               alt={image.alt || `${photoshoot.title} image ${index + 1}`}
-              eager={index === firstImageIndex}
+              eager={candidates.has(mediaUrl(image) || '')}
               sizes="(max-width: 700px) calc(50vw - 4px), (max-width: 1100px) calc((100vw - clamp(18px, 2.8vw, 46px) * 2 - clamp(12px, 1.5vw, 24px)) / 2), calc((100vw - clamp(18px, 2.8vw, 46px) * 2 - clamp(12px, 1.5vw, 24px) * 2) / 3)"
               variant={index + 1}
             />

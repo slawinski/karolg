@@ -229,6 +229,20 @@ afterEach(async () => {
 })
 
 describe('Homepage browser lifecycle', () => {
+  it('carries replacement identities to images while bypassing legacy optimization', async () => {
+    const pool = { ...imagePool, media: [
+      { ...imagePool.media[0], processingRevision: 2 },
+      imagePool.media[1],
+    ] }
+    await renderEligible([pool], [
+      { ...slots[0], id: 'versioned', initialMediaIndex: 0 },
+      { ...slots[0], id: 'legacy', initialMediaIndex: 1 },
+    ])
+    const image = document.querySelector<HTMLImageElement>('[data-slot="versioned"] img')!
+    expect(image.getAttribute('src')).toBe('/__controlled__/image-0.jpg?v=2')
+    expect(image.hasAttribute('data-unoptimized')).toBe(false)
+    expect(document.querySelector('[data-slot="legacy"] img')?.getAttribute('data-unoptimized')).toBe('true')
+  })
   it('uses the photoshoot title typeface for both homepage name rows', async () => {
     await render(
       <>

@@ -129,7 +129,13 @@ export async function getPortfolioData() {
     ])
 
     return {
-      site: { ...fallbackSite, ...(site as unknown as SiteLike) },
+      site: {
+        ...fallbackSite,
+        ...(site as unknown as SiteLike),
+        heroMedia: site.heroMedia && typeof site.heroMedia === 'object'
+          ? normalizeMediaLike(site.heroMedia)
+          : site.heroMedia,
+      },
       photoshoots: photoshoots
         .map((photoshoot) => normalizePhotoshootReference(photoshoot))
         .filter((photoshoot): photoshoot is PhotoshootLike =>

@@ -1,3 +1,5 @@
+import { publishedDerivative, versionMediaURL } from './media-revision'
+
 export type PhotographerLike = {
   id?: string | number
   displayName: string
@@ -112,14 +114,23 @@ export function mediaStatus(media: MediaLike | null | undefined): MediaProcessin
 }
 
 export const originalMediaUrl = (media: MediaLike | null | undefined) =>
-  stringValue(media?.url)
+  versionMediaURL(stringValue(media?.url), inferMediaKind(media) === 'image' ? media?.processingRevision : null)
+
+function derivativeUrl(media: MediaLike | null | undefined, kind: 'poster' | 'playback') {
+  const url = stringValue(kind === 'poster' ? media?.posterUrl : media?.playbackUrl)
+  const filename = kind === 'poster' ? media?.posterFilename : media?.playbackFilename
+  const published = filename ? publishedDerivative(filename, media?.id) : null
+  // Snapshot URLs already address the immutable revision directory.
+  if (!published || published.kind !== kind || url?.split(/[?#]/)[0].endsWith(`/media/${filename}`)) return url
+  return versionMediaURL(url, published.revision)
+}
 
 export const mediaPosterUrl = (media: MediaLike | null | undefined) =>
-  stringValue(media?.posterUrl)
+  derivativeUrl(media, 'poster')
 
 export function mediaPresentationUrl(media: MediaLike | null | undefined) {
   return inferMediaKind(media) === 'video'
-    ? stringValue(media?.playbackUrl)
+    ? derivativeUrl(media, 'playback')
     : originalMediaUrl(media)
 }
 
@@ -230,6 +241,10 @@ export function normalizeMediaLike(
   if (media.kind === 'video') {
     media.filename = null
     media.url = null
+    media.playbackUrl = mediaPresentationUrl(media)
+    media.posterUrl = mediaPosterUrl(media)
+  } else {
+    media.url = originalMediaUrl(media)
   }
   return media
 }

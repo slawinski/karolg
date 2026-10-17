@@ -10,6 +10,7 @@ const isStaticExport = process.env.STATIC_EXPORT === '1'
 const nextConfig: NextConfig = {
   ...(isStaticExport ? { output: 'export' as const, trailingSlash: true } : {}),
   images: {
+    minimumCacheTTL: 604800,
     formats: ['image/avif', 'image/webp'],
     localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/media/**' }],
     ...(isStaticExport ? { unoptimized: true } : {}),

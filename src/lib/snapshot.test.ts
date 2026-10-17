@@ -7,6 +7,9 @@ import {
 } from './snapshot'
 
 describe('static snapshot media normalization', () => {
+  it('versions copied images without changing filesystem filenames', () => {
+    expect(normalizeSnapshotMedia({ id: 7, filename: 'portrait.jpg', processingRevision: 2 }, documentsById([]), documentsById([]))).toMatchObject({ filename: 'portrait.jpg', url: '/media/portrait.jpg?v=2' })
+  })
   it('retains published video metadata without exposing the private original', () => {
     const photoshoots = documentsById([
       { id: 4, title: 'Motion', slug: 'motion', photographers: [8] },

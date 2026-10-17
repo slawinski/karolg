@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { mediaRevision } from '@/lib/media-revision'
 import {
   type AnimationEvent,
   type CSSProperties,
@@ -224,6 +225,7 @@ function HomepageVisual({
   return (
     <Image
       src={src}
+      unoptimized={mediaRevision(media.processingRevision) === null}
       alt={hidden ? '' : alt}
       aria-hidden={hidden || undefined}
       fill

@@ -11,6 +11,29 @@ import {
 } from './media'
 
 describe('canonical media model', () => {
+  it('versions image identities idempotently while preserving other URL parts', () => {
+    const image = { id: 7, url: '/api/media/file/portrait.jpg?size=card&v=old#photo', processingRevision: 2 }
+    expect(mediaPresentationUrl(image)).toBe('/api/media/file/portrait.jpg?size=card&v=2#photo')
+    const normalized = normalizeMediaLike(image)
+    expect(normalizeMediaLike(normalized)).toEqual(normalized)
+    expect(normalized?.url).toBe(mediaPresentationUrl(image))
+    expect(mediaPresentationUrl({ ...image, processingRevision: 3 })).not.toBe(mediaPresentationUrl(image))
+  })
+
+  it.each([undefined, null, 0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])('leaves invalid image revision %s unversioned', (processingRevision) => {
+    expect(mediaPresentationUrl({ url: '/photo.jpg', processingRevision })).toBe('/photo.jpg')
+    expect(mediaPresentationUrl({ processingRevision })).toBeNull()
+  })
+
+  it.each(['pending', 'processing', 'failed', 'ready'] as const)('uses published filenames rather than active revisions while %s', (processingStatus) => {
+    const video = { id: 7, kind: 'video' as const, processingRevision: 3, processingStatus,
+      playbackFilename: 'generated/7/r2/playback.mp4', playbackUrl: '/api/media/7/playback',
+      posterFilename: 'generated/7/r2/poster.jpg', posterUrl: '/api/media/7/poster' }
+    expect(mediaPresentationUrl(video)).toBe('/api/media/7/playback?v=2')
+    expect(mediaPosterUrl(video)).toBe('/api/media/7/poster?v=2')
+    expect(normalizeMediaLike(video)).toMatchObject({ playbackUrl: '/api/media/7/playback?v=2', posterUrl: '/api/media/7/poster?v=2', url: null, filename: null })
+    expect(mediaPosterUrl({ ...video, posterFilename: 'generated/8/r2/poster.jpg' })).toBe('/api/media/7/poster')
+  })
   it('keeps legacy images ready and usable', () => {
     const image = { url: '/media/photo.jpg', width: 1200, height: 800 }
 

@@ -54,7 +54,7 @@ export function parseSingleByteRange(
   return { start, end: Math.min(requestedEnd, size - 1) }
 }
 
-const notFound = () => Response.json({ error: 'Media derivative not found' }, { status: 404 })
+const notFound = () => Response.json({ error: 'Media derivative not found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } })
 
 export async function serveMediaDerivative({
   payload,
@@ -70,6 +70,8 @@ export async function serveMediaDerivative({
   if (!Number.isSafeInteger(id)) return notFound()
 
   try {
+    const versions = new URL(request.url).searchParams.getAll('v')
+    if (versions.length && (versions.length !== 1 || !/^[1-9]\d*$/.test(versions[0]) || !Number.isSafeInteger(Number(versions[0])))) return notFound()
     const media = await payload.findByID({
       collection: 'media',
       id,
@@ -83,12 +85,13 @@ export async function serveMediaDerivative({
       : media.posterFilename
     if (!storedPath) return notFound()
 
-    const { absolutePath } = resolveOwnedDerivativePath(
+    const { absolutePath, revision } = resolveOwnedDerivativePath(
       storedPath,
       id,
       kind,
       mediaRoot,
     )
+    if (versions.length && Number(versions[0]) !== revision) return notFound()
     const details = await stat(absolutePath)
     if (!details.isFile()) return notFound()
 
@@ -100,12 +103,13 @@ export async function serveMediaDerivative({
     const range = parseSingleByteRange(request.headers.get('range'), details.size)
     const headers = new Headers({
       'Accept-Ranges': 'bytes',
-      'Cache-Control': 'public, max-age=300',
+      'Cache-Control': versions.length ? 'public, max-age=31536000, immutable' : 'public, max-age=0, must-revalidate',
       'Content-Type': contentType,
       'X-Content-Type-Options': 'nosniff',
     })
 
     if (range === 'invalid') {
+      headers.set('Cache-Control', 'no-store')
       headers.set('Content-Range', `bytes */${details.size}`)
       return new Response(null, { status: 416, headers })
     }

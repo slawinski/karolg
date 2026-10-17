@@ -1,0 +1,1808 @@
+{
+  "schema": "issue-30-media-cache-network/v1",
+  "at": "2026-10-17T17:15:27.379Z",
+  "commit": "90ac6b2bd263db532ba1f264457952509af58fd8",
+  "node": "v24.8.0",
+  "cacheDisabled": false,
+  "interception": false,
+  "headers": [
+    {
+      "label": "fixed variant first request",
+      "url": "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=640&q=75",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=604800, must-revalidate",
+        "content-type": "image/webp",
+        "content-length": "1170",
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": "MISS",
+        "etag": "T4IZVyE0_3SB7AX0K5V-xVqF98Qnzg1YCTSSdkbFRDo",
+        "vary": "Accept"
+      },
+      "bytes": 1170,
+      "sha256": "4f8219572134ff7481ec05f42b957ec55a85f7c427ce0d580934927646c5443a"
+    },
+    {
+      "label": "fixed variant independent repeat",
+      "url": "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=640&q=75",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=604800, must-revalidate",
+        "content-type": "image/webp",
+        "content-length": "1170",
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": "HIT",
+        "etag": "T4IZVyE0_3SB7AX0K5V-xVqF98Qnzg1YCTSSdkbFRDo",
+        "vary": "Accept"
+      },
+      "bytes": 1170,
+      "sha256": "4f8219572134ff7481ec05f42b957ec55a85f7c427ce0d580934927646c5443a"
+    },
+    {
+      "label": "/api/media/file/portrait.jpg?v=1",
+      "url": "/api/media/file/portrait.jpg?v=1",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "private, no-cache, max-age=0, must-revalidate",
+        "content-type": "image/jpeg",
+        "content-length": "11520",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 11520,
+      "sha256": "72e2627ea4ca77aafaa4656d5202659691ac8dbd27418018c6b9839b4d8fbd8b"
+    },
+    {
+      "label": "/api/media/3/poster?v=1",
+      "url": "/api/media/3/poster?v=1",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/jpeg",
+        "content-length": "1123",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 1123,
+      "sha256": "7f8abf63a408d9c6d73ede183cbc2cec1031d15b951187fac8665b00cb7f9ad7"
+    },
+    {
+      "label": "/api/media/3/playback?v=1",
+      "url": "/api/media/3/playback?v=1",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 2389,
+      "sha256": "ce310a11b2979d6bd7d7056f99c28b312a060d656c99129491b5a16c280ff365"
+    },
+    {
+      "label": "replacement fixed optimizer variant",
+      "url": "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=604800, must-revalidate",
+        "content-type": "image/webp",
+        "content-length": "1070",
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": "MISS",
+        "etag": "VQtJUesyZbBiPZj3Z-7Zayvbz0Q1GM8YJESOkfBAxvw",
+        "vary": "Accept"
+      },
+      "bytes": 1070,
+      "sha256": "550b4951eb3265b0623d98f767eed96b2bdbcf443518cf1824448e91f040c6fc"
+    },
+    {
+      "label": "retained pending",
+      "url": "/api/media/3/poster?v=1",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/jpeg",
+        "content-length": "1123",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 1123,
+      "sha256": "7f8abf63a408d9c6d73ede183cbc2cec1031d15b951187fac8665b00cb7f9ad7"
+    },
+    {
+      "label": "retained pending",
+      "url": "/api/media/3/playback?v=1",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 2389,
+      "sha256": "ce310a11b2979d6bd7d7056f99c28b312a060d656c99129491b5a16c280ff365"
+    },
+    {
+      "label": "/api/media/3/poster?v=2",
+      "url": "/api/media/3/poster?v=2",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/jpeg",
+        "content-length": "1123",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 1123,
+      "sha256": "946ae465108d02129465bd7262313b3feba8f4623fb81fb9f6f63a1feb1ecaff"
+    },
+    {
+      "label": "/api/media/3/poster",
+      "url": "/api/media/3/poster",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "image/jpeg",
+        "content-length": "1123",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 1123,
+      "sha256": "946ae465108d02129465bd7262313b3feba8f4623fb81fb9f6f63a1feb1ecaff"
+    },
+    {
+      "label": "/api/media/3/poster?v=1",
+      "url": "/api/media/3/poster?v=1",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "/api/media/3/poster?v=2",
+      "url": "/api/media/3/poster?v=2",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/jpeg",
+        "content-length": "1123",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "/api/media/3/poster?v=2",
+      "url": "/api/media/3/poster?v=2",
+      "method": "GET",
+      "range": "bytes=0-9",
+      "status": 206,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/jpeg",
+        "content-length": "10",
+        "content-range": "bytes 0-9/1123",
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 10,
+      "sha256": "45ae705277879f7f01d778f7c95a065bb0c06ab9936cf24307f375211fee13d1"
+    },
+    {
+      "label": "/api/media/3/poster?v=2",
+      "url": "/api/media/3/poster?v=2",
+      "method": "GET",
+      "range": "bytes=9999999-",
+      "status": 416,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "image/jpeg",
+        "content-length": null,
+        "content-range": "bytes */1123",
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "/api/media/3/playback?v=2",
+      "url": "/api/media/3/playback?v=2",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 2389,
+      "sha256": "4dfbe02594b3ce7c85f9bb4e3d4d209e5e493f3b42537eb02a4cc94862525886"
+    },
+    {
+      "label": "/api/media/3/playback",
+      "url": "/api/media/3/playback",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 2389,
+      "sha256": "4dfbe02594b3ce7c85f9bb4e3d4d209e5e493f3b42537eb02a4cc94862525886"
+    },
+    {
+      "label": "/api/media/3/playback?v=1",
+      "url": "/api/media/3/playback?v=1",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "/api/media/3/playback?v=2",
+      "url": "/api/media/3/playback?v=2",
+      "method": "HEAD",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "/api/media/3/playback?v=2",
+      "url": "/api/media/3/playback?v=2",
+      "method": "GET",
+      "range": "bytes=0-9",
+      "status": 206,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "video/mp4",
+        "content-length": "10",
+        "content-range": "bytes 0-9/2389",
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 10,
+      "sha256": "7a0b11dbb94fd5859f5b2dae56af394008565367eb7fc264e45f173d0b66b137"
+    },
+    {
+      "label": "/api/media/3/playback?v=2",
+      "url": "/api/media/3/playback?v=2",
+      "method": "GET",
+      "range": "bytes=9999999-",
+      "status": 416,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "video/mp4",
+        "content-length": null,
+        "content-range": "bytes */2389",
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "/api/media/3/playback?v=1",
+      "url": "/api/media/3/playback?v=1",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "/api/media/3/playback?v=3",
+      "url": "/api/media/3/playback?v=3",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "/api/media/3/playback?v=2&v=2",
+      "url": "/api/media/3/playback?v=2&v=2",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "/api/media/3/playback?v=bad",
+      "url": "/api/media/3/playback?v=bad",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "/api/media/3/playback?v=9007199254740992",
+      "url": "/api/media/3/playback?v=9007199254740992",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 38,
+      "sha256": "286bb77be169531178374a2da02d5c7158e0bd017a338b015f752f801fadadb6"
+    },
+    {
+      "label": "retained after processing failure",
+      "url": "/api/media/3/poster?v=2",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "image/jpeg",
+        "content-length": "1123",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 1123,
+      "sha256": "946ae465108d02129465bd7262313b3feba8f4623fb81fb9f6f63a1feb1ecaff"
+    },
+    {
+      "label": "retained after processing failure",
+      "url": "/api/media/3/playback?v=2",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 2389,
+      "sha256": "4dfbe02594b3ce7c85f9bb4e3d4d209e5e493f3b42537eb02a4cc94862525886"
+    },
+    {
+      "label": "anonymous original denied",
+      "url": "/api/media/file/motion.mp4",
+      "method": "GET",
+      "status": 404,
+      "headers": {
+        "cache-control": "no-store",
+        "content-type": "application/json",
+        "content-length": null,
+        "content-range": null,
+        "accept-ranges": null,
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 21,
+      "sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f"
+    },
+    {
+      "label": "authenticated original private",
+      "url": "/api/media/file/motion.mp4",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "private, no-cache, max-age=0, must-revalidate",
+        "content-type": "video/mp4",
+        "content-length": "2389",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 2389,
+      "sha256": "00db5fb4c1fb0a374782c264e7474f0c62241b468f922ae0b06d1806890eb9aa"
+    },
+    {
+      "label": "/api/media/file/legacy.jpg",
+      "url": "/api/media/file/legacy.jpg",
+      "method": "GET",
+      "status": 200,
+      "headers": {
+        "cache-control": "private, no-cache, max-age=0, must-revalidate",
+        "content-type": "image/jpeg",
+        "content-length": "11518",
+        "content-range": null,
+        "accept-ranges": "bytes",
+        "x-nextjs-cache": null,
+        "etag": null,
+        "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "bytes": 11518,
+      "sha256": "3598c9978554b6f094c75faf11795b978bcc7fab96a2030ac20ce3d7e67496aa"
+    }
+  ],
+  "pages": [
+    {
+      "phase": "warm homepage",
+      "route": "/",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=384&q=75",
+      "pixel": [
+        255,
+        1,
+        1
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=1",
+      "playback": "/api/media/3/playback?v=1"
+    },
+    {
+      "phase": "warm photoshoot",
+      "route": "/work/cache-fixture",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=640&q=75",
+      "pixel": [
+        255,
+        1,
+        1
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=1",
+      "playback": "/api/media/3/playback?v=1"
+    },
+    {
+      "phase": "repeat browser cache",
+      "route": "/",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=640&q=75",
+      "pixel": [
+        255,
+        1,
+        1
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=1",
+      "playback": "/api/media/3/playback?v=1"
+    },
+    {
+      "phase": "first fresh request after image replacement",
+      "route": "/",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=384&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=1",
+      "playback": "/api/media/3/playback?v=1"
+    },
+    {
+      "phase": "first fresh photoshoot after image replacement",
+      "route": "/work/cache-fixture",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=1",
+      "playback": "/api/media/3/playback?v=1"
+    },
+    {
+      "phase": "video pending retained",
+      "route": "/",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=1",
+      "playback": "/api/media/3/playback?v=1"
+    },
+    {
+      "phase": "first fresh homepage after CLI publication",
+      "route": "/",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=2",
+      "playback": "/api/media/3/playback?v=2"
+    },
+    {
+      "phase": "first fresh photoshoot after CLI publication",
+      "route": "/work/cache-fixture",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=2",
+      "playback": "/api/media/3/playback?v=2"
+    },
+    {
+      "phase": "failed processing retains published identities",
+      "route": "/work/cache-fixture",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=2",
+      "playback": "/api/media/3/playback?v=2"
+    },
+    {
+      "phase": "mobile retained media",
+      "route": "/work/cache-fixture",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=2",
+      "playback": "/api/media/3/playback?v=2"
+    },
+    {
+      "phase": "desktop retained media",
+      "route": "/",
+      "src": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "pixel": [
+        1,
+        1,
+        253
+      ],
+      "legacy": "/api/media/file/legacy.jpg",
+      "poster": "/api/media/3/poster?v=2",
+      "playback": "/api/media/3/playback?v=2"
+    },
+    {
+      "route": "/",
+      "phase": "first fresh request after deletion",
+      "deletedImageCount": 0
+    },
+    {
+      "route": "/work/cache-fixture",
+      "phase": "first fresh request after deletion",
+      "deletedImageCount": 0
+    }
+  ],
+  "cacheEvents": [
+    {
+      "id": "73734.16",
+      "url": "http://localhost:3110/api/media/3/poster?v=1",
+      "phase": "warm homepage",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 1816
+    },
+    {
+      "id": "73734.3",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "warm homepage",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.33",
+      "url": "http://localhost:3110/api/media/3/playback?v=1",
+      "phase": "warm homepage",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.4",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=384&q=75",
+      "phase": "warm homepage",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 920
+    },
+    {
+      "id": "73734.53",
+      "url": "http://localhost:3110/api/media/3/poster?v=1",
+      "phase": "warm photoshoot",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.67",
+      "url": "http://localhost:3110/api/media/3/playback?v=1",
+      "phase": "warm photoshoot",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.43",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "warm photoshoot",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.65",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=640&q=75",
+      "phase": "warm photoshoot",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 971
+    },
+    {
+      "id": "73734.81",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=384&q=75",
+      "phase": "repeat browser cache",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.91",
+      "url": "http://localhost:3110/api/media/3/poster?v=1",
+      "phase": "repeat browser cache",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.104",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D1&w=640&q=75",
+      "phase": "repeat browser cache",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.110",
+      "url": "http://localhost:3110/api/media/3/playback?v=1",
+      "phase": "repeat browser cache",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.107",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "repeat browser cache",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.131",
+      "url": "http://localhost:3110/api/media/3/poster?v=1",
+      "phase": "first fresh request after image replacement",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.149",
+      "url": "http://localhost:3110/api/media/3/playback?v=1",
+      "phase": "first fresh request after image replacement",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.146",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "first fresh request after image replacement",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.120",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=384&q=75",
+      "phase": "first fresh request after image replacement",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 920
+    },
+    {
+      "id": "73734.169",
+      "url": "http://localhost:3110/api/media/3/poster?v=1",
+      "phase": "first fresh photoshoot after image replacement",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.183",
+      "url": "http://localhost:3110/api/media/3/playback?v=1",
+      "phase": "first fresh photoshoot after image replacement",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.159",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "first fresh photoshoot after image replacement",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.181",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "first fresh photoshoot after image replacement",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 971
+    },
+    {
+      "id": "73734.207",
+      "url": "http://localhost:3110/api/media/3/poster?v=1",
+      "phase": "video pending retained",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.220",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "video pending retained",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.197",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "video pending retained",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.225",
+      "url": "http://localhost:3110/api/media/3/playback?v=1",
+      "phase": "video pending retained",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.234",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=384&q=75",
+      "phase": "first fresh homepage after CLI publication",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.257",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "first fresh homepage after CLI publication",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.245",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "first fresh homepage after CLI publication",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 1816
+    },
+    {
+      "id": "73734.269",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "first fresh homepage after CLI publication",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.260",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "first fresh homepage after CLI publication",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.284",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "first fresh photoshoot after CLI publication",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.295",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "first fresh photoshoot after CLI publication",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.274",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "first fresh photoshoot after CLI publication",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.300",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "first fresh photoshoot after CLI publication",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.323",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "failed processing retains published identities",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.334",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "failed processing retains published identities",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.339",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "failed processing retains published identities",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.313",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "failed processing retains published identities",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.362",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "mobile retained media",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.373",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "mobile retained media",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.378",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "mobile retained media",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.352",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "mobile retained media",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.391",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=384&q=75",
+      "phase": "desktop retained media",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.403",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "desktop retained media",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.416",
+      "url": "http://localhost:3110/_next/image?url=%2Fapi%2Fmedia%2Ffile%2Fportrait.jpg%3Fv%3D2&w=640&q=75",
+      "phase": "desktop retained media",
+      "servedFromCache": true,
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "public, max-age=604800, must-revalidate",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.390",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "desktop retained media",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.421",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "desktop retained media",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.440",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "desktop retained media",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.455",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "desktop retained media",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.430",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "desktop retained media",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    },
+    {
+      "id": "73734.474",
+      "url": "http://localhost:3110/api/media/3/poster?v=2",
+      "phase": "desktop retained media",
+      "fromDiskCache": true,
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 0
+    },
+    {
+      "id": "73734.487",
+      "url": "http://localhost:3110/api/media/3/playback?v=2",
+      "phase": "desktop retained media",
+      "fromDiskCache": false,
+      "status": 206,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "encodedDataLength": 3128
+    },
+    {
+      "id": "73734.464",
+      "url": "http://localhost:3110/api/media/file/legacy.jpg",
+      "phase": "desktop retained media",
+      "fromDiskCache": false,
+      "status": 200,
+      "cacheControl": "private, no-cache, max-age=0, must-revalidate",
+      "encodedDataLength": 12189
+    }
+  ],
+  "operations": [
+    {
+      "action": "image",
+      "at": "2026-10-17T17:15:32.669Z",
+      "docs": [
+        {
+          "id": 3,
+          "url": null,
+          "alt": "Motion fixture",
+          "caption": null,
+          "transitionColor": "#fe0000",
+          "filename": null,
+          "mimeType": "video/mp4",
+          "filesize": 2390,
+          "width": null,
+          "height": null,
+          "photoshoot": 1,
+          "kind": "video",
+          "processingStatus": "ready",
+          "processingRevision": 1,
+          "processingError": null,
+          "duration": 1,
+          "videoWidth": 320,
+          "videoHeight": 480,
+          "playbackFilename": "generated/3/r1/playback.mp4",
+          "playbackUrl": "/api/media/3/playback?v=1",
+          "playbackMimeType": "video/mp4",
+          "playbackFilesize": 2389,
+          "posterFilename": "generated/3/r1/poster.jpg",
+          "posterUrl": "/api/media/3/poster?v=1",
+          "posterMimeType": "image/jpeg",
+          "posterWidth": 320,
+          "posterHeight": 480,
+          "original": null
+        },
+        {
+          "id": 2,
+          "url": "/api/media/file/legacy.jpg",
+          "alt": "Legacy portrait",
+          "caption": null,
+          "transitionColor": "#008001",
+          "filename": "legacy.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11518,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 0,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "legacy.jpg"
+        },
+        {
+          "id": 1,
+          "url": "/api/media/file/portrait.jpg?v=2",
+          "alt": "Replacement portrait",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": "portrait.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11520,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "portrait.jpg"
+        }
+      ]
+    },
+    {
+      "action": "video",
+      "at": "2026-10-17T17:15:35.997Z",
+      "docs": [
+        {
+          "id": 3,
+          "url": null,
+          "alt": "Motion fixture",
+          "caption": null,
+          "transitionColor": "#fe0000",
+          "filename": null,
+          "mimeType": "video/mp4",
+          "filesize": 2390,
+          "width": null,
+          "height": null,
+          "photoshoot": 1,
+          "kind": "video",
+          "processingStatus": "pending",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": 1,
+          "videoWidth": 320,
+          "videoHeight": 480,
+          "playbackFilename": "generated/3/r1/playback.mp4",
+          "playbackUrl": "/api/media/3/playback?v=1",
+          "playbackMimeType": "video/mp4",
+          "playbackFilesize": 2389,
+          "posterFilename": "generated/3/r1/poster.jpg",
+          "posterUrl": "/api/media/3/poster?v=1",
+          "posterMimeType": "image/jpeg",
+          "posterWidth": 320,
+          "posterHeight": 480,
+          "original": null
+        },
+        {
+          "id": 2,
+          "url": "/api/media/file/legacy.jpg",
+          "alt": "Legacy portrait",
+          "caption": null,
+          "transitionColor": "#008001",
+          "filename": "legacy.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11518,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 0,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "legacy.jpg"
+        },
+        {
+          "id": 1,
+          "url": "/api/media/file/portrait.jpg?v=2",
+          "alt": "Replacement portrait",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": "portrait.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11520,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "portrait.jpg"
+        }
+      ]
+    },
+    {
+      "action": "standalone CLI worker",
+      "extra": {},
+      "at": "2026-10-17T17:15:38.512Z",
+      "output": "\n> karolg@1.0.0 media:worker [fixture-workspace]\n> payload jobs:run --queue media-processing --limit 1\n\n[19:15:38] WARN: No email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.\n[19:15:38] INFO: Running 1 jobs.\n    new: 1\n    retrying: 0\n"
+    },
+    {
+      "action": "inspect",
+      "at": "2026-10-17T17:15:40.496Z",
+      "docs": [
+        {
+          "id": 3,
+          "url": null,
+          "alt": "Motion fixture",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": null,
+          "mimeType": "video/mp4",
+          "filesize": 2390,
+          "width": null,
+          "height": null,
+          "photoshoot": 1,
+          "kind": "video",
+          "processingStatus": "ready",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": 1,
+          "videoWidth": 320,
+          "videoHeight": 480,
+          "playbackFilename": "generated/3/r2/playback.mp4",
+          "playbackUrl": "/api/media/3/playback?v=2",
+          "playbackMimeType": "video/mp4",
+          "playbackFilesize": 2389,
+          "posterFilename": "generated/3/r2/poster.jpg",
+          "posterUrl": "/api/media/3/poster?v=2",
+          "posterMimeType": "image/jpeg",
+          "posterWidth": 320,
+          "posterHeight": 480,
+          "original": null
+        },
+        {
+          "id": 2,
+          "url": "/api/media/file/legacy.jpg",
+          "alt": "Legacy portrait",
+          "caption": null,
+          "transitionColor": "#008001",
+          "filename": "legacy.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11518,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 0,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "legacy.jpg"
+        },
+        {
+          "id": 1,
+          "url": "/api/media/file/portrait.jpg?v=2",
+          "alt": "Replacement portrait",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": "portrait.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11520,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "portrait.jpg"
+        }
+      ]
+    },
+    {
+      "action": "fail",
+      "at": "2026-10-17T17:15:43.854Z",
+      "docs": [
+        {
+          "id": 3,
+          "url": null,
+          "alt": "Motion fixture",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": null,
+          "mimeType": "video/mp4",
+          "filesize": 2389,
+          "width": null,
+          "height": null,
+          "photoshoot": 1,
+          "kind": "video",
+          "processingStatus": "pending",
+          "processingRevision": 3,
+          "processingError": null,
+          "duration": 1,
+          "videoWidth": 320,
+          "videoHeight": 480,
+          "playbackFilename": "generated/3/r2/playback.mp4",
+          "playbackUrl": "/api/media/3/playback?v=2",
+          "playbackMimeType": "video/mp4",
+          "playbackFilesize": 2389,
+          "posterFilename": "generated/3/r2/poster.jpg",
+          "posterUrl": "/api/media/3/poster?v=2",
+          "posterMimeType": "image/jpeg",
+          "posterWidth": 320,
+          "posterHeight": 480,
+          "original": null
+        },
+        {
+          "id": 2,
+          "url": "/api/media/file/legacy.jpg",
+          "alt": "Legacy portrait",
+          "caption": null,
+          "transitionColor": "#008001",
+          "filename": "legacy.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11518,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 0,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "legacy.jpg"
+        },
+        {
+          "id": 1,
+          "url": "/api/media/file/portrait.jpg?v=2",
+          "alt": "Replacement portrait",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": "portrait.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11520,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "portrait.jpg"
+        }
+      ]
+    },
+    {
+      "action": "standalone CLI worker",
+      "extra": {
+        "VIDEO_MAX_DIMENSION": "64"
+      },
+      "at": "2026-10-17T17:15:45.640Z",
+      "output": "\n> karolg@1.0.0 media:worker [fixture-workspace]\n> payload jobs:run --queue media-processing --limit 1\n\n[19:15:45] WARN: No email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.\n[19:15:45] INFO: Running 1 jobs.\n    new: 1\n    retrying: 0\n[19:15:45] ERROR: Error running task 1. Attempt 1 - max retries reached\n    job: {\n      \"id\": 1,\n      \"input\": {\n        \"mediaId\": 3,\n        \"revision\": 3\n      },\n      \"completedAt\": null,\n      \"totalTried\": 1,\n      \"hasError\": true,\n      \"error\": {\n        \"name\": \"Error\",\n        \"cancelled\": false,\n        \"message\": \"Input dimensions exceed limit\",\n        \"stack\": \"Error: Input dimensions exceed limit\\n    at Object.processVideo ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/getRunTaskFunction.ts:153:15)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async handler ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:348:13)\\n    at async runJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/index.ts:46:5)\\n    at async runSingleJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:422:24)\\n    at async Promise.all (index 0)\\n    at async runJobs ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:503:21)\\n    at async Object.run ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/localAPI.ts:304:12)\\n    at async runBinScript ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:141:9)\\n    at async bin ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:46:29)\"\n      },\n      \"log\": [\n        {\n          \"id\": \"6ad3ad41af139820d0cc45ff\",\n          \"executedAt\": \"2026-10-17T17:15:45.581Z\",\n          \"completedAt\": \"2026-10-17T17:15:45.617Z\",\n          \"taskSlug\": \"processVideo\",\n          \"taskID\": \"1\",\n          \"input\": {\n            \"mediaId\": 3,\n            \"revision\": 3\n          },\n          \"output\": {},\n          \"state\": \"failed\",\n          \"error\": {\n            \"name\": \"Error\",\n            \"cancelled\": false,\n            \"message\": \"Input dimensions exceed limit\",\n            \"stack\": \"Error: Input dimensions exceed limit\\n    at Object.processVideo ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/getRunTaskFunction.ts:153:15)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async handler ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:348:13)\\n    at async runJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/index.ts:46:5)\\n    at async runSingleJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:422:24)\\n    at async Promise.all (index 0)\\n    at async runJobs ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:503:21)\\n    at async Object.run ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/localAPI.ts:304:12)\\n    at async runBinScript ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:141:9)\\n    at async bin ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:46:29)\"\n          }\n        }\n      ],\n      \"taskSlug\": \"processVideo\",\n      \"queue\": \"media-processing\",\n      \"waitUntil\": null,\n      \"processing\": false,\n      \"concurrencyKey\": \"media:3\",\n      \"updatedAt\": \"2026-10-17T17:15:45.617Z\",\n      \"createdAt\": \"2026-10-17T17:15:43.850Z\",\n      \"taskStatus\": {\n        \"processVideo\": {\n          \"1\": {\n            \"complete\": false,\n            \"input\": {\n              \"mediaId\": 3,\n              \"revision\": 3\n            },\n            \"output\": {},\n            \"taskSlug\": \"processVideo\",\n            \"totalTried\": 1\n          }\n        }\n      }\n    }\n    taskSlug: \"processVideo\"\n    err: {\n      \"type\": \"TaskError\",\n      \"message\": \"Input dimensions exceed limit\",\n      \"stack\":\n          Error: Input dimensions exceed limit\n              at Object.processVideo ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/getRunTaskFunction.ts:153:15)\n              at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n              at async handler ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:348:13)\n              at async runJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/index.ts:46:5)\n              at async runSingleJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:422:24)\n              at async Promise.all (index 0)\n              at async runJobs ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:503:21)\n              at async Object.run ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/localAPI.ts:304:12)\n              at async runBinScript ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:141:9)\n              at async bin ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:46:29)\n      \"args\": {\n        \"type\": \"Object\",\n        \"message\": \"Input dimensions exceed limit\",\n        \"stack\":\n            \n        \"executedAt\": \"2026-10-17T17:15:45.581Z\",\n        \"input\": {\n          \"mediaId\": 3,\n          \"revision\": 3\n        },\n        \"job\": {\n          \"id\": 1,\n          \"input\": {\n            \"mediaId\": 3,\n            \"revision\": 3\n          },\n          \"completedAt\": null,\n          \"totalTried\": 1,\n          \"hasError\": true,\n          \"error\": {\n            \"name\": \"Error\",\n            \"cancelled\": false,\n            \"message\": \"Input dimensions exceed limit\",\n            \"stack\":\n                Error: Input dimensions exceed limit\n                    at Object.processVideo ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/getRunTaskFunction.ts:153:15)\n                    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n                    at async handler ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:348:13)\n                    at async runJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/index.ts:46:5)\n                    at async runSingleJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:422:24)\n                    at async Promise.all (index 0)\n                    at async runJobs ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:503:21)\n                    at async Object.run ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/localAPI.ts:304:12)\n                    at async runBinScript ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:141:9)\n                    at async bin ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:46:29)\n          },\n          \"log\": [\n            {\n              \"id\": \"6ad3ad41af139820d0cc45ff\",\n              \"executedAt\": \"2026-10-17T17:15:45.581Z\",\n              \"completedAt\": \"2026-10-17T17:15:45.617Z\",\n              \"taskSlug\": \"processVideo\",\n              \"taskID\": \"1\",\n              \"input\": {\n                \"mediaId\": 3,\n                \"revision\": 3\n              },\n              \"output\": {},\n              \"state\": \"failed\",\n              \"error\": {\n                \"name\": \"Error\",\n                \"cancelled\": false,\n                \"message\": \"Input dimensions exceed limit\",\n                \"stack\":\n                    Error: Input dimensions exceed limit\n                        at Object.processVideo ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/getRunTaskFunction.ts:153:15)\n                        at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n                        at async handler ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:348:13)\n                        at async runJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/runJob/index.ts:46:5)\n                        at async runSingleJob ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:422:24)\n                        at async Promise.all (index 0)\n                        at async runJobs ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/operations/runJobs/index.ts:503:21)\n                        at async Object.run ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/src/queues/localAPI.ts:304:12)\n                        at async runBinScript ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:141:9)\n                        at async bin ([fixture-workspace]/node_modules/.pnpm/payload@3.90.2_graphql@16.14.2_typescript@5.7.3/node_modules/payload/dist/bin/index.js:46:29)\n              }\n            }\n          ],\n          \"taskSlug\": \"processVideo\",\n          \"queue\": \"media-processing\",\n          \"waitUntil\": null,\n          \"processing\": false,\n          \"concurrencyKey\": \"media:3\",\n          \"updatedAt\": \"2026-10-17T17:15:45.617Z\",\n          \"createdAt\": \"2026-10-17T17:15:43.850Z\",\n          \"taskStatus\": {\n            \"processVideo\": {\n              \"1\": {\n                \"complete\": false,\n                \"input\": {\n                  \"mediaId\": 3,\n                  \"revision\": 3\n                },\n                \"output\": {},\n                \"taskSlug\": \"processVideo\",\n                \"totalTried\": 1\n              }\n            }\n          }\n        },\n        \"output\": {},\n        \"retriesConfig\": {\n          \"attempts\": 0\n        },\n        \"taskConfig\": {\n          \"slug\": \"processVideo\",\n          \"label\": \"Process uploaded video\",\n          \"inputSchema\": [\n            {\n              \"name\": \"mediaId\",\n              \"type\": \"number\",\n              \"required\": true\n            },\n            {\n              \"name\": \"revision\",\n              \"type\": \"number\",\n              \"required\": true\n            }\n          ],\n          \"outputSchema\": [\n            {\n              \"name\": \"mediaId\",\n              \"type\": \"number\",\n              \"required\": true\n            },\n            {\n              \"name\": \"status\",\n              \"type\": \"select\",\n              \"options\": [\n                \"ready\",\n                \"stale\"\n              ],\n              \"required\": true\n            }\n          ],\n          \"retries\": 0,\n          \"concurrency\": {\n            \"exclusive\": true,\n            \"supersedes\": true\n          }\n        },\n        \"taskID\": \"1\",\n        \"taskSlug\": \"processVideo\",\n        \"taskStatus\": null,\n        \"workflowConfig\": {\n          \"slug\": \"singleTask\"\n        }\n      }\n    }\n"
+    },
+    {
+      "action": "inspect",
+      "at": "2026-10-17T17:15:47.647Z",
+      "docs": [
+        {
+          "id": 3,
+          "url": null,
+          "alt": "Motion fixture",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": null,
+          "mimeType": "video/mp4",
+          "filesize": 2389,
+          "width": null,
+          "height": null,
+          "photoshoot": 1,
+          "kind": "video",
+          "processingStatus": "failed",
+          "processingRevision": 3,
+          "processingError": "Input dimensions exceed limit",
+          "duration": 1,
+          "videoWidth": 320,
+          "videoHeight": 480,
+          "playbackFilename": "generated/3/r2/playback.mp4",
+          "playbackUrl": "/api/media/3/playback?v=2",
+          "playbackMimeType": "video/mp4",
+          "playbackFilesize": 2389,
+          "posterFilename": "generated/3/r2/poster.jpg",
+          "posterUrl": "/api/media/3/poster?v=2",
+          "posterMimeType": "image/jpeg",
+          "posterWidth": 320,
+          "posterHeight": 480,
+          "original": null
+        },
+        {
+          "id": 2,
+          "url": "/api/media/file/legacy.jpg",
+          "alt": "Legacy portrait",
+          "caption": null,
+          "transitionColor": "#008001",
+          "filename": "legacy.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11518,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 0,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "legacy.jpg"
+        },
+        {
+          "id": 1,
+          "url": "/api/media/file/portrait.jpg?v=2",
+          "alt": "Replacement portrait",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": "portrait.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11520,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 2,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "portrait.jpg"
+        }
+      ]
+    },
+    {
+      "action": "delete",
+      "at": "2026-10-17T17:15:51.680Z",
+      "docs": [
+        {
+          "id": 3,
+          "url": null,
+          "alt": "Motion fixture",
+          "caption": null,
+          "transitionColor": "#0000fe",
+          "filename": null,
+          "mimeType": "video/mp4",
+          "filesize": 2389,
+          "width": null,
+          "height": null,
+          "photoshoot": 1,
+          "kind": "video",
+          "processingStatus": "failed",
+          "processingRevision": 3,
+          "processingError": "Input dimensions exceed limit",
+          "duration": 1,
+          "videoWidth": 320,
+          "videoHeight": 480,
+          "playbackFilename": "generated/3/r2/playback.mp4",
+          "playbackUrl": "/api/media/3/playback?v=2",
+          "playbackMimeType": "video/mp4",
+          "playbackFilesize": 2389,
+          "posterFilename": "generated/3/r2/poster.jpg",
+          "posterUrl": "/api/media/3/poster?v=2",
+          "posterMimeType": "image/jpeg",
+          "posterWidth": 320,
+          "posterHeight": 480,
+          "original": null
+        },
+        {
+          "id": 2,
+          "url": "/api/media/file/legacy.jpg",
+          "alt": "Legacy portrait",
+          "caption": null,
+          "transitionColor": "#008001",
+          "filename": "legacy.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 11518,
+          "width": 1200,
+          "height": 1600,
+          "photoshoot": 1,
+          "kind": "image",
+          "processingStatus": "ready",
+          "processingRevision": 0,
+          "processingError": null,
+          "duration": null,
+          "videoWidth": null,
+          "videoHeight": null,
+          "playbackFilename": null,
+          "playbackUrl": null,
+          "playbackMimeType": null,
+          "playbackFilesize": null,
+          "posterFilename": null,
+          "posterUrl": null,
+          "posterMimeType": null,
+          "posterWidth": null,
+          "posterHeight": null,
+          "original": "legacy.jpg"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "serverPID": 73700,
+  "browser": "156.0.8078.4",
+  "status": "passed",
+  "versions": {
+    "next": "16.4.0",
+    "payload": "3.90.2",
+    "react": "19.2.6",
+    "sharp": "0.35.5",
+    "playwright": "1.64.0",
+    "pnpm": "10.34.6"
+  },
+  "fixtureIDs": {
+    "image": 1,
+    "legacy": 2,
+    "video": 3,
+    "photoshoot": 1
+  },
+  "harnessSourceSHA256": {
+    "issue30-fixture.mjs": "eb3d2f6c43b77866a2ef0bc5d21db483ea9a3c72b70679e92c2a57ba69eeb8f9",
+    "issue30-network.mjs": "98250fb70d3b1d30a13bbf0049c11de91314878d57c123336453189b06b9ea01"
+  },
+  "checks": {
+    "unitTests": {
+      "result": "passed",
+      "files": 24,
+      "tests": 162
+    },
+    "typecheck": "passed",
+    "chromium": {
+      "result": "passed",
+      "files": 3,
+      "tests": 48
+    },
+    "productionBuild": "passed",
+    "staticImageSSR": {
+      "status": "passed",
+      "mode": "actual Next Image SSR with static-export image config",
+      "source": "/media/portrait.jpg?v=2",
+      "markup": "<img alt=\"Snapshot portrait\" loading=\"lazy\" decoding=\"async\" data-nimg=\"fill\" class=\"visual-img\" style=\"position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent\" src=\"/media/portrait.jpg?v=2\"/>"
+    },
+    "staticDrop": {
+      "result": "blocked",
+      "compiled": true,
+      "typechecked": true,
+      "error": "\"dynamicParams: true\" cannot be used with \"output: export\". Failed to collect page data for /work/[slug]"
+    }
+  }
+}

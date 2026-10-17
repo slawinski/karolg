@@ -70,6 +70,9 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: MEDIA_STATIC_DIR,
+    modifyResponseHeaders: ({ headers }) => {
+      headers.set('Cache-Control', 'private, no-cache, max-age=0, must-revalidate')
+    },
     mimeTypes: [
       'image/jpeg',
       'image/png',

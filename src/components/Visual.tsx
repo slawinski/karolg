@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { mediaAlt, mediaUrl, type MediaLike } from '@/lib/portfolio'
 import { inferMediaKind, isUsableMedia, mediaPosterUrl } from '@/lib/media'
+import { mediaRevision } from '@/lib/media-revision'
 
 type VisualProps = {
   media?: MediaLike | string | number | null
@@ -52,6 +53,7 @@ export function Visual({
   return (
     <Image
       src={src}
+      unoptimized={mediaRevision(normalizedMedia?.processingRevision) === null}
       alt={mediaAlt(media, alt)}
       fill
       loading={eager ? 'eager' : 'lazy'}

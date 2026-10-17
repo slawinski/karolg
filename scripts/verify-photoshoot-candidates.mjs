@@ -37,7 +37,7 @@ const sizes = template.match(/<img\b[^>]*sizes="([^"]+)"/)?.[1]
 assert(sizes, 'Production sizes required')
 
 // Actual Next Image + React SSR, not the browser-test plain-image alias.
-function controlledDocument(media, title, unoptimized = false) {
+function controlledDocument(media, title) {
   const selected = selectPhotoshootCandidates(media)
   const gallery = renderToStaticMarkup(React.createElement('section', { className: 'photoshoot-gallery' },
     media.map((item, index) => React.createElement('figure', {
@@ -47,7 +47,7 @@ function controlledDocument(media, title, unoptimized = false) {
         poster: item.posterUrl, controls: true, playsInline: true, preload: 'metadata' })
       : React.createElement(Image, { src: item.url, alt: `Slot ${index}`, fill: true, sizes,
         className: 'visual-img', loading: selected.has(item.url) ? 'eager' : 'lazy',
-        fetchPriority: selected.has(item.url) ? 'high' : undefined, unoptimized })))))
+        fetchPriority: selected.has(item.url) ? 'high' : undefined })))))
   // Remove the original document's image hints and RSC/client scripts, retaining
   // real build stylesheet/header/head. Fixture SSR is not claimed as route hydration.
   return template.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
@@ -209,10 +209,6 @@ try {
       for (const viewport of candidateViewports) await navigate(`${label}:${title.length}`, viewport, { html })
     }
   }
-  // Unoptimized SSR follows the static-export image configuration without
-  // overwriting the production .next build or exporting a mutable CMS snapshot.
-  const staticMedia = regressionPhotoshoot.filenames.map((filename) => ({ kind: 'image', url: `/api/media/file/${filename}` }))
-  await navigate('unoptimized-static-config', candidateViewports[0], { html: controlledDocument(staticMedia, 'A', true) })
 } finally {
   await browser.close()
   if (output) await writeFile(output, `${JSON.stringify(report, null, 2)}\n`)

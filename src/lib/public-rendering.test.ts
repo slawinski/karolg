@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({ connection: vi.fn(), portfolio: vi.fn(), photoshoot: vi.fn(), media: vi.fn() }))
 vi.mock('next/server', () => ({ connection: mocks.connection }))
@@ -10,21 +10,16 @@ vi.mock('./portfolio', () => ({
 }))
 
 beforeEach(() => {
-  vi.stubEnv('STATIC_EXPORT', '')
   vi.clearAllMocks()
   mocks.connection.mockResolvedValue(undefined)
   mocks.portfolio.mockResolvedValue({ site: {}, photoshoots: [], media: [] })
   mocks.photoshoot.mockResolvedValue({ id: 4, title: 'Fixture' })
   mocks.media.mockResolvedValue([])
 })
-afterEach(() => vi.unstubAllEnvs())
 
 describe('fresh public rendering', () => {
-  it('waits for the request boundary in runtime and omits it for snapshots', async () => {
+  it('waits for the request boundary', async () => {
     const { awaitPublicRequest } = await import('./public-rendering')
-    await awaitPublicRequest()
-    expect(mocks.connection).toHaveBeenCalledTimes(1)
-    vi.stubEnv('STATIC_EXPORT', '1')
     await awaitPublicRequest()
     expect(mocks.connection).toHaveBeenCalledTimes(1)
   })

@@ -185,7 +185,7 @@ type HomepageVisualProps = {
   alt: string
   className: string
   media: MediaLike
-  priority?: boolean
+  eager?: boolean
   hidden?: boolean
   preparing?: boolean
   onReady?: () => void
@@ -197,7 +197,7 @@ function HomepageVisual({
   alt,
   className,
   media,
-  priority = false,
+  eager = false,
   hidden = false,
   preparing = false,
   onReady,
@@ -227,11 +227,11 @@ function HomepageVisual({
       alt={hidden ? '' : alt}
       aria-hidden={hidden || undefined}
       fill
-      priority={priority}
-      loading={preparing ? 'eager' : undefined}
+      loading={eager || preparing ? 'eager' : 'lazy'}
+      fetchPriority={eager ? 'high' : undefined}
       onLoad={onReady}
       onError={onError}
-      sizes="(max-width: 700px) 50vw, (max-width: 1100px) 50vw, 25vw"
+      sizes="(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)"
       className={className}
     />
   )
@@ -800,7 +800,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                               active={!isSwapping}
                               alt={alt}
                               media={currentMedia}
-                              priority={columnIndex < 4}
+                              eager={slots.indexOf(slot) < 2}
                               className="gallery-stage__outgoing"
                             />
                             {candidate && incomingSrc ? (

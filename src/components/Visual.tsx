@@ -5,7 +5,7 @@ import { inferMediaKind, isUsableMedia, mediaPosterUrl } from '@/lib/media'
 type VisualProps = {
   media?: MediaLike | string | number | null
   alt: string
-  priority?: boolean
+  eager?: boolean
   sizes: string
   variant?: number
   className?: string
@@ -14,7 +14,7 @@ type VisualProps = {
 export function Visual({
   media,
   alt,
-  priority = false,
+  eager = false,
   sizes,
   variant = 1,
   className = '',
@@ -54,7 +54,8 @@ export function Visual({
       src={src}
       alt={mediaAlt(media, alt)}
       fill
-      priority={priority}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchPriority={eager ? 'high' : undefined}
       sizes={sizes}
       className={`visual-img ${className}`.trim()}
     />

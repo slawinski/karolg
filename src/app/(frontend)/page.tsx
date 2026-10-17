@@ -2,10 +2,10 @@ import { HomepageMasonry } from '@/components/HomepageMasonry'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { composeHomepage } from '@/lib/homepage'
 import { getPortfolioData } from '@/lib/portfolio'
-
-export const revalidate = 60
+import { awaitPublicRequest } from '@/lib/public-rendering'
 
 export default async function HomePage() {
+  await awaitPublicRequest()
   const { site, photoshoots, media } = await getPortfolioData()
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
   const facts = (site.profileFacts || []).filter((fact) => fact.label && fact.value)

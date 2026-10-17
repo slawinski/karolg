@@ -5,14 +5,13 @@ import { Arrow } from '@/components/Arrow'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
 import { selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
+import { awaitPublicRequest } from '@/lib/public-rendering'
 import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
   getPortfolioData,
   mediaUrl,
 } from '@/lib/portfolio'
-
-export const revalidate = 60
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -24,6 +23,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  await awaitPublicRequest()
   const { slug } = await params
   const photoshoot = await getPhotoshootBySlug(slug)
   return photoshoot
@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function WorkPage({ params }: Props) {
+  await awaitPublicRequest()
   const { slug } = await params
   const [photoshoot, { site }] = await Promise.all([
     getPhotoshootBySlug(slug),

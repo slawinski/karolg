@@ -142,9 +142,6 @@ export function isUsableMedia(media: MediaLike | null | undefined) {
   return hasPublishedVideoDerivatives(media)
 }
 
-export const readinessKindForMedia = (media: MediaLike | null | undefined) =>
-  inferMediaKind(media) === 'video' ? 'canplay' as const : 'decode' as const
-
 export function mediaDimensions(media: MediaLike | null | undefined) {
   if (!media) return null
 

@@ -8,7 +8,6 @@ import {
   mediaPresentationUrl,
   mediaStatus,
   normalizeMediaLike,
-  readinessKindForMedia,
 } from './media'
 
 describe('canonical media model', () => {
@@ -39,8 +38,6 @@ describe('canonical media model', () => {
     expect(mediaPosterUrl(video)).toBe('/media/movie.jpg')
     expect(mediaDimensions(video)).toEqual({ width: 1080, height: 1920 })
     expect(isUsableMedia(video)).toBe(true)
-    expect(readinessKindForMedia(video)).toBe('canplay')
-    expect(readinessKindForMedia({ url: '/media/photo.jpg' })).toBe('decode')
     expect(isUsableMedia({ ...video, processingStatus: 'failed' })).toBe(true)
     expect(isUsableMedia({ ...video, processingStatus: 'pending' })).toBe(true)
     expect(hasPublishedVideoDerivatives(video)).toBe(true)

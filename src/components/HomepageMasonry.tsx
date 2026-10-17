@@ -39,6 +39,7 @@ import {
   type MediaLike,
 } from '@/lib/media'
 import { useDeferredVideoSource } from './useDeferredVideoSource'
+import { usePublicMediaReady } from './PublicMediaReadiness'
 
 const galleryMotion = {
   totalMs: 1500,
@@ -102,57 +103,14 @@ export function HomepageVideo({
 }: HomepageVideoProps) {
   const ref = useRef<HTMLVideoElement>(null)
   const src = mediaPresentationUrl(media) || undefined
-  const { attachedSrc, nearViewport } = useDeferredVideoSource(ref, src, preparing)
-  const [visible, setVisible] = useState(false)
-  const [pageVisible, setPageVisible] = useState(true)
-  const [reducedMotion, setReducedMotion] = useState(false)
+  const { attachedSrc, playing } = useDeferredVideoSource(ref, src, preparing, active)
 
   useEffect(() => {
     const video = ref.current
-    if (video && video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+    if (video && attachedSrc && video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
       onReady?.()
     }
   }, [onReady, attachedSrc])
-
-  useEffect(() => {
-    const video = ref.current
-    if (!video) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting && entry.intersectionRatio >= 0.1),
-      { threshold: [0, 0.1, 1] },
-    )
-    observer.observe(video)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const updateVisibility = () => setPageVisible(document.visibilityState === 'visible')
-    const updateMotion = () => setReducedMotion(motion.matches)
-
-    updateVisibility()
-    updateMotion()
-    document.addEventListener('visibilitychange', updateVisibility)
-    motion.addEventListener('change', updateMotion)
-    return () => {
-      document.removeEventListener('visibilitychange', updateVisibility)
-      motion.removeEventListener('change', updateMotion)
-    }
-  }, [])
-
-  useEffect(() => {
-    const video = ref.current
-    if (!video) return
-
-    if (active && visible && pageVisible && !reducedMotion) {
-      void video.play().catch(() => undefined)
-    } else {
-      video.pause()
-    }
-
-    return () => video.pause()
-  }, [active, attachedSrc, pageVisible, reducedMotion, visible])
 
   return (
     <video
@@ -161,10 +119,11 @@ export function HomepageVideo({
       aria-label={hidden ? undefined : alt}
       aria-hidden={hidden || undefined}
       className={className}
+      style={{ opacity: playing || preparing ? 1 : 0 }}
       loop
       muted
       playsInline
-      preload={preparing ? 'auto' : nearViewport ? 'metadata' : 'none'}
+      preload={attachedSrc ? preparing ? 'auto' : 'metadata' : 'none'}
       onCanPlay={onReady}
       onError={onError}
     >
@@ -212,6 +171,7 @@ function HomepageVisual({
             fill
             loading={eager || preparing ? 'eager' : 'lazy'}
             fetchPriority={eager ? 'high' : undefined}
+            data-public-critical={eager || undefined}
             sizes={homepageCardSizes}
             className="media-poster"
             onError={(event) => { event.currentTarget.style.display = 'none' }}
@@ -241,6 +201,7 @@ function HomepageVisual({
       fill
       loading={eager || preparing ? 'eager' : 'lazy'}
       fetchPriority={eager ? 'high' : undefined}
+      data-public-critical={eager || undefined}
       onLoad={onReady}
       onError={onError}
       sizes={homepageCardSizes}
@@ -255,6 +216,7 @@ type HomepageMasonryProps = {
 }
 
 export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
+  const mediaReady = usePublicMediaReady()
   const viewportRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const currentIndexesRef = useRef<Record<string, number>>({})
@@ -460,7 +422,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
         (ratio) => ratio >= 0.1,
       )
 
-      const eligible = (titleVisible || firstRowVisible) && pageVisible && !reduced
+      const eligible = mediaReady && (titleVisible || firstRowVisible) && pageVisible && !reduced
       eligibleRef.current = eligible
       if (!eligible) cancelWaveRef.current()
       setHeroEligible(eligible)
@@ -508,7 +470,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       document.removeEventListener('visibilitychange', handleVisibility)
       reducedMotion.removeEventListener('change', handleMotionPreference)
     }
-  }, [columnCount, topologyKey])
+  }, [columnCount, topologyKey, mediaReady])
 
   const settleActiveWave = useCallback((commitIncoming = true) => {
     generationRef.current += 1

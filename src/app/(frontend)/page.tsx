@@ -1,5 +1,6 @@
 import { HomepageMasonry } from '@/components/HomepageMasonry'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
+import { PublicMediaReadiness } from '@/components/PublicMediaReadiness'
 import { compactHomepage, composeHomepage } from '@/lib/homepage'
 import { getPortfolioData } from '@/lib/portfolio'
 import { awaitPublicRequest } from '@/lib/public-rendering'
@@ -16,7 +17,7 @@ export default async function HomePage() {
   const homepage = compactHomepage(composeHomepage(photoshoots, media))
 
   return (
-    <main className="site" id="top">
+    <PublicMediaReadiness routeKey="/"><main className="site" id="top">
       <PortfolioHeader instagram={instagram} />
 
       <section className="masonry-section" id="work">
@@ -50,6 +51,6 @@ export default async function HomePage() {
         <span>{locationLine}</span>
         <a href="#top">Back to top</a>
       </footer>
-    </main>
+    </main></PublicMediaReadiness>
   )
 }

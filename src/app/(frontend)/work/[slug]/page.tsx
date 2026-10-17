@@ -4,14 +4,14 @@ import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
-import { selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
+import { PublicMediaReadiness } from '@/components/PublicMediaReadiness'
+import { photoshootPresentationImage, selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import { awaitPublicRequest } from '@/lib/public-rendering'
 import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
   getSiteSettings,
   getPhotoshoots,
-  mediaUrl,
 } from '@/lib/portfolio'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -46,7 +46,7 @@ export default async function WorkPage({ params }: Props) {
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
 
   return (
-    <main className="photoshoot-page">
+    <PublicMediaReadiness routeKey={`/work/${slug}`}><main className="photoshoot-page">
       <PortfolioHeader instagram={instagram} />
 
       <section className="photoshoot-head">
@@ -62,7 +62,7 @@ export default async function WorkPage({ params }: Props) {
             <Visual
               media={image}
               alt={image.alt || `${photoshoot.title} image ${index + 1}`}
-              eager={candidates.has(mediaUrl(image) || '')}
+              eager={candidates.has(photoshootPresentationImage(image) || '')}
               sizes="(max-width: 700px) calc(50vw - 4px), (max-width: 1100px) calc((100vw - clamp(18px, 2.8vw, 46px) * 2 - clamp(12px, 1.5vw, 24px)) / 2), calc((100vw - clamp(18px, 2.8vw, 46px) * 2 - clamp(12px, 1.5vw, 24px) * 2) / 3)"
               variant={index + 1}
             />
@@ -86,6 +86,6 @@ export default async function WorkPage({ params }: Props) {
         <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
         <Link href="/#about">Profile</Link>
       </footer>
-    </main>
+    </main></PublicMediaReadiness>
   )
 }

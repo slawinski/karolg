@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render } from 'vitest-browser-react'
 import { act } from 'react'
 import { HomepageMasonry, HomepageVideo } from './HomepageMasonry'
+import { PublicMediaReadiness } from './PublicMediaReadiness'
 import type { HomepageMediaPool, HomepageMasonrySlot } from '@/lib/homepage'
 import '@/app/(frontend)/styles.css'
 
@@ -251,6 +252,29 @@ afterEach(async () => {
 })
 
 describe('Homepage browser lifecycle', () => {
+  it('holds current acquisition and incoming preparation behind initial image readiness', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockReturnValue(false)
+    await render(<PublicMediaReadiness routeKey="home"><div className="masonry-stage">
+      <h1 className="masonry-name">Carla</h1>
+      <HomepageMasonry pools={pools} slots={slots} />
+      <HomepageVideo active alt="Clip" className="clip" media={pools[0].media[1]} />
+    </div></PublicMediaReadiness>)
+    const video = document.querySelector('video')!
+    await emitIntersection(video, 1)
+    await emitIntersection(document.querySelector('.masonry-name')!, 1)
+    await advance(8000)
+    expect(video.hasAttribute('src')).toBe(false)
+    expect(incomingNodes()).toHaveLength(0)
+    await act(async () => document.querySelector('img[data-public-critical]')!.dispatchEvent(new Event('load')))
+    await advance(100)
+    expect(video.hasAttribute('src')).toBe(true)
+    await emitIntersection(document.querySelector('.masonry-name')!, 1)
+    await advance(5999)
+    expect(incomingNodes()).toHaveLength(0)
+    await advance(1)
+    expect(incomingNodes()).toHaveLength(1)
+  })
   it('carries replacement identities to images while bypassing legacy optimization', async () => {
     const pool = { ...imagePool, media: [
       { ...imagePool.media[0], processingRevision: 2 },
@@ -462,7 +486,7 @@ describe('Homepage browser lifecycle', () => {
     expect(video.preload).toBe('none')
     expect(video.hasAttribute('src')).toBe(false)
 
-    await emitNearIntersection(video)
+    await emitIntersection(video, 1)
     expect(video.preload).toBe('metadata')
     expect(video.getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
 
@@ -1220,7 +1244,7 @@ describe('Homepage browser lifecycle', () => {
     expect(videos.every((video) => !video.hasAttribute('src'))).toBe(true)
     expect(videos.map((video) => video.preload)).toEqual(['none', 'none'])
 
-    await emitNearIntersection(videos[0])
+    await emitIntersection(videos[0], 1)
     expect(videos[0].getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
     expect(videos[0].preload).toBe('metadata')
     expect(videos[1].hasAttribute('src')).toBe(false)

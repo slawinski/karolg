@@ -41,6 +41,8 @@ export function Visual({
         alt={mediaAlt(media, alt)}
         className={`visual-img visual-video ${className}`.trim()}
         media={normalizedMedia}
+        eager={eager}
+        sizes={sizes}
       />
     )
   }
@@ -53,6 +55,7 @@ export function Visual({
       fill
       loading={eager ? 'eager' : 'lazy'}
       fetchPriority={eager ? 'high' : undefined}
+      data-public-critical={eager || undefined}
       sizes={sizes}
       className={`visual-img ${className}`.trim()}
     />

@@ -594,3 +594,7 @@ video.gallery-static-image { pointer-events:none; }
     will-change:auto;
   }
 }
+.photoshoot-video-poster {
+  z-index: 1;
+  pointer-events: none;
+}

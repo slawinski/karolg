@@ -12,11 +12,12 @@ describe('Visual', () => {
       expect(render(revision)).not.toContain('/_next/image')
     }
   })
-  it('renders deferred video as semantic manual playback with a poster', () => {
+  it('renders silent control-free deferred video with a responsive poster', () => {
     const markup = renderToStaticMarkup(
       <Visual
         media={{
           kind: 'video',
+          processingRevision: 1,
           processingStatus: 'ready',
           playbackFilename: 'generated/1/r1/playback.mp4',
           playbackUrl: '/media/clip.mp4',
@@ -30,12 +31,14 @@ describe('Visual', () => {
     )
 
     expect(markup).toContain('<video')
-    expect(markup).toContain('controls=""')
+    expect(markup).not.toContain('controls=""')
+    expect(markup).toContain('muted=""')
     expect(markup).toContain('playsInline=""')
     expect(markup).toContain('preload="none"')
-    expect(markup).toContain('poster="/media/clip.jpg"')
+    expect(markup).not.toContain('poster="/media/clip.jpg"')
     expect(markup).not.toContain('media/clip.mp4')
-    expect(markup).not.toContain('<img')
+    expect(markup).toContain('<img')
+    expect(markup).toContain('sizes="100vw"')
   })
 
   it('uses the accessible fallback for unusable video', () => {

@@ -50,6 +50,12 @@ describe('media reprocess endpoint', () => {
 })
 
 describe('media metadata', () => {
+  it('keeps all allowed upload-file responses private and revalidating', () => {
+    if (!Media.upload || typeof Media.upload !== 'object') throw new Error('Missing uploads')
+    const headers = new Headers({ 'Cache-Control': 'public, max-age=3600' })
+    Media.upload.modifyResponseHeaders?.({ headers })
+    expect(headers.get('cache-control')).toBe('private, no-cache, max-age=0, must-revalidate')
+  })
   it('allows uploads without alt text and titles records by filename', () => {
     const altField = Media.fields.find(
       (field) => 'name' in field && field.name === 'alt',

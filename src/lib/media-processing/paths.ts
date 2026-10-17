@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { publishedDerivative } from '../media-revision'
 
 export const MEDIA_STATIC_DIR = path.resolve(
   /* turbopackIgnore: true */
@@ -52,19 +53,17 @@ export function validateOwnedDerivativePath(
   expectedKind?: DerivativeKind,
 ) {
   const normalized = normalizeRelativeMediaPath(value)
-  const match = normalized.match(
-    /^generated\/([1-9]\d*)\/r([1-9]\d*)\/(playback\.mp4|poster\.jpg)$/,
-  )
-  if (!match || Number(match[1]) !== mediaId) {
+  const published = publishedDerivative(normalized, mediaId)
+  if (!published) {
     throw new Error('Derivative is not owned by this media record')
   }
 
-  const kind = match[3] === 'playback.mp4' ? 'playback' : 'poster'
+  const { kind, revision } = published
   if (expectedKind && kind !== expectedKind) {
     throw new Error('Derivative kind does not match')
   }
 
-  return { relativePath: normalized, revision: Number(match[2]), kind }
+  return { relativePath: normalized, revision, kind }
 }
 
 export function resolveContainedMediaPath(

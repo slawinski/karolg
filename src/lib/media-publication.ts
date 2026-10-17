@@ -30,7 +30,7 @@ export function privateVideoOriginalHandler(
   { doc }: { doc: TypeWithID },
 ) {
   if (req.user || !isVideoDocument(doc)) return
-  return Response.json({ error: 'Not found' }, { status: 404 })
+  return Response.json({ error: 'Not found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } })
 }
 
 export function redactPrivateVideoOriginal<T extends Record<string, unknown>>(

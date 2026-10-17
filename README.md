@@ -41,6 +41,24 @@ Accepted videos are QuickTime/MOV, MP4/M4V, and WebM. The original upload is ret
 
 Generated files live under `media/generated/<media-id>/r<revision>/`. Runtime clients use controlled `GET`/`HEAD` endpoints at `/api/media/:id/playback` and `/api/media/:id/poster`; playback supports a single HTTP byte range. Static snapshots rewrite those generated filenames to `/media/...` and copy only referenced image originals and video derivatives. Video originals are never included in the public export.
 
+### Replacement and caching
+
+Image uploads and replacements advance a revision and public image URLs include
+`?v=<revision>`, even when the filename stays the same. Metadata-only edits do not
+change that identity. Versioned images use a seven-day optimizer minimum; legacy
+images without a positive safe-integer revision bypass optimization. Upload-file
+responses remain private and must revalidate, including authenticated originals.
+
+Video endpoint URLs identify the revision in the published filename, not the
+revision currently being processed. A matching `v` gets one-year immutable caching;
+an unversioned endpoint alias must revalidate. Invalid or retired revisions return
+non-cacheable errors rather than a newer revision's bytes. Superseded derivatives
+are removed after publication, so historical URLs are not an archive.
+
+Fresh runtime page requests read current CMS identities, including publication by
+the standalone worker. Reload or navigate to see replacements in an already-open
+document. Static Drop deployments still require a rebuild to publish CMS changes.
+
 The photoshoot page renders ready videos with controls. Homepage videos are muted, looping, and control-free during normal motion; they only play while current, at least 10% visible, and the document is visible. Reduced-motion mode disables gallery swaps, rail motion, and autoplay and exposes manual video controls. Video controls are never nested inside the photoshoot link.
 
 ## FFmpeg and workers

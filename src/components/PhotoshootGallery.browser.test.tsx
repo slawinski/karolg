@@ -32,7 +32,7 @@ it('retains the actual nine-slot regression and characterizes balanced columns b
   expect(rects).toHaveLength(9)
   expect(regressionMedia[5].filename).toBe('IMG_3912.JPG')
   expect(rects[5].x).toBe(199)
-  // The supplied older Chromium observation was 377.039; Chrome 155 uses
+  // The supplied older Chromium observation was 377.039; Chromium 156 uses
   // a 3px rather than 4px inline baseline contribution (376.031 here).
   expect(Math.abs(rects[5].y - 377.039)).toBeLessThan(2)
   expect(rects[5].width).toBe(191)
@@ -92,7 +92,7 @@ it('covers actual largest clipped stills with the same bounded responsive identi
         const max = Math.max(0, ...areas)
         const winners = areas.flatMap((area, index) => area > 0 && Math.abs(area - max) < 1 ? [index] : [])
         expect(winners.length === 0 || winners.some((index) => selected.has(media[index].url!)),
-          JSON.stringify({ width, height, title, count: media.length, winners, selected: [...selected], areas })).toBe(true)
+          JSON.stringify({ width, height, title, count: media.length, winners, selected: [...selected], areas, rects })).toBe(true)
         await cleanup()
       }
     }

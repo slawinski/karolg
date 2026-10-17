@@ -2,7 +2,7 @@ import { inferMediaKind, isUsableMedia, mediaPresentationUrl, type MediaLike } f
 
 // These mirror photoshoot-gallery in styles.css, not intrinsic media ratios.
 // Browser characterization: inline-block baseline descent adds 3px after each
-// figure in Chrome 155 (older Chromium adds ~4px). Subpixel rounding is immaterial
+// figure in Chromium 156 (older Chromium adds ~4px). Subpixel rounding is immaterial
 // to scoring, but the extra line-box space matters to column breaks and clipping.
 const ratios = [3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3]
 const widths = [390, 700, 701, 900, 1100, 1101, 1440, 1920]

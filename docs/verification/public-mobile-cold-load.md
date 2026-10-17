@@ -56,3 +56,31 @@ two-video gallery; there is no long-title/empty real page.
   Independent requests and every measured run agree. U5 will inspect this.
 - No evidence yet attributes the live timeout to a proxy, host, or leaked admin
   bundle. Public-origin causes remain unknown pending equivalent live evidence.
+
+## U5 — attributed delivery correction
+
+The installed Next metadata matcher anchors robots at app root; unlike sitemap,
+it does not accept the route-group prefix. Installed `dist/docs/.../robots.md`
+and Context7 both require root placement. Moving the unchanged static handler
+to `src/app/robots.ts` makes the production route table include `/robots.txt`.
+Before: 404. After: 200, expected allow/disallow/sitemap, TTFB 20.6ms,
+total 21.2ms on first independent local request. No Payload dependency added.
+
+Live read-only check on 2026-10-18: `https://carlagorecka.com/` returned 200;
+DNS 5.2ms, connect 40.7ms, TLS 95.4ms, TTFB 272.4ms, total 367.0ms,
+no redirect. Live `/robots.txt` also returned **404**, not a reproduced timeout:
+DNS 1.8ms, connect 37.7ms, TLS 90.6ms, TTFB 138.4ms, total 139.0ms.
+This validates the placement defect across environments but does not establish
+the cause of the reported intermittent timeout. The local fix is not deployed.
+
+No format/quality, persistent cache, hosting, dependency or speculative bundle
+change was made. Baseline resources identify public framework/application chunks;
+no measured evidence establishes an unnecessary public dependency. Legacy image
+originals are expensive, but changing their mutable-cache contract is not allowed.
+
+During U6, shift source attribution corrected the initial hypothesis: a measured
+homepage shift at 11.53s came from a lower `gallery-static-image` moving upward
+when the first-row swap committed a different aspect ratio. A regression test
+failed with a frame changing from 114.19 to 360.88px high. Slot geometry is now
+reserved from its opening media, retaining object-fit crops and the composition
+instead of changing the rail topology speculatively.

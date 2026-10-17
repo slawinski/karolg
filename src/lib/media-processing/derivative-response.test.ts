@@ -46,6 +46,27 @@ describe('anonymous generated derivative responses', () => {
     }
   })
 
+  it.each(['pending', 'processing', 'failed'])('serves matching retained revisions while %s', async (processingStatus) => {
+    document.processingStatus = processingStatus
+    document.processingRevision = 3
+    const response = await serveMediaDerivative({ payload, request: new Request('http://test/api/media/7/playback?v=2'), rawId: '7', kind: 'playback', mediaRoot })
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('public, max-age=31536000, immutable')
+    expect(await response.text()).toBe('0123456789')
+  })
+
+  it.each([
+    ['generated/8/r2/playback.mp4', 2],
+    ['generated/7/r2/poster.jpg', 2],
+    ['generated/7/r9/playback.mp4', 9],
+  ])('rejects cross-owned, wrong-kind, or unavailable path %s', async (playbackFilename, revision) => {
+    document.playbackFilename = playbackFilename
+    const response = await serveMediaDerivative({ payload, request: new Request(`http://test/api/media/7/playback?v=${revision}`), rawId: '7', kind: 'playback', mediaRoot })
+    expect(response.status).toBe(404)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(await response.text()).not.toContain(mediaRoot)
+  })
+
   it.each(['v=1', 'v=3', 'v=2&v=2', 'v=', 'v=02', 'v=-2', 'v=2.0', 'v=9007199254740992', 'v=../r2'])('rejects invalid identity %s without caching errors', async (query) => {
     const response = await serveMediaDerivative({ payload, request: new Request(`http://test/api/media/7/playback?${query}`), rawId: '7', kind: 'playback', mediaRoot })
     expect(response.status).toBe(404)

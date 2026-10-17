@@ -45,6 +45,19 @@ beforeEach(() => {
 })
 
 describe('public portfolio photographer attribution', () => {
+  it('normalizes retained video identities and redacts expanded hero originals', async () => {
+    const video = { id: 7, kind: 'video', filename: 'private.mov', url: '/api/media/file/private.mov',
+      processingRevision: 3, processingStatus: 'failed',
+      playbackFilename: 'generated/7/r2/playback.mp4', playbackUrl: '/api/media/7/playback',
+      posterFilename: 'generated/7/r2/poster.jpg', posterUrl: '/api/media/7/poster', photoshoot }
+    payload.findGlobal.mockResolvedValue({ heroMedia: video })
+    payload.find.mockResolvedValue({ docs: [video], hasNextPage: false })
+    const expected = { url: null, filename: null, playbackUrl: '/api/media/7/playback?v=2', posterUrl: '/api/media/7/poster?v=2' }
+    const result = await getPortfolioData()
+    expect(result.site.heroMedia).toMatchObject(expected)
+    expect(result.media[0]).toMatchObject(expected)
+    expect((await getPhotoshootMedia(4))[0]).toMatchObject(expected)
+  })
   it('normalizes hero and collection identities through both loaders', async () => {
     payload.findGlobal.mockResolvedValue({ heroMedia: media })
     const result = await getPortfolioData()

@@ -1,6 +1,6 @@
 import { HomepageMasonry } from '@/components/HomepageMasonry'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
-import { composeHomepage } from '@/lib/homepage'
+import { compactHomepage, composeHomepage } from '@/lib/homepage'
 import { getPortfolioData } from '@/lib/portfolio'
 import { awaitPublicRequest } from '@/lib/public-rendering'
 
@@ -13,7 +13,7 @@ export default async function HomePage() {
     .map((location) => location.label?.trim())
     .filter((location): location is string => Boolean(location))
   const locationLine = locations.join(' / ') || 'WARSAW / WORLDWIDE'
-  const homepage = composeHomepage(photoshoots, media)
+  const homepage = compactHomepage(composeHomepage(photoshoots, media))
 
   return (
     <main className="site" id="top">

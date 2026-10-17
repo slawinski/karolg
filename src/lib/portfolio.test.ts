@@ -12,6 +12,8 @@ import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
   getPortfolioData,
+  getSiteSettings,
+  getPhotoshoots,
 } from './portfolio'
 
 const photographer = { id: 8, displayName: 'A. Camera' }
@@ -45,6 +47,12 @@ beforeEach(() => {
 })
 
 describe('public portfolio photographer attribution', () => {
+  it('reads settings and project listings without loading unrelated media', async () => {
+    expect(await getSiteSettings()).toMatchObject({ name: 'Carla Gorecka' })
+    expect(payload.find).not.toHaveBeenCalled()
+    expect(await getPhotoshoots()).toMatchObject([{ slug: 'motion' }])
+    expect(payload.find.mock.calls.every(([query]) => query.collection === 'projects')).toBe(true)
+  })
   it('normalizes retained video identities and redacts expanded hero originals', async () => {
     const video = { id: 7, kind: 'video', filename: 'private.mov', url: '/api/media/file/private.mov',
       processingRevision: 3, processingStatus: 'failed',

@@ -26,6 +26,18 @@ const shoot = (id: number, title = `Shoot ${id}`): PhotoshootLike => ({
   slug: `shoot-${id}`,
 })
 
+it('compacts normalized pools without losing members, dimensions or revision identities', () => {
+  const composition = composeHomepage([shoot(1)], [image(1, shoot(1), {
+    processingRevision: 2, caption: 'unused', processingError: 'unused', filesize: 999, width: 1200, height: 1600,
+  })], () => 0)
+  const compact = compactHomepage(composition)
+  expect(compact.slots).toEqual(composition.slots)
+  expect(compact.pools[0].media).toHaveLength(1)
+  expect(compact.pools[0].media[0]).toMatchObject({ url: '/media/1.jpg?v=2', width: 1200, height: 1600 })
+  expect(compact.pools[0].media[0]).not.toHaveProperty('processingError')
+  expect(JSON.stringify(compact).length).toBeLessThan(JSON.stringify(composition).length)
+})
+
 const image = (
   id: number,
   photoshoot: PhotoshootLike,
@@ -542,3 +554,4 @@ describe('transition colors', () => {
     expect(normalizeStoredTransitionColor(null)).toBeNull()
   })
 })
+import { compactHomepage } from './homepage'

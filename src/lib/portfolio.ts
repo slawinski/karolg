@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import {
   isUsableMedia,
   mediaPresentationUrl,
@@ -67,7 +68,20 @@ async function getPayloadClient() {
   return getPayload({ config: configPromise })
 }
 
-export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike | null> {
+const projectSelect = { title: true, slug: true, excerpt: true, year: true, order: true, photographers: true } as const
+const publicPopulate = {
+  projects: projectSelect,
+  photographers: { displayName: true },
+} as const
+const mediaSelect = {
+  url: true, alt: true, caption: true, transitionColor: true, filename: true,
+  mimeType: true, width: true, height: true, photoshoot: true, kind: true,
+  processingStatus: true, processingRevision: true, videoWidth: true, videoHeight: true,
+  playbackFilename: true, playbackUrl: true, posterFilename: true, posterUrl: true,
+  posterWidth: true, posterHeight: true,
+} as const
+
+export const getPhotoshootBySlug = cache(async (slug: string): Promise<PhotoshootLike | null> => {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
@@ -75,6 +89,8 @@ export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike 
       where: { slug: { equals: slug } },
       depth: 1,
       limit: 1,
+      select: projectSelect,
+      populate: publicPopulate,
     })
 
     const photoshoot = normalizePhotoshootReference(result.docs[0])
@@ -83,6 +99,25 @@ export async function getPhotoshootBySlug(slug: string): Promise<PhotoshootLike 
     console.error(`Could not load photoshoot slug ${JSON.stringify(slug)}`, error)
     throw error
   }
+})
+
+export async function getSiteSettings(): Promise<SiteLike> {
+  const payload = await getPayloadClient()
+  const site = await payload.findGlobal({ slug: 'site-settings', depth: 0,
+    select: { name: true, roles: true, heroEyebrow: true, heroHeadline: true,
+      handwrittenLine: true, intro: true, locations: true, profileFacts: true,
+      instagram: true, email: true, seoDescription: true } })
+  return { ...fallbackSite, ...(site as unknown as SiteLike) }
+}
+
+export async function getPhotoshoots(): Promise<PhotoshootLike[]> {
+  const payload = await getPayloadClient()
+  const docs = await loadAllDocuments((pagination) => payload.find({
+    collection: 'projects', depth: 1, ...pagination, sort: 'order',
+    select: projectSelect, populate: publicPopulate,
+  }))
+  return docs.map(normalizePhotoshootReference).filter((doc): doc is PhotoshootLike =>
+    Boolean(doc) && typeof doc === 'object')
 }
 
 export async function getPhotoshootMedia(
@@ -118,6 +153,8 @@ export async function getPortfolioData() {
         depth: 1,
         ...pagination,
         sort: 'order',
+        select: projectSelect,
+        populate: publicPopulate,
       })),
       loadAllDocuments((pagination) => payload.find({
         collection: 'media',
@@ -125,6 +162,8 @@ export async function getPortfolioData() {
         ...pagination,
         sort: 'filename',
         overrideAccess: false,
+        select: mediaSelect,
+        populate: publicPopulate,
       })),
     ])
 

@@ -9,7 +9,8 @@ import { awaitPublicRequest } from '@/lib/public-rendering'
 import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
-  getPortfolioData,
+  getSiteSettings,
+  getPhotoshoots,
   mediaUrl,
 } from '@/lib/portfolio'
 
@@ -18,7 +19,7 @@ type Props = { params: Promise<{ slug: string }> }
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const { photoshoots } = await getPortfolioData()
+  const photoshoots = await getPhotoshoots()
   return photoshoots.map((photoshoot) => ({ slug: photoshoot.slug }))
 }
 
@@ -34,9 +35,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WorkPage({ params }: Props) {
   await awaitPublicRequest()
   const { slug } = await params
-  const [photoshoot, { site }] = await Promise.all([
+  const [photoshoot, site] = await Promise.all([
     getPhotoshootBySlug(slug),
-    getPortfolioData(),
+    getSiteSettings(),
   ])
   if (!photoshoot?.id) notFound()
 

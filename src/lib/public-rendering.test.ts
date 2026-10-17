@@ -4,6 +4,8 @@ const mocks = vi.hoisted(() => ({ connection: vi.fn(), portfolio: vi.fn(), photo
 vi.mock('next/server', () => ({ connection: mocks.connection }))
 vi.mock('./portfolio', () => ({
   getPortfolioData: mocks.portfolio,
+  getSiteSettings: async () => ({}),
+  getPhotoshoots: async () => [],
   getPhotoshootBySlug: mocks.photoshoot,
   getPhotoshootMedia: mocks.media,
   mediaUrl: () => null,

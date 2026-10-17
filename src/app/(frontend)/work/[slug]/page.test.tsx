@@ -10,7 +10,7 @@ const versionedRegressionMedia = regressionMedia.map((media) => ({ ...media, pro
 vi.mock('@/lib/portfolio', async (importOriginal) => ({
   ...await importOriginal<typeof import('@/lib/portfolio')>(),
   getPhotoshootBySlug: vi.fn().mockResolvedValue({ id: 1, title: 'Portraits' }),
-  getPortfolioData: vi.fn().mockResolvedValue({ site: {} }),
+  getSiteSettings: vi.fn().mockResolvedValue({}),
   getPhotoshootMedia: vi.fn().mockResolvedValue([
     { id: 1, kind: 'video', processingStatus: 'ready', playbackFilename: 'clip.mp4',
       playbackUrl: '/media/clip.mp4', posterFilename: 'poster.jpg', posterUrl: '/media/poster.jpg' },

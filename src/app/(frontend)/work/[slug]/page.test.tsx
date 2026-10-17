@@ -1,0 +1,67 @@
+import { renderToStaticMarkup } from 'react-dom/server'
+import { describe, expect, it, vi } from 'vitest'
+import WorkPage from './page'
+import { getPhotoshootMedia } from '@/lib/portfolio'
+import { regressionMedia } from '@/test/fixtures/photoshoot-candidates'
+
+vi.mock('@/lib/portfolio', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/portfolio')>(),
+  getPhotoshootBySlug: vi.fn().mockResolvedValue({ id: 1, title: 'Portraits' }),
+  getPortfolioData: vi.fn().mockResolvedValue({ site: {} }),
+  getPhotoshootMedia: vi.fn().mockResolvedValue([
+    { id: 1, kind: 'video', processingStatus: 'ready', playbackFilename: 'clip.mp4',
+      playbackUrl: '/media/clip.mp4', posterFilename: 'poster.jpg', posterUrl: '/media/poster.jpg' },
+    { id: 2, kind: 'image', url: '/media/first.jpg', width: 1000, height: 1500 },
+    { id: 3, kind: 'image', url: '/media/later.jpg', width: 1000, height: 1500 },
+  ]),
+}))
+
+describe('photoshoot image delivery', () => {
+  it('selects visible stills after a video without changing video delivery', async () => {
+    const markup = renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'portraits' }) }))
+    const images = markup.match(/<img\b[^>]*>/g)!
+    expect(images).toHaveLength(2)
+    expect(images[0]).toContain('loading="eager"')
+    expect(images[0]).toContain('fetchPriority="high"')
+    expect(images[1]).toContain('loading="lazy"')
+    expect(images[1]).not.toContain('fetchPriority="high"')
+    expect(images[0]).toContain('(max-width: 700px) calc(50vw - 4px)')
+    expect(markup.match(/<link\b[^>]*as="image"[^>]*>/g) || []).toHaveLength(1)
+    const video = markup.match(/<video\b[^>]*>/)![0]
+    expect(video).toContain('preload="metadata"')
+    expect(video).toContain('controls=""')
+    expect(video).toContain('playsInline=""')
+    expect(video).toContain('poster="/media/poster.jpg"')
+    expect(video).not.toContain('autoPlay')
+  })
+
+  it('delivers the retained later mobile LCP in initial SSR and bounds the entire hint/image union', async () => {
+    vi.mocked(getPhotoshootMedia).mockResolvedValueOnce(regressionMedia)
+    const markup = renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'a' }) }))
+    const images = markup.match(/<img\b[^>]*>/g)!
+    const hints = markup.match(/<link\b[^>]*as="image"[^>]*>/g) || []
+    expect(images).toHaveLength(9)
+    expect(images[5]).toContain('loading="eager"')
+    expect(images[5]).toContain('fetchPriority="high"')
+    const urgent = images.filter((image) => image.includes('loading="eager"'))
+    expect(urgent.length).toBeLessThanOrEqual(4)
+    expect(urgent.length).toBeGreaterThan(1)
+    expect(hints).toHaveLength(urgent.length)
+    const identity = (tag: string) => decodeURIComponent(tag.match(/url=([^&]+)/)![1])
+    expect(new Set([...urgent, ...hints].map(identity)).size).toBeLessThanOrEqual(4)
+    hints.forEach((hint) => {
+      expect(urgent.map(identity)).toContain(identity(hint))
+      expect(hint).toContain('imageSrcSet=')
+      expect(hint).toContain('imageSizes=')
+    })
+    images.forEach((image) => {
+      expect(image).toContain('(max-width: 700px) calc(50vw - 4px)')
+      if (!urgent.includes(image)) {
+        expect(image).toContain('loading="lazy"')
+        expect(image).not.toContain('fetchPriority="high"')
+      }
+    })
+    vi.mocked(getPhotoshootMedia).mockResolvedValueOnce(regressionMedia)
+    expect(renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'a' }) }))).toBe(markup)
+  })
+})

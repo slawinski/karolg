@@ -249,6 +249,25 @@ describe('Homepage browser lifecycle', () => {
       .toBe(titleFont)
   })
 
+  it('loads only two stable opening slots eagerly with high priority and keeps later cards lazy', async () => {
+    await renderEligible([imagePool], Array.from({ length: 10 }, (_, index) => ({
+      id: `loading-slot-${index}`, poolId: imagePool.id, initialMediaIndex: index % 6,
+    })))
+
+    const images = Array.from(document.querySelectorAll<HTMLImageElement>('.masonry-card img'))
+    expect(images).toHaveLength(10)
+    expect(images.filter((image) => image.loading === 'eager')).toHaveLength(2)
+    expect(images.filter((image) => image.fetchPriority === 'high')).toHaveLength(2)
+    images.forEach((image) => {
+      const slot = image.closest('.masonry-card')!.getAttribute('data-slot')
+      const opening = slot === 'loading-slot-0' || slot === 'loading-slot-1'
+      expect(image.loading).toBe(opening ? 'eager' : 'lazy')
+      expect(image.sizes).toContain('(max-width: 700px) calc(50vw - 4px)')
+      expect(image.sizes).toContain('150vw')
+      expect(image.sizes).toContain('125vw')
+    })
+  })
+
   it('uses intrinsic frame dimensions and contains the complete image', async () => {
     const dimensions = [
       { width: 1600, height: 900 },
@@ -710,7 +729,8 @@ describe('Homepage browser lifecycle', () => {
     await renderEligible([imagePool], slots)
     expectIdleCards()
     const current = document.querySelector<HTMLImageElement>('.gallery-stage__outgoing')!
-    expect(current.getAttribute('loading')).not.toBe('eager')
+    expect(current.getAttribute('loading')).toBe('eager')
+    expect(current.fetchPriority).toBe('high')
     await advance(6_000)
     const incoming = incomingNodes()[0] as HTMLImageElement
     expect(incoming.isConnected).toBe(true)
@@ -728,7 +748,7 @@ describe('Homepage browser lifecycle', () => {
     expect(document.querySelector('img.gallery-stage__outgoing')?.getAttribute('src'))
       .toBe('/__controlled__/image-1.jpg')
     expect(document.querySelector('img.gallery-stage__outgoing')?.getAttribute('loading'))
-      .not.toBe('eager')
+      .toBe('eager')
     expect(detachedImage).not.toHaveBeenCalled()
     expect(preloadSources).toEqual([])
   })

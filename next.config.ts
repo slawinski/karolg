@@ -5,15 +5,12 @@ import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
-const isStaticExport = process.env.STATIC_EXPORT === '1'
 
 const nextConfig: NextConfig = {
-  ...(isStaticExport ? { output: 'export' as const, trailingSlash: true } : {}),
   images: {
     minimumCacheTTL: 604800,
     formats: ['image/avif', 'image/webp'],
     localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/media/**' }],
-    ...(isStaticExport ? { unoptimized: true } : {}),
   },
   poweredByHeader: false,
   webpack: (webpackConfig) => {
@@ -29,6 +26,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default isStaticExport
-  ? nextConfig
-  : withPayload(nextConfig, { devBundleServerPackages: false })
+export default withPayload(nextConfig, { devBundleServerPackages: false })

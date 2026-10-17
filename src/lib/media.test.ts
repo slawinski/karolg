@@ -72,7 +72,7 @@ describe('canonical media model', () => {
     })).toBe(false)
   })
 
-  it('normalizes photoshoot photographers and static derivative URLs', () => {
+  it('normalizes photoshoot photographers without export options', () => {
     const normalized = normalizeMediaLike(
       {
         id: 4,
@@ -93,20 +93,32 @@ describe('canonical media model', () => {
         posterFilename: 'generated/4/r2/poster.jpg',
         processingStatus: 'ready',
       },
-      { urlForFilename: (filename) => `/media/${filename}` },
     )
 
     expect(normalized).toMatchObject({
       kind: 'video',
       filename: null,
       url: null,
-      playbackUrl: '/media/generated/4/r2/playback.mp4',
-      posterUrl: '/media/generated/4/r2/poster.jpg',
       photoshoot: {
         id: 7,
         photographers: [{ id: 1, displayName: '  Alex Smith  ' }, 2],
       },
     })
     expect(normalized).not.toHaveProperty('photographers')
+  })
+
+  it('returns stored snapshot-style derivative URLs unchanged', () => {
+    const video = {
+      id: 4,
+      kind: 'video' as const,
+      playbackFilename: 'generated/4/r2/playback.mp4',
+      playbackUrl: '/media/generated/4/r2/playback.mp4',
+      posterFilename: 'generated/4/r2/poster.jpg',
+      posterUrl: '/media/generated/4/r2/poster.jpg',
+      processingStatus: 'ready' as const,
+    }
+
+    expect(mediaPresentationUrl(video)).toBe('/media/generated/4/r2/playback.mp4')
+    expect(mediaPosterUrl(video)).toBe('/media/generated/4/r2/poster.jpg')
   })
 })

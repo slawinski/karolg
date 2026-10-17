@@ -120,7 +120,7 @@ function derivativeUrl(media: MediaLike | null | undefined, kind: 'poster' | 'pl
   const url = stringValue(kind === 'poster' ? media?.posterUrl : media?.playbackUrl)
   const filename = kind === 'poster' ? media?.posterFilename : media?.playbackFilename
   const published = filename ? publishedDerivative(filename, media?.id) : null
-  // Snapshot URLs already address the immutable revision directory.
+  // Stored URLs already addressing the immutable revision directory are returned as-is.
   if (!published || published.kind !== kind || url?.split(/[?#]/)[0].endsWith(`/media/${filename}`)) return url
   return versionMediaURL(url, published.revision)
 }
@@ -168,33 +168,24 @@ export function mediaDimensions(media: MediaLike | null | undefined) {
   return width && height ? { width, height } : null
 }
 
-type NormalizeMediaOptions = {
-  normalizePhotoshoot?: (value: unknown) => MediaLike['photoshoot']
-  urlForFilename?: (filename: string) => string
-}
-
 const normalizedStoredColor = (value: unknown) => {
   const color = stringValue(value)?.toLowerCase()
   return color && /^#[0-9a-f]{6}$/.test(color) ? color : null
 }
 
-export function normalizeMediaLike(
-  value: unknown,
-  options: NormalizeMediaOptions = {},
-): MediaLike | null {
+export function normalizeMediaLike(value: unknown): MediaLike | null {
   const doc = objectValue(value)
   if (!doc) return null
 
   const filename = stringValue(doc.filename)
   const playbackFilename = stringValue(doc.playbackFilename)
   const posterFilename = stringValue(doc.posterFilename)
-  const urlForFilename = options.urlForFilename
   const media: MediaLike = {
     id:
       typeof doc.id === 'string' || typeof doc.id === 'number'
         ? doc.id
         : undefined,
-    url: filename && urlForFilename ? urlForFilename(filename) : stringValue(doc.url),
+    url: stringValue(doc.url),
     alt: stringValue(doc.alt),
     caption: stringValue(doc.caption),
     transitionColor: normalizedStoredColor(doc.transitionColor),
@@ -203,9 +194,7 @@ export function normalizeMediaLike(
     filesize: numberValue(doc.filesize),
     width: numberValue(doc.width),
     height: numberValue(doc.height),
-    photoshoot: options.normalizePhotoshoot
-      ? options.normalizePhotoshoot(doc.photoshoot)
-      : normalizePhotoshootReference(doc.photoshoot),
+    photoshoot: normalizePhotoshootReference(doc.photoshoot),
     kind: doc.kind === 'video' || doc.kind === 'image' ? doc.kind : null,
     processingStatus:
       doc.processingStatus === 'pending' ||
@@ -220,17 +209,11 @@ export function normalizeMediaLike(
     videoWidth: numberValue(doc.videoWidth),
     videoHeight: numberValue(doc.videoHeight),
     playbackFilename,
-    playbackUrl:
-      playbackFilename && urlForFilename
-        ? urlForFilename(playbackFilename)
-        : stringValue(doc.playbackUrl),
+    playbackUrl: stringValue(doc.playbackUrl),
     playbackMimeType: stringValue(doc.playbackMimeType),
     playbackFilesize: numberValue(doc.playbackFilesize),
     posterFilename,
-    posterUrl:
-      posterFilename && urlForFilename
-        ? urlForFilename(posterFilename)
-        : stringValue(doc.posterUrl),
+    posterUrl: stringValue(doc.posterUrl),
     posterMimeType: stringValue(doc.posterMimeType),
     posterWidth: numberValue(doc.posterWidth),
     posterHeight: numberValue(doc.posterHeight),

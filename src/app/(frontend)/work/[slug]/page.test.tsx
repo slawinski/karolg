@@ -4,6 +4,9 @@ import WorkPage from './page'
 import { getPhotoshootMedia } from '@/lib/portfolio'
 import { regressionMedia } from '@/test/fixtures/photoshoot-candidates'
 
+vi.mock('next/server', () => ({ connection: async () => {} }))
+const versionedRegressionMedia = regressionMedia.map((media) => ({ ...media, processingRevision: 1 }))
+
 vi.mock('@/lib/portfolio', async (importOriginal) => ({
   ...await importOriginal<typeof import('@/lib/portfolio')>(),
   getPhotoshootBySlug: vi.fn().mockResolvedValue({ id: 1, title: 'Portraits' }),
@@ -11,8 +14,8 @@ vi.mock('@/lib/portfolio', async (importOriginal) => ({
   getPhotoshootMedia: vi.fn().mockResolvedValue([
     { id: 1, kind: 'video', processingStatus: 'ready', playbackFilename: 'clip.mp4',
       playbackUrl: '/media/clip.mp4', posterFilename: 'poster.jpg', posterUrl: '/media/poster.jpg' },
-    { id: 2, kind: 'image', url: '/media/first.jpg', width: 1000, height: 1500 },
-    { id: 3, kind: 'image', url: '/media/later.jpg', width: 1000, height: 1500 },
+    { id: 2, kind: 'image', url: '/media/first.jpg', processingRevision: 1, width: 1000, height: 1500 },
+    { id: 3, kind: 'image', url: '/media/later.jpg', processingRevision: 1, width: 1000, height: 1500 },
   ]),
 }))
 
@@ -36,7 +39,7 @@ describe('photoshoot image delivery', () => {
   })
 
   it('delivers the retained later mobile LCP in initial SSR and bounds the entire hint/image union', async () => {
-    vi.mocked(getPhotoshootMedia).mockResolvedValueOnce(regressionMedia)
+    vi.mocked(getPhotoshootMedia).mockResolvedValueOnce(versionedRegressionMedia)
     const markup = renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'a' }) }))
     const images = markup.match(/<img\b[^>]*>/g)!
     const hints = markup.match(/<link\b[^>]*as="image"[^>]*>/g) || []
@@ -61,7 +64,7 @@ describe('photoshoot image delivery', () => {
         expect(image).not.toContain('fetchPriority="high"')
       }
     })
-    vi.mocked(getPhotoshootMedia).mockResolvedValueOnce(regressionMedia)
+    vi.mocked(getPhotoshootMedia).mockResolvedValueOnce(versionedRegressionMedia)
     expect(renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'a' }) }))).toBe(markup)
   })
 })

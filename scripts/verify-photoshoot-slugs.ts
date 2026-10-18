@@ -56,9 +56,11 @@ try {
     if (status === 200) assert(html.includes('<h1>Slug regression fixture</h1>'))
     console.log(`PASS /work/${slug}: ${status}`)
   }
+  await expectPage('original-slug', 200)
   await payload.update({ collection: 'projects', id: photoshoot.id, data: { slug: 'renamed-after-build' } })
   await expectPage('renamed-after-build', 200)
   await expectPage('original-slug', 404)
+  await expectPage('created-after-build', 404)
   await payload.create({ collection: 'projects', data: { title: 'Slug regression fixture', slug: 'created-after-build' } })
   await expectPage('created-after-build', 200)
   await expectPage('does-not-exist', 404)

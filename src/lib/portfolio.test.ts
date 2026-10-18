@@ -12,6 +12,8 @@ import {
   getPhotoshootBySlug,
   getPhotoshootMedia,
   getPortfolioData,
+  getSiteSettings,
+  getPhotoshoots,
 } from './portfolio'
 
 const photographer = { id: 8, displayName: 'A. Camera' }
@@ -45,6 +47,25 @@ beforeEach(() => {
 })
 
 describe('public portfolio photographer attribution', () => {
+  it('retains paginated media and propagates missing-slug and read failures', async () => {
+    payload.find.mockImplementation(async ({ collection, pagination }) => ({
+      docs: collection === 'projects' ? [photoshoot] : (pagination === false ? [1, 2] : [1])
+        .map((id) => ({ ...media, id, filename: `page-${id}.jpg` })),
+    }))
+    expect((await getPortfolioData()).media.map((item) => item.id)).toEqual([1, 2])
+    payload.find.mockResolvedValueOnce({ docs: [] })
+    expect(await getPhotoshootBySlug('missing')).toBeNull()
+    payload.find.mockRejectedValueOnce(new Error('database unavailable'))
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await expect(getPhotoshootBySlug('broken')).rejects.toThrow('database unavailable')
+    log.mockRestore()
+  })
+  it('reads settings and project listings without loading unrelated media', async () => {
+    expect(await getSiteSettings()).toMatchObject({ name: 'Carla Gorecka' })
+    expect(payload.find).not.toHaveBeenCalled()
+    expect(await getPhotoshoots()).toMatchObject([{ slug: 'motion' }])
+    expect(payload.find.mock.calls.every(([query]) => query.collection === 'projects')).toBe(true)
+  })
   it('normalizes retained video identities and redacts expanded hero originals', async () => {
     const video = { id: 7, kind: 'video', filename: 'private.mov', url: '/api/media/file/private.mov',
       processingRevision: 3, processingStatus: 'failed',

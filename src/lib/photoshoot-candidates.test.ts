@@ -22,7 +22,7 @@ describe('photoshoot candidate identities', () => {
     expect([...selected].every((url) => media.some((item) => item.url === url))).toBe(true)
   })
 
-  it('keeps videos in the ratio cycle without spending still slots on them or unusable placeholders', () => {
+  it('shares the identity budget between stills and video posters, excluding playback and placeholders', () => {
     const media = controlledMedia(9)
     media[0] = controlledVideo
     media[3] = { ...controlledVideo, id: 'second-video' }
@@ -30,13 +30,14 @@ describe('photoshoot candidate identities', () => {
     const selected = selectPhotoshootCandidates(media)
     expect(selected.size).toBeLessThanOrEqual(4)
     expect(selected.has(controlledVideo.playbackUrl!)).toBe(false)
-    expect([...selected].every((url) => media.some((item) => item.kind === 'image' && item.url === url))).toBe(true)
+    expect(selected.has(controlledVideo.posterUrl!)).toBe(true)
+    expect([...selected].every((url) => media.some((item) => item.url === url || item.posterUrl === url))).toBe(true)
     expect(selected).not.toEqual(selectPhotoshootCandidates(media.filter((item) => item.kind === 'image')))
   })
 
   it('does not exhaust the budget arbitrarily for empty, video-only or short input', () => {
     expect(selectPhotoshootCandidates([]).size).toBe(0)
-    expect(selectPhotoshootCandidates([controlledVideo]).size).toBe(0)
+    expect([...selectPhotoshootCandidates([controlledVideo])]).toEqual([controlledVideo.posterUrl])
     expect([...selectPhotoshootCandidates(controlledMedia(1))]).toEqual(['/__controlled__/still-0.jpg'])
     expect(selectPhotoshootCandidates(controlledMedia(2)).size).toBeLessThanOrEqual(2)
   })

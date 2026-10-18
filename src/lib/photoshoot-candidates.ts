@@ -1,4 +1,7 @@
-import { inferMediaKind, isUsableMedia, mediaPresentationUrl, type MediaLike } from './media'
+import { inferMediaKind, isUsableMedia, mediaPresentationUrl, mediaPosterUrl, type MediaLike } from './media'
+
+export const photoshootPresentationImage = (media: MediaLike) =>
+  isUsableMedia(media) ? inferMediaKind(media) === 'video' ? mediaPosterUrl(media) : mediaPresentationUrl(media) : null
 
 // These mirror photoshoot-gallery in styles.css, not intrinsic media ratios.
 // Browser characterization: inline-block baseline descent adds 3px after each
@@ -46,8 +49,7 @@ function positions(count: number, width: number) {
  * scenarios, then allocates the FOUR-identity budget globally, not per breakpoint.
  */
 export function selectPhotoshootCandidates(media: readonly MediaLike[]): ReadonlySet<string> {
-  const identities = media.map((item) =>
-    inferMediaKind(item) === 'image' && isUsableMedia(item) ? mediaPresentationUrl(item) : null)
+  const identities = media.map(photoshootPresentationImage)
   const unique = [...new Set(identities.filter((url): url is string => Boolean(url)))]
   const scenarios: Map<string, number>[] = []
   for (const width of widths) {

@@ -1,5 +1,5 @@
 import type { MediaLike, PhotoshootLike } from './portfolio'
-import { isUsableMedia, mediaPresentationUrl } from './media'
+import { isUsableMedia, mediaPresentationUrl, mediaPosterUrl } from './media'
 
 export type RandomSource = () => number
 
@@ -19,6 +19,27 @@ export type HomepageMasonrySlot = {
 export type HomepageComposition = {
   pools: HomepageMediaPool[]
   slots: HomepageMasonrySlot[]
+}
+
+/** Normalize identities before discarding CMS-only fields at the client boundary. */
+export function compactHomepage(composition: HomepageComposition): HomepageComposition {
+  return {
+    ...composition,
+    pools: composition.pools.map((pool) => ({
+      ...pool,
+      media: pool.media.map((item) => {
+        const url = mediaPresentationUrl(item)
+        return {
+          id: item.id, kind: item.kind, alt: item.alt,
+          url, playbackUrl: item.playbackUrl ? url : undefined,
+          posterUrl: mediaPosterUrl(item), playbackFilename: item.playbackFilename,
+          posterFilename: item.posterFilename, processingRevision: item.processingRevision,
+          width: item.width, height: item.height, videoWidth: item.videoWidth, videoHeight: item.videoHeight,
+          posterWidth: item.posterWidth, posterHeight: item.posterHeight, transitionColor: item.transitionColor,
+        }
+      }),
+    })),
+  }
 }
 
 export type ActiveMediaSwap = {

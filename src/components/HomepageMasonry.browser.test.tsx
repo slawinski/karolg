@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render } from 'vitest-browser-react'
 import { act } from 'react'
 import { HomepageMasonry, HomepageVideo } from './HomepageMasonry'
+import { PublicMediaReadiness } from './PublicMediaReadiness'
 import type { HomepageMediaPool, HomepageMasonrySlot } from '@/lib/homepage'
 import '@/app/(frontend)/styles.css'
 
@@ -64,23 +65,6 @@ const emitIntersection = async (element: Element, ratio: number) => {
       target: element,
       isIntersecting: ratio > 0,
       intersectionRatio: ratio,
-    } as IntersectionObserverEntry], {} as IntersectionObserver)
-  })
-}
-
-const emitNearIntersection = async (element: Element) => {
-  if (!observerFor(element, true)) {
-    await vi.waitFor(() => {
-      expect(observerFor(element, true)).toBeDefined()
-    })
-  }
-  const observer = observerFor(element, true)!
-
-  await act(async () => {
-    observer.callback([{
-      target: element,
-      isIntersecting: true,
-      intersectionRatio: 0,
     } as IntersectionObserverEntry], {} as IntersectionObserver)
   })
 }
@@ -251,6 +235,39 @@ afterEach(async () => {
 })
 
 describe('Homepage browser lifecycle', () => {
+  it('preserves slot geometry when a swap changes the media aspect ratio', async () => {
+    vi.useFakeTimers()
+    await renderEligible(pools, slots)
+    const before = document.querySelector('figure')!.getBoundingClientRect().toJSON()
+    await advance(6000)
+    await readyIncoming()
+    await finishAnimations()
+    expect(document.querySelector('figure')!.getBoundingClientRect().toJSON()).toEqual(before)
+  })
+  it('holds current acquisition and incoming preparation behind initial image readiness', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockReturnValue(false)
+    vi.spyOn(HTMLImageElement.prototype, 'decode').mockResolvedValue()
+    await render(<PublicMediaReadiness routeKey="home"><div className="masonry-stage">
+      <h1 className="masonry-name">Carla</h1>
+      <HomepageMasonry pools={pools} slots={slots} />
+      <HomepageVideo active alt="Clip" className="clip" media={pools[0].media[1]} />
+    </div></PublicMediaReadiness>)
+    const video = document.querySelector('video')!
+    await emitIntersection(video, 1)
+    await emitIntersection(document.querySelector('.masonry-name')!, 1)
+    await advance(8000)
+    expect(video.hasAttribute('src')).toBe(false)
+    expect(incomingNodes()).toHaveLength(0)
+    await act(async () => document.querySelector('img[data-public-critical]')!.dispatchEvent(new Event('load')))
+    await advance(100)
+    expect(video.hasAttribute('src')).toBe(true)
+    await emitIntersection(document.querySelector('.masonry-name')!, 1)
+    await advance(5999)
+    expect(incomingNodes()).toHaveLength(0)
+    await advance(1)
+    expect(incomingNodes()).toHaveLength(1)
+  })
   it('carries replacement identities to images while bypassing legacy optimization', async () => {
     const pool = { ...imagePool, media: [
       { ...imagePool.media[0], processingRevision: 2 },
@@ -368,11 +385,13 @@ describe('Homepage browser lifecycle', () => {
 
     await emitIntersection(video, 0.1)
     await vi.waitFor(() => expect(play).toHaveBeenCalled())
+    expect(getComputedStyle(video).opacity).toBe('1')
     const pauseBeforeOffscreen = pause.mock.calls.length
     await emitIntersection(video, 0.09)
     await vi.waitFor(() => {
       expect(pause.mock.calls.length).toBeGreaterThan(pauseBeforeOffscreen)
     })
+    expect(getComputedStyle(video).opacity).toBe('0')
 
     await emitIntersection(video, 0.5)
     await vi.waitFor(() => expect(play.mock.calls.length).toBeGreaterThan(1))
@@ -462,7 +481,7 @@ describe('Homepage browser lifecycle', () => {
     expect(video.preload).toBe('none')
     expect(video.hasAttribute('src')).toBe(false)
 
-    await emitNearIntersection(video)
+    await emitIntersection(video, 1)
     expect(video.preload).toBe('metadata')
     expect(video.getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
 
@@ -686,6 +705,7 @@ describe('Homepage browser lifecycle', () => {
     expect(nodes).toHaveLength(5)
     expect(nodes.every((node) => node.isConnected)).toBe(true)
     expect(createdVideos.filter((video) => video.hasAttribute('src'))).toEqual(nodes)
+    nodes.forEach((node) => expect(getComputedStyle(node).opacity).toBe('0'))
     await act(async () => {
       nodes.slice(1).reverse().forEach((node) => node.dispatchEvent(new Event('canplay')))
       // A later error cannot override a ready terminal result.
@@ -693,13 +713,28 @@ describe('Homepage browser lifecycle', () => {
     })
     expect(document.querySelector('.is-swapping')).toBeNull()
     expect(incomingNodes()).toEqual(nodes)
+    nodes.forEach((node) => expect(getComputedStyle(node).opacity).toBe('0'))
     await act(async () => { nodes[0].dispatchEvent(new Event('canplay')) })
     expect(nodes[0].closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(true)
     expect(nodes[1].closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(false)
+    expect(getComputedStyle(nodes[1]).opacity).toBe('0')
     await advance(239)
     expect(incomingNodes()).toEqual(nodes)
     expect(nodes[1].closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(false)
-    await advance(721)
+    expect(getComputedStyle(nodes[1]).opacity).toBe('0')
+    await advance(1)
+    // Seek the real CSS animation: JS fake timers do not advance the browser animation clock.
+    const reveal = nodes[1].getAnimations().find((animation) =>
+      animation instanceof CSSAnimation && animation.animationName === 'gallery-in')!
+    expect(reveal).toBeDefined()
+    reveal.pause()
+    reveal.currentTime = 750
+    expect(getComputedStyle(nodes[1]).opacity).toBe('0')
+    reveal.currentTime = 1125
+    expect(Number(getComputedStyle(nodes[1]).opacity)).toBeGreaterThan(0)
+    reveal.currentTime = 1500
+    expect(getComputedStyle(nodes[1]).opacity).toBe('1')
+    await advance(720)
     expect(incomingNodes()).toEqual(nodes)
     expect(document.querySelectorAll('.gallery-stage.is-swapping')).toHaveLength(5)
     await act(async () => {
@@ -1220,7 +1255,7 @@ describe('Homepage browser lifecycle', () => {
     expect(videos.every((video) => !video.hasAttribute('src'))).toBe(true)
     expect(videos.map((video) => video.preload)).toEqual(['none', 'none'])
 
-    await emitNearIntersection(videos[0])
+    await emitIntersection(videos[0], 1)
     expect(videos[0].getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
     expect(videos[0].preload).toBe('metadata')
     expect(videos[1].hasAttribute('src')).toBe(false)

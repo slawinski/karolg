@@ -59,7 +59,13 @@ Fresh runtime page requests read current CMS identities, including publication b
 the standalone worker. Reload or navigate to see replacements in an already-open
 document.
 
-The photoshoot page renders ready videos with controls. Homepage videos are muted, looping, and control-free during normal motion; they only play while current, at least 10% visible, and the document is visible. Reduced-motion mode disables gallery swaps, rail motion, and autoplay and exposes manual video controls. Video controls are never nested inside the photoshoot link.
+Public videos are muted, looping, inline and control-free. Playback sources wait
+for initial eager photographs/posters to settle, a 1.5-second foreground minimum,
+and a paint opportunity. Videos acquire only in the viewport (or during an
+eligible homepage swap preparation) and play only while active, at least 10%
+visible, and the document is visible. Reduced motion suppresses acquisition,
+autoplay and swaps without exposing manual controls. Autoplay rejection retains
+the responsive poster. Homepage swap timing starts after initial readiness.
 
 ## FFmpeg and workers
 

@@ -4,7 +4,7 @@ import { cleanup, render } from 'vitest-browser-react'
 import { PortfolioHeader } from './PortfolioHeader'
 import { candidateViewports, controlledMedia, controlledVideo, regressionMedia, regressionPhotoshoot } from '@/test/fixtures/photoshoot-candidates'
 import type { MediaLike } from '@/lib/media'
-import { selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
+import { photoshootPresentationImage, selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import '@/app/(frontend)/styles.css'
 
 afterEach(cleanup)
@@ -17,7 +17,7 @@ async function gallery(media: MediaLike[], title = regressionPhotoshoot.title) {
       {media.map((item, index) => <figure key={index}
         className={`photoshoot-gallery-item photoshoot-gallery-item-${index % 7 + 1} image-frame`}>
         {item.kind === 'video'
-          ? <video className="visual-img visual-video" poster={item.posterUrl!} controls playsInline preload="none" />
+          ? <><video className="visual-img visual-video" muted playsInline preload="none" /><img className="media-poster photoshoot-video-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style={{ position: 'absolute', width: '100%', height: '100%', inset: 0 }} /></>
           : <img className="visual-img" alt={`Slot ${index}`} src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style={{ position: 'absolute', width: '100%', height: '100%', inset: 0 }} />}
       </figure>)}
     </section>
@@ -61,7 +61,7 @@ it('characterizes lengths, breakpoints, title clipping and full-slot video geome
         rects.forEach((rect, index) => expect(rect.width / rect.height).toBeCloseTo(ratios[index % 7], 3))
         const videos = Array.from(document.querySelectorAll('video'))
         videos.forEach((video) => {
-          expect(video.controls).toBe(true)
+          expect(video.controls).toBe(false)
           expect(video.playsInline).toBe(true)
           expect(video.preload).toBe('none')
           expect(video.autoplay).toBe(false)
@@ -88,11 +88,10 @@ it('covers actual largest clipped stills with the same bounded responsive identi
       await page.viewport(width, height)
       for (const title of ['A', 'Editorial Portraits', 'Editorial Portraits in Natural Light', Array(60).fill('Portraits').join(' ')]) {
         const rects = await gallery(media, title)
-        const areas = rects.map((rect, index) => media[index].kind === 'video' ? 0
-          : rect.width * Math.max(0, Math.min(rect.bottom, height) - Math.max(0, rect.top)))
+        const areas = rects.map((rect) => rect.width * Math.max(0, Math.min(rect.bottom, height) - Math.max(0, rect.top)))
         const max = Math.max(0, ...areas)
         const winners = areas.flatMap((area, index) => area > 0 && Math.abs(area - max) < 1 ? [index] : [])
-        expect(winners.length === 0 || winners.some((index) => selected.has(media[index].url!)),
+        expect(winners.length === 0 || winners.some((index) => selected.has(photoshootPresentationImage(media[index])!)),
           JSON.stringify({ width, height, title, count: media.length, winners, selected: [...selected], areas, rects })).toBe(true)
         await cleanup()
       }

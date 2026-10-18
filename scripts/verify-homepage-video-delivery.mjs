@@ -1,3 +1,5 @@
+// Historical verifier for 6944671's 200%-margin acquisition contract.
+// Current readiness/viewport behavior: use scripts/verify-public-motion.mjs.
 // pnpm exec tsx scripts/verify-homepage-video-delivery.mjs http://localhost:3108 [raw.json] [summary.json]
 // A built application served by `pnpm start` is required. The script drives the
 // public homepage on a mobile viewport and records the actual request log.

@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mocks = vi.hoisted(() => ({ connection: vi.fn(), portfolio: vi.fn(), photoshoot: vi.fn(), media: vi.fn() }))
+const mocks = vi.hoisted(() => ({ connection: vi.fn(), portfolio: vi.fn(), photoshoot: vi.fn(), media: vi.fn(), settings: vi.fn(), listing: vi.fn() }))
 vi.mock('next/server', () => ({ connection: mocks.connection }))
 vi.mock('./portfolio', () => ({
   getPortfolioData: mocks.portfolio,
+  getSiteSettings: mocks.settings,
+  getPhotoshoots: mocks.listing,
   getPhotoshootBySlug: mocks.photoshoot,
   getPhotoshootMedia: mocks.media,
   mediaUrl: () => null,
@@ -15,6 +17,8 @@ beforeEach(() => {
   mocks.portfolio.mockResolvedValue({ site: {}, photoshoots: [], media: [] })
   mocks.photoshoot.mockResolvedValue({ id: 4, title: 'Fixture' })
   mocks.media.mockResolvedValue([])
+  mocks.settings.mockResolvedValue({})
+  mocks.listing.mockResolvedValue([{ slug: 'fixture' }])
 })
 
 describe('fresh public rendering', () => {
@@ -35,9 +39,19 @@ describe('fresh public rendering', () => {
     expect(mocks.portfolio).not.toHaveBeenCalled()
     expect(mocks.photoshoot).not.toHaveBeenCalled()
     expect(mocks.media).not.toHaveBeenCalled()
+    expect(mocks.settings).not.toHaveBeenCalled()
     release()
     await rendering
     expect(route === 'home' ? mocks.portfolio : mocks.photoshoot).toHaveBeenCalled()
+    if (route !== 'home') expect(mocks.portfolio).not.toHaveBeenCalled()
+  })
+
+  it('generates static parameters without loading settings or media', async () => {
+    const { generateStaticParams } = await import('../app/(frontend)/work/[slug]/page')
+    expect(await generateStaticParams()).toEqual([{ slug: 'fixture' }])
+    expect(mocks.portfolio).not.toHaveBeenCalled()
+    expect(mocks.settings).not.toHaveBeenCalled()
+    expect(mocks.media).not.toHaveBeenCalled()
   })
 
   it('propagates a failed boundary without reading stale data', async () => {

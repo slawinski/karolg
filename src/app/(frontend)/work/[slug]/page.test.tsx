@@ -10,7 +10,7 @@ const versionedRegressionMedia = regressionMedia.map((media) => ({ ...media, pro
 vi.mock('@/lib/portfolio', async (importOriginal) => ({
   ...await importOriginal<typeof import('@/lib/portfolio')>(),
   getPhotoshootBySlug: vi.fn().mockResolvedValue({ id: 1, title: 'Portraits' }),
-  getPortfolioData: vi.fn().mockResolvedValue({ site: {} }),
+  getSiteSettings: vi.fn().mockResolvedValue({}),
   getPhotoshootMedia: vi.fn().mockResolvedValue([
     { id: 1, kind: 'video', processingStatus: 'ready', playbackFilename: 'clip.mp4',
       playbackUrl: '/media/clip.mp4', posterFilename: 'poster.jpg', posterUrl: '/media/poster.jpg' },
@@ -23,18 +23,19 @@ describe('photoshoot image delivery', () => {
   it('selects visible stills after a video while deferring video playback', async () => {
     const markup = renderToStaticMarkup(await WorkPage({ params: Promise.resolve({ slug: 'portraits' }) }))
     const images = markup.match(/<img\b[^>]*>/g)!
-    expect(images).toHaveLength(2)
+    expect(images).toHaveLength(3)
     expect(images[0]).toContain('loading="eager"')
     expect(images[0]).toContain('fetchPriority="high"')
-    expect(images[1]).toContain('loading="lazy"')
-    expect(images[1]).not.toContain('fetchPriority="high"')
-    expect(images[0]).toContain('(max-width: 700px) calc(50vw - 4px)')
+    expect(images[2]).toContain('loading="lazy"')
+    expect(images[2]).not.toContain('fetchPriority="high"')
+    expect(images[1]).toContain('(max-width: 700px) calc(50vw - 4px)')
     expect(markup.match(/<link\b[^>]*as="image"[^>]*>/g) || []).toHaveLength(1)
     const video = markup.match(/<video\b[^>]*>/)![0]
     expect(video).toContain('preload="none"')
-    expect(video).toContain('controls=""')
+    expect(video).not.toContain('controls=""')
+    expect(video).toContain('muted=""')
     expect(video).toContain('playsInline=""')
-    expect(video).toContain('poster="/media/poster.jpg"')
+    expect(video).not.toContain('poster=')
     expect(video).not.toContain('autoPlay')
     expect(video).not.toContain('src=')
   })

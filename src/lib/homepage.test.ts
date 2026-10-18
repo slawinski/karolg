@@ -114,6 +114,79 @@ describe('composeHomepage', () => {
     expect(first.slots).toEqual(second.slots)
   })
 
+  it.each([
+    { draw: 0, count: 4 },
+    { draw: 0.75, count: 5 },
+  ])('prefers measurable portraits for all $count openings when enough exist', ({ draw, count }) => {
+    const photoshoot = shoot(1)
+    const media = [
+      image(1, photoshoot, { width: 1200, height: 800 }),
+      image(2, photoshoot, { width: 800, height: 800 }),
+      image(3, photoshoot, { height: 1200 }),
+      ...Array.from({ length: 6 }, (_, index) =>
+        image(index + 4, photoshoot, { width: 800, height: 1200 })),
+    ]
+    let draws = 0
+    const { pools, slots } = composeHomepage([photoshoot], media, () => draws++ === 0 ? draw : 0)
+
+    expect(pools[0].media).toEqual(media)
+    expect(slots).toHaveLength(count)
+    expect(slots.map((slot) => slot.initialMediaIndex))
+      .toEqual(Array.from({ length: count }, (_, index) => index + 3))
+  })
+
+  it('uses every available portrait before distinct remainder openings in each own pool', () => {
+    const photoshoots = [shoot(1), shoot(2)]
+    const media = photoshoots.flatMap((photoshoot, poolIndex) => [
+      image(poolIndex * 10 + 1, photoshoot, { width: 1015, height: 1000 }),
+      image(poolIndex * 10 + 2, photoshoot),
+      image(poolIndex * 10 + 3, photoshoot, { width: 985, height: 1000 }),
+      image(poolIndex * 10 + 4, photoshoot, { width: 985, height: 1000 }),
+      image(poolIndex * 10 + 5, photoshoot, { width: 1000, height: 1000 }),
+    ])
+    const { pools, slots } = composeHomepage(photoshoots, media, () => 0)
+
+    expect(slots).toHaveLength(8)
+    for (const pool of pools) {
+      const openings = slots.filter((slot) => slot.poolId === pool.id)
+      expect(openings.map((slot) => slot.initialMediaIndex)).toEqual([2, 3, 0, 1])
+      expect(new Set(openings.map((slot) => slot.initialMediaIndex)).size).toBe(4)
+      for (const opening of openings) {
+        expect(pool.media[opening.initialMediaIndex].photoshoot).toMatchObject({ slug: pool.photoshootSlug })
+        // Isolate each opening so sibling occupancy cannot hide the rotation gate.
+        const result = scheduleNextSwap({
+          pools: [pool], slots: [opening], currentIndexes: {}, schedulerState: schedulerState(),
+        })
+        if ([2, 3].includes(opening.initialMediaIndex)) {
+          expect(result.swap?.nextIndex).toBe(opening.initialMediaIndex === 2 ? 3 : 2)
+        } else {
+          expect(result.swap).toBeNull()
+        }
+      }
+    }
+  })
+
+  it.each([
+    { name: 'landscape', dimensions: { width: 1200, height: 800 } },
+    { name: 'square', dimensions: { width: 800, height: 800 } },
+    { name: 'unmeasurable', dimensions: {} },
+    { name: 'portrait', dimensions: { width: 800, height: 1200 } },
+  ])('preserves the old openings and random draws for an all-$name pool', ({ name, dimensions }) => {
+    const photoshoot = shoot(1)
+    const media = Array.from({ length: 7 }, (_, index) => image(index + 1, photoshoot, dimensions))
+    const random = sequenceRandom(0.75, 0.9, 0.8, 0.7, 0.6, 0.5)
+    let draws = 0
+    const composition = composeHomepage([photoshoot], media, () => { draws += 1; return random() })
+
+    expect(composition.slots.map((slot) => slot.initialMediaIndex)).toEqual([6, 5, 1, 2, 3])
+    expect(draws).toBe(11)
+    if (name !== 'portrait') {
+      expect(scheduleNextSwap({
+        ...composition, currentIndexes: {}, schedulerState: schedulerState(),
+      }).swap).toBeNull()
+    }
+  })
+
   it('retains a complete deduplicated pool while sampling more than five media', () => {
     const photoshoot = shoot(1)
     const media = Array.from({ length: 7 }, (_, index) =>

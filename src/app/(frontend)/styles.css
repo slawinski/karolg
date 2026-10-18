@@ -80,9 +80,18 @@ img { display:block; }
 .gallery-stage__incoming,
 .gallery-static-image {
   display:block;
-  object-fit:contain;
   object-position:center;
   pointer-events:none;
+}
+
+.gallery-stage__outgoing,
+.gallery-stage__incoming,
+.gallery-stage .media-poster {
+  object-fit:cover;
+}
+
+.gallery-static-image {
+  object-fit:contain;
 }
 
 .gallery-stage__outgoing {

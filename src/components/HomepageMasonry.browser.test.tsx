@@ -1274,11 +1274,15 @@ describe('Homepage browser lifecycle', () => {
   })
 
   it('defers video sources to the near viewport behind a decorative optimized poster layer', async () => {
+    const videoMedia = {
+      ...pools[0].media[1],
+      posterUrl: '/__controlled__/poster.jpg',
+    }
     const pool: HomepageMediaPool = {
       ...pools[0],
       media: [
-        { ...pools[0].media[1], processingRevision: 3 },
-        pools[0].media[1],
+        { ...videoMedia, processingRevision: 3 },
+        videoMedia,
       ],
     }
     await render(
@@ -1302,6 +1306,11 @@ describe('Homepage browser lifecycle', () => {
     expect(videos.map((video) => video.preload)).toEqual(['none', 'none'])
     expect(posters.map((poster) => getComputedStyle(poster).objectFit)).toEqual(['cover', 'cover'])
     posters.forEach((poster) => {
+      // Own poster readiness before measuring: native fixture failures are suppressed.
+      poster.dispatchEvent(new Event('error'))
+      expect(getComputedStyle(poster).display).toBe('none')
+      poster.dispatchEvent(new Event('load'))
+      expect(getComputedStyle(poster).display).toBe('block')
       expect(poster.getBoundingClientRect().toJSON())
         .toEqual(poster.closest('.image-frame')!.getBoundingClientRect().toJSON())
     })

@@ -20,6 +20,16 @@ export const SiteSettings: GlobalConfig = {
     { name: 'intro', type: 'textarea', defaultValue: 'A portfolio built around fashion, movement and natural portraiture.' },
     { name: 'heroMedia', type: 'upload', relationTo: 'media' },
     {
+      name: 'socialImage',
+      label: 'Social image',
+      type: 'upload',
+      relationTo: 'media',
+      filterOptions: { mimeType: { in: ['image/jpeg', 'image/png'] } },
+      admin: {
+        description: 'Default sharing image for the homepage and photoshoots. Choose a public JPEG or PNG, ideally 1200 × 630 pixels. Leave empty to omit the social image.',
+      },
+    },
+    {
       name: 'locations',
       type: 'array',
       fields: [{ name: 'label', type: 'text', required: true }],

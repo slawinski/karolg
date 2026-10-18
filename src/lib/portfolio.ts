@@ -21,6 +21,7 @@ export type SiteLike = {
   handwrittenLine?: string | null
   intro?: string | null
   heroMedia?: MediaLike | string | number | null
+  socialImage?: MediaLike | string | number | null
   locations?: Array<{ label?: string | null }> | null
   profileFacts?: Array<{ label?: string | null; value?: string | null }> | null
   instagram?: string | null
@@ -101,14 +102,17 @@ export const getPhotoshootBySlug = cache(async (slug: string): Promise<Photoshoo
   }
 })
 
-export async function getSiteSettings(): Promise<SiteLike> {
+export const getSiteSettings = cache(async (): Promise<SiteLike> => {
   const payload = await getPayloadClient()
-  const site = await payload.findGlobal({ slug: 'site-settings', depth: 0,
+  const site = await payload.findGlobal({ slug: 'site-settings', depth: 1, overrideAccess: false,
     select: { name: true, roles: true, heroEyebrow: true, heroHeadline: true,
       handwrittenLine: true, intro: true, locations: true, profileFacts: true,
-      instagram: true, email: true, seoDescription: true } })
-  return { ...fallbackSite, ...(site as unknown as SiteLike) }
-}
+      instagram: true, email: true, seoDescription: true, socialImage: true },
+    populate: { media: { url: true, filename: true, alt: true, mimeType: true, kind: true,
+      processingRevision: true, width: true, height: true } },
+  })
+  return { ...fallbackSite, ...(site as unknown as SiteLike), socialImage: normalizeMediaLike(site.socialImage) }
+})
 
 export async function getPhotoshoots(): Promise<PhotoshootLike[]> {
   const payload = await getPayloadClient()

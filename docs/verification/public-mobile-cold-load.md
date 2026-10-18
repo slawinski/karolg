@@ -341,3 +341,88 @@ artifact directories remain uncommitted: the first deliberate red browser run
 emitted a failure screenshot despite `--browser.screenshotFailures=false`;
 subsequent runs redirected artifact paths outside the checkout. No artifact
 cleanup or edits to pre-existing user artifacts were attempted.
+
+## Final post-review production browser pass — 2026-10-18
+
+**Result: PASS.** `ce-test-browser mode:pipeline` on
+`fix/public-mobile-cold-load`, commit `78a5078` plus the uncommitted
+`src/lib/homepage.ts` URL simplification. Driver: installed `agent-browser`
+0.39.1, headless Chromium 155, isolated named sessions
+`public-final-78a5078` and `public-final-media`; both closed at completion.
+The separately configured Chrome MCP was not used. No new browser stack was
+introduced, and this pass required no application-source changes.
+
+### Build and server
+
+- Synced canonical `src`, scripts and build configuration to the existing
+  isolated `public-cold-load` copy under the temporary directory below. All 87
+  source files (excluding screenshot artifacts) match byte-for-byte; combined
+  relative-path/NUL/content SHA256:
+  `d45e08cca0055b6ea898bcc88d9e5213b7962ef40630416f01b08558c7e6f17b`.
+- Fresh `pnpm build` **passed**, including compilation, TypeScript and static
+  generation. This supersedes the earlier pre-review build receipt for the
+  final tree, including the homepage opacity fix and URL simplification.
+- Verified the old PID 9764's working directory and port ownership before
+  terminating it. Resolved a free port with the skill's `resolve-port.sh --free
+  3110` in the startup command, then started `pnpm start` in the isolated copy.
+- Server left running: **http://localhost:3110**, listener **PID 15542**,
+  parent PID 15536, `next-server (v16.4.0)`, working directory
+  `/private/var/folders/zl/fkgnlthd363175f4ffymzcjh0000gn/T/opencode/public-cold-load`.
+  Startup reported ready in 111ms. The copied environment resolves SQLite and
+  media inside this copy; `DISABLE_MEDIA_JOB_AUTORUN=1` was verified and retained.
+  No real database, user server 3108, secrets or artifact directories were changed.
+
+### Browser Test Results
+
+Mobile: 390×844 DPR2. Desktop: 1440×1000 DPR1. Every actual `/sitemap.xml`
+location was parsed, its path/search rebased to `http://localhost:3110`, requested
+locally with status recorded, then opened with the selected browser driver.
+The sitemap itself returned 200 and contained exactly the five pages below.
+
+| Route | Mobile | Desktop | Notes |
+|---|---|---|---|
+| `/` | Pass | Pass | Carla Gorecka heading, photographs, project links; no horizontal overflow |
+| `/work/A` | Pass | Pass | A heading and still gallery; HTTP 200 |
+| `/work/B` | Pass | Pass | B heading and still gallery; HTTP 200 |
+| `/work/c` | Pass | Pass | C heading and still gallery; HTTP 200 |
+| `/work/d` | Pass | Pass | D heading, photos/posters and delayed silent autoplay; HTTP 200 |
+| `/robots.txt` | Pass | Pass | HTTP 200; allow root, disallow admin/API, local sitemap URL |
+
+- Fresh snapshots and viewport/full-page screenshots captured for every route
+  at both sizes. Visible photos were checked for completion and nonzero natural
+  width. Initial desktop samples caught still-loading lazy images; explicit
+  visible-image completion waits resolved those assertions on recheck, without
+  source changes. Initial and settled receipts are retained separately.
+- Actual snapshot-ref clicks exercised home → A, home → D, D → selected work
+  (`/#work`), and D → profile (`/#about`). Resulting headings, URLs, hash targets
+  and scroll movement were confirmed after navigation settled.
+- A fresh-session MutationObserver recorded video source attachment only with
+  `data-public-media-ready=true`: first attachment **1666.7ms mobile** and
+  **1553.3ms desktop** after navigation. Both videos played with advancing
+  currentTime, `muted=true`, `playsInline=true`, `controls=false`, opacity 1
+  and no media error. Mobile playback later reached about 8.78 seconds;
+  desktop playback also continued after scrolling.
+- **Console errors: 0. Uncaught browser errors: 0. Failures remaining: 0.**
+  Server log has only the existing no-email-adapter startup warning, no request
+  errors during this pass. No external flow needed human verification.
+- **Skips:** no requested route skipped. WebKit/real Safari and live deployment
+  were not exercised; their earlier limitations remain. This functional pass
+  does not replace the earlier controlled performance measurements.
+
+### Temporary evidence
+
+All artifacts are under
+`/var/folders/zl/fkgnlthd363175f4ffymzcjh0000gn/T/opencode/`:
+
+- `public-final-build.log`, `public-final-server.log`.
+- `final-browser-results.json` (initial) and
+  `final-browser-results-desktop-settled.json` (desktop recheck); exact requested
+  local URLs/statuses, content checks and console/error buffers included.
+- `final-{home,work-A,work-B,work-c,work-d,robots.txt}-{mobile,desktop}-snapshot.json`.
+- Matching `final-…-{mobile,desktop}.png` and `…-full.png`; inspected homepage
+  mobile/desktop, project A desktop and project D mobile viewport images.
+- `final-video-{mobile,desktop}.json` and
+  `final-video-playing-{mobile,desktop}.png` preserve playback evidence.
+
+`git diff --check` passed. Prior 168 unit / 56 targeted Chromium checks remain
+as recorded above; this pass did not rerun them. No commit or push performed.

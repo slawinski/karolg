@@ -371,21 +371,6 @@ img { display:block; }
   inset:0;
   z-index:3;
 }
-.masonry-card__link--video {
-  inset:0;
-  padding:0;
-  background:none;
-}
-.masonry-card__link--video span {
-  position:absolute;
-  top:8px;
-  right:8px;
-  padding:7px 9px;
-  background:rgba(16,16,15,.76);
-  color:#fff;
-  font-size:10px;
-  letter-spacing:.04em;
-}
 .gallery-stage video,
 video.gallery-static-image { pointer-events:none; }
 .masonry-card .image-frame { width:100%; }

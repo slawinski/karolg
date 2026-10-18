@@ -419,7 +419,7 @@ describe('Homepage browser lifecycle', () => {
     expect(pause.mock.calls.length).toBeGreaterThan(1)
   })
 
-  it('keeps a current video preview control-free with a full-card project link', async () => {
+  it('keeps a current video preview control-free with a full-card project link and only a screen-reader label', async () => {
     const videoFirstPool: HomepageMediaPool = {
       ...pools[0],
       media: [pools[0].media[1], pools[0].media[0]],
@@ -432,14 +432,21 @@ describe('Homepage browser lifecycle', () => {
     )
 
     const video = document.querySelector<HTMLVideoElement>('.gallery-stage__outgoing')!
-    const link = document.querySelector('.masonry-card__link--video')!
+    const card = video.closest('.masonry-card')!
+    const link = card.querySelector('.masonry-card__link')!
     const linkStyle = getComputedStyle(link)
+    const label = link.querySelector('span')!
+    const labelStyle = getComputedStyle(label)
 
     expect(video.controls).toBe(false)
     expect(getComputedStyle(video).pointerEvents).toBe('none')
     expect(document.querySelector('.gallery-stage__incoming')).toBeNull()
     expect([linkStyle.top, linkStyle.right, linkStyle.bottom, linkStyle.left])
       .toEqual(['0px', '0px', '0px', '0px'])
+    expect(label.textContent?.trim()).toBe('View Shoot')
+    expect(label.className).toContain('sr-only')
+    expect(labelStyle.position).toBe('absolute')
+    expect([labelStyle.width, labelStyle.height]).toEqual(['1px', '1px'])
   })
 
   it('reports mounted preparation video readiness without starting playback or detached loading', async () => {

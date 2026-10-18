@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { chromium } from 'playwright'
 import { writeFile } from 'node:fs/promises'
 const [base, output] = process.argv.slice(2)
-const browser = await chromium.launch()
+let browser
 const report = { routes: [], checks: [] }
 try {
   const sitemapResponse = await fetch(new URL('/sitemap.xml', base))
@@ -27,6 +27,7 @@ try {
     assert.equal(response.status, 200, `Route failed: ${url.href}`)
     assert(html.includes('<h1'), `Route has no heading: ${url.href}`)
   }
+  browser = await chromium.launch()
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })
   const page = await context.newPage()
   await page.route('**/_next/image?**', async (route) => {
@@ -58,7 +59,7 @@ try {
   report.checks.push('Reduced motion suppresses acquisition before initial readiness with no controls')
   await context.close()
 } finally {
-  await browser.close()
+  await browser?.close()
   await writeFile(output, JSON.stringify(report, null, 2))
   console.log(JSON.stringify(report, null, 2))
 }

@@ -23,7 +23,9 @@ it('checks sitemap paths and queries on BASE, not the canonical origin', async (
   const directory = await mkdtemp(join(tmpdir(), 'navigation-review-'))
   const output = join(directory, 'report.json')
   try {
-    await expect(promisify(execFile)(process.execPath, ['scripts/verify-public-navigation.mjs', base, output]))
+    await expect(promisify(execFile)(process.execPath, ['scripts/verify-public-navigation.mjs', base, output], {
+      env: { ...process.env, PLAYWRIGHT_BROWSERS_PATH: join(directory, 'no-browsers') },
+    }))
       .rejects.toThrow(`Route failed: ${base}/work/broken`)
     expect(requests).toEqual(['/sitemap.xml', '/work/ok?revision=2&view=full', '/work/broken'])
     expect(JSON.parse(await readFile(output, 'utf8')).routes).toEqual([
@@ -52,7 +54,9 @@ it.each([
   const directory = await mkdtemp(join(tmpdir(), 'navigation-review-'))
   try {
     await expect(promisify(execFile)(process.execPath, ['scripts/verify-public-navigation.mjs',
-      `http://127.0.0.1:${address.port}`, join(directory, 'report.json')])).rejects.toThrow(error)
+      `http://127.0.0.1:${address.port}`, join(directory, 'report.json')], {
+      env: { ...process.env, PLAYWRIGHT_BROWSERS_PATH: join(directory, 'no-browsers') },
+    })).rejects.toThrow(error)
     expect(requests).toEqual(['/sitemap.xml'])
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()))

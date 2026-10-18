@@ -181,3 +181,28 @@ PerformanceObserver/resource reports, not saved DevTools trace or HAR files.
 Only this new verification document is owned by this task in the canonical
 repository. The older verification document, plan, production source, and
 measurement script were left untouched. No commit was made.
+
+## Integrated verification after U6
+
+The host subsequently verified the integrated canonical source:
+
+- `pnpm test`: **195 tests passed**, 24 files.
+- `pnpm test:browser`: **67 Chromium tests passed**, 5 files.
+- `pnpm typecheck`: **passed**.
+- Focused WebKit attempt: session connection timed out after 60 seconds with
+  **no tests executed**, matching the existing local runtime limitation.
+- Final simplification and a focused correctness review with a separate
+  adversarial read found no further actionable defects.
+- Headless `agent-browser` QA used an isolated dev server on port 3001. The
+  homepage at 1440×900 and 390×844 used `cover` for rotating layers and `contain`
+  for static media. Homepage-to-project navigation worked; `/work/A`, `/work/B`,
+  `/work/c`, and `/work/d` rendered their headings and galleries. The two project
+  video posters retained `contain`. No browser console errors were recorded.
+- Desktop, mobile, and project screenshots are retained under the approved
+  temporary workspace as `homepage-crop-desktop.png`, `homepage-crop-mobile.png`,
+  and `homepage-crop-project.png`.
+
+The ±15% width remains an implementation assumption. It prevents a slot from
+cross-rotating between the mixed pool's still/video ratio families. Pool-wide
+portrait preference can also change openings on cards that never rotate. These
+product implications are passed to PR review rather than claimed as owner-approved.

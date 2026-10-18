@@ -35,6 +35,32 @@ Payload stores originals and generated files in the root `media/` directory. SQL
 
 Media inherit photographer attribution from their Photoshoot. The provenance is stored in the CMS but is not rendered as a public credit.
 
+### Social sharing image
+
+In **Site Settings → Social image**, choose or upload a JPEG or PNG (ideally
+1200 × 630 pixels), then save. This optional image is shared by the homepage and
+all photoshoot pages for Open Graph and Twitter previews. Existing settings keep
+working with no selection; clearing the field removes the image metadata.
+The selected file must be publicly accessible. Its alt text comes from Media.
+
+Fresh page requests pick up selections and replacements without a rebuild.
+Social platforms can cache previews independently; use their preview refresh
+tools after changing the image. Set `NEXT_PUBLIC_SITE_URL` to the public site
+origin so preview image URLs point to the production domain.
+
+Deploying this field requires migration `20261018_151842_social_image`. Back up
+the production SQLite database consistently (pause CMS writes while taking a
+filesystem backup, including SQLite sidecar files) and retain the `media/` volume.
+Run `pnpm exec payload migrate` with the production environment before starting
+the updated app. The migration adds only a nullable reference and index to
+`site_settings`; it does not reset or rewrite existing content. Rolling it back
+removes the new image selection, but keeps the image file and existing content.
+
+`pnpm test:social-metadata` checks a production build against a disposable
+database and synthetic uploads, including page metadata, public image fetching,
+same-file replacement, and clearing the selection. It writes the checkout's
+`.next` build output, so run it in a separate checkout when a local server is active.
+
 Images retain Payload's existing card/hero image generation. On a new or replaced image, the server also derives a deterministic transition color after EXIF orientation and alpha flattening. SVG uploads are not accepted. Existing images remain valid while this value is null.
 
 Accepted videos are QuickTime/MOV, MP4/M4V, and WebM. The original upload is retained privately for administrators and processing, and a new video starts as `pending`. Anonymous API responses omit its original filename and URL. The `media-processing` worker validates bounded stream and container metadata, creates an H.264/AAC MP4 and JPEG poster with preemptive duration, output-size, and thread limits, derives the poster transition color, then atomically publishes the matching revision. A replacement keeps its last published playback and poster available while the new revision is pending or failed. First-time failures remain excluded from the public portfolio.

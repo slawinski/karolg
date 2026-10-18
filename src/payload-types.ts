@@ -617,6 +617,10 @@ export interface SiteSetting {
   handwrittenLine?: string | null;
   intro?: string | null;
   heroMedia?: (number | null) | Media;
+  /**
+   * Default sharing image for the homepage and photoshoots. Choose a public JPEG or PNG, ideally 1200 × 630 pixels. Leave empty to omit the social image.
+   */
+  socialImage?: (number | null) | Media;
   locations?:
     | {
         label: string;
@@ -648,6 +652,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   handwrittenLine?: T;
   intro?: T;
   heroMedia?: T;
+  socialImage?: T;
   locations?:
     | T
     | {

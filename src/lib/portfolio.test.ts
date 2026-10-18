@@ -66,6 +66,13 @@ describe('public portfolio photographer attribution', () => {
     expect(await getPhotoshoots()).toMatchObject([{ slug: 'motion' }])
     expect(payload.find.mock.calls.every(([query]) => query.collection === 'projects')).toBe(true)
   })
+  it('normalizes the selected social image without changing other settings', async () => {
+    payload.findGlobal.mockResolvedValue({ name: 'Existing name', instagram: 'https://instagram.com/existing', socialImage: media })
+    expect(await getSiteSettings()).toMatchObject({
+      name: 'Existing name', instagram: 'https://instagram.com/existing',
+      socialImage: { id: 2, url: '/api/media/file/motion.jpg?v=2' },
+    })
+  })
   it('normalizes retained video identities and redacts expanded hero originals', async () => {
     const video = { id: 7, kind: 'video', filename: 'private.mov', url: '/api/media/file/private.mov',
       processingRevision: 3, processingStatus: 'failed',

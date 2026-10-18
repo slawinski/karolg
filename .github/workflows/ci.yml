@@ -32,3 +32,4 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm exec payload migrate
       - run: pnpm test:slugs
+      - run: pnpm test:social-metadata

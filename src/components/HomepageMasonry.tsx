@@ -745,7 +745,6 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                     : transitionColorOf(currentMedia)
                   const alt = currentMedia?.alt ||
                     `${pool.photoshootTitle} portfolio ${inferMediaKind(currentMedia)}`
-                  const isVideo = inferMediaKind(currentMedia) === 'video'
                   // A slot's frame belongs to the opening composition, not the
                   // currently rotating asset. Keep subsequent rows stationary.
                   const dimensions = mediaDimensions(pool.media[initialIndexForSlot(slot, pool.media.length)])
@@ -809,10 +808,10 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                         )}
                       </figure>
                       <Link
-                        className={`masonry-card__link${isVideo ? ' masonry-card__link--video' : ''}`}
+                        className="masonry-card__link"
                         href={`/work/${pool.photoshootSlug}`}
                       >
-                        <span className={isVideo ? undefined : 'sr-only'}>
+                        <span className="sr-only">
                           View {pool.photoshootTitle}
                         </span>
                       </Link>

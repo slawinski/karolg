@@ -192,8 +192,12 @@ export function composeHomepage(
   for (const pool of pools) {
     const indexes = pool.media.map((_, index) => index)
     const count = initialMediaCount(indexes.length, random)
-    const preferred = indexes.filter((index) => isPortraitMedia(pool.media[index]))
-    const remainder = indexes.filter((index) => !isPortraitMedia(pool.media[index]))
+    const preferred: number[] = []
+    const remainder: number[] = []
+    for (const index of indexes) {
+      if (isPortraitMedia(pool.media[index])) preferred.push(index)
+      else remainder.push(index)
+    }
     const selectedIndexes = preferred.length
       ? [
           ...sampleWithoutReplacement(preferred, count, random),

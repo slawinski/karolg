@@ -16,6 +16,8 @@ import {
 
 type Props = { params: Promise<{ slug: string }> }
 
+// An empty build-time CMS must not make future photoshoot slugs static fallbacks.
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 export async function generateStaticParams() {

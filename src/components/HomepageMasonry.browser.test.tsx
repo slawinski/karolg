@@ -78,8 +78,8 @@ const pools: HomepageMediaPool[] = [{
       id: 1,
       kind: 'image',
       url: '/__controlled__/still.jpg',
-      width: 1600,
-      height: 900,
+      width: 1080,
+      height: 1800,
     },
     {
       id: 2,
@@ -88,7 +88,7 @@ const pools: HomepageMediaPool[] = [{
       playbackFilename: 'generated/2/r1/playback.mp4',
       playbackUrl: '/__controlled__/clip.mp4',
       posterFilename: 'generated/2/r1/poster.jpg',
-      posterUrl: 'data:image/jpeg;base64,/9j/2Q==',
+      posterUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="9" height="16"%3E%3Cpath fill="%23999" d="M0 0h9v16H0z"/%3E%3C/svg%3E',
       videoWidth: 1080,
       videoHeight: 1920,
     },
@@ -109,8 +109,8 @@ const wavePools: HomepageMediaPool[] = Array.from({ length: 6 }, (_, index) => (
       id: `image-${index}`,
       kind: 'image',
       url: `/__controlled__/still-${index}.jpg`,
-      width: 4,
-      height: 3,
+      width: 9,
+      height: 16,
     },
     {
       id: `video-${index}`,
@@ -119,7 +119,7 @@ const wavePools: HomepageMediaPool[] = Array.from({ length: 6 }, (_, index) => (
       playbackFilename: `generated/${index}/playback.mp4`,
       playbackUrl: `/__controlled__/clip-${index}.mp4`,
       posterFilename: `generated/${index}/poster.jpg`,
-      posterUrl: 'data:image/jpeg;base64,/9j/2Q==',
+      posterUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="9" height="16"%3E%3Cpath fill="%23999" d="M0 0h9v16H0z"/%3E%3C/svg%3E',
       videoWidth: 9,
       videoHeight: 16,
     },
@@ -138,7 +138,7 @@ const imagePool: HomepageMediaPool = {
     id: `still-${index}`,
     kind: 'image',
     url: `/__controlled__/image-${index}.jpg`,
-    width: 4,
+    width: 2,
     height: 3,
   })),
 }
@@ -240,9 +240,17 @@ describe('Homepage browser lifecycle', () => {
     await renderEligible(pools, slots)
     const before = document.querySelector('figure')!.getBoundingClientRect().toJSON()
     await advance(6000)
+    const incoming = document.querySelector<HTMLVideoElement>('video.gallery-stage__incoming')!
+    expect(incoming).not.toBeNull()
+    expect(getComputedStyle(incoming).objectFit).toBe('cover')
+    expect(incoming.getBoundingClientRect().toJSON()).toEqual(before)
     await readyIncoming()
+    expect(document.querySelector('video.gallery-stage__incoming')).toBe(incoming)
+    expect(incoming.closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(true)
     await finishAnimations()
     expect(document.querySelector('figure')!.getBoundingClientRect().toJSON()).toEqual(before)
+    expect(document.querySelector('video.gallery-stage__outgoing')).not.toBeNull()
+    expectIdleCards()
   })
   it('holds current acquisition and incoming preparation behind initial image readiness', async () => {
     vi.useFakeTimers()
@@ -319,9 +327,13 @@ describe('Homepage browser lifecycle', () => {
       expect(image.sizes).toContain('150vw')
       expect(image.sizes).toContain('125vw')
     })
+    const staticImages = images.filter((image) => image.classList.contains('gallery-static-image'))
+    expect(staticImages).toHaveLength(5)
+    expect(staticImages.map((image) => getComputedStyle(image).objectFit))
+      .toEqual(Array(5).fill('contain'))
   })
 
-  it('uses intrinsic frame dimensions and contains the complete image', async () => {
+  it('uses intrinsic frame dimensions and covers the rotating frame', async () => {
     const dimensions = [
       { width: 1600, height: 900 },
       { width: 900, height: 1600 },
@@ -358,13 +370,40 @@ describe('Homepage browser lifecycle', () => {
       document.querySelectorAll<HTMLImageElement>('.gallery-stage__outgoing'),
     )
 
-    expect(frames.map((frame) => frame.style.aspectRatio)).toEqual([
-      '1600 / 900',
-      '900 / 1600',
-      '1000 / 1000',
-    ])
+    expect(frames).toHaveLength(3)
+    frames.forEach((frame, index) => {
+      const box = frame.getBoundingClientRect()
+      expect(box.width / box.height).toBeCloseTo(dimensions[index].width / dimensions[index].height, 2)
+    })
     expect(images.map((image) => getComputedStyle(image).objectFit))
-      .toEqual(['contain', 'contain', 'contain'])
+      .toEqual(['cover', 'cover', 'cover'])
+  })
+
+  it('crop-fills a mismatched portrait still without leaving a gap on either axis', async () => {
+    vi.useFakeTimers()
+    // A 3:5 incoming image is 10% narrower than the opening 2:3 frame.
+    const pool: HomepageMediaPool = {
+      ...imagePool,
+      media: [imagePool.media[0], { ...imagePool.media[1], width: 3, height: 5 }],
+    }
+    await renderEligible([pool], slots)
+    const frame = document.querySelector('.image-frame')!.getBoundingClientRect().toJSON()
+    expect(frame.width).toBeGreaterThan(0)
+    expect(frame.height).toBeGreaterThan(0)
+    await advance(6_000)
+    const incoming = document.querySelector<HTMLImageElement>('img.gallery-stage__incoming')!
+    expect(incoming).not.toBeNull()
+    expect(incoming.getBoundingClientRect().toJSON()).toEqual(frame)
+    expect(getComputedStyle(incoming).objectFit).toBe('cover')
+    await readyIncoming()
+    expect(document.querySelector('img.gallery-stage__incoming')).toBe(incoming)
+    expect(incoming.closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(true)
+    await finishAnimations()
+    const outgoing = document.querySelector<HTMLImageElement>('img.gallery-stage__outgoing')!
+    expect(outgoing.getAttribute('src')).toBe('/__controlled__/image-1.jpg')
+    expect(outgoing.getBoundingClientRect().toJSON()).toEqual(frame)
+    expect(getComputedStyle(outgoing).objectFit).toBe('cover')
+    expectIdleCards()
   })
 
   it('plays only while active, at least 10% visible, page-visible, and motion-safe', async () => {
@@ -548,8 +587,8 @@ describe('Homepage browser lifecycle', () => {
       const incoming = document.querySelector('video.gallery-stage__incoming')
       expect(outgoing).not.toBeNull()
       expect(incoming).not.toBeNull()
-      expect(getComputedStyle(outgoing!).objectFit).toBe('contain')
-      expect(getComputedStyle(incoming!).objectFit).toBe('contain')
+      expect(getComputedStyle(outgoing!).objectFit).toBe('cover')
+      expect(getComputedStyle(incoming!).objectFit).toBe('cover')
       expect(getComputedStyle(incoming!).pointerEvents).toBe('none')
       const link = incoming!.closest('.masonry-card')!
         .querySelector('.masonry-card__link')!
@@ -1235,11 +1274,15 @@ describe('Homepage browser lifecycle', () => {
   })
 
   it('defers video sources to the near viewport behind a decorative optimized poster layer', async () => {
+    const videoMedia = {
+      ...pools[0].media[1],
+      posterUrl: '/__controlled__/poster.jpg',
+    }
     const pool: HomepageMediaPool = {
       ...pools[0],
       media: [
-        { ...pools[0].media[1], processingRevision: 3 },
-        pools[0].media[1],
+        { ...videoMedia, processingRevision: 3 },
+        videoMedia,
       ],
     }
     await render(
@@ -1261,6 +1304,16 @@ describe('Homepage browser lifecycle', () => {
     expect(posters.map((poster) => poster.hasAttribute('data-unoptimized'))).toEqual([false, true])
     expect(videos.every((video) => !video.hasAttribute('src'))).toBe(true)
     expect(videos.map((video) => video.preload)).toEqual(['none', 'none'])
+    expect(posters.map((poster) => getComputedStyle(poster).objectFit)).toEqual(['cover', 'cover'])
+    posters.forEach((poster) => {
+      // Own poster readiness before measuring: native fixture failures are suppressed.
+      poster.dispatchEvent(new Event('error'))
+      expect(getComputedStyle(poster).display).toBe('none')
+      poster.dispatchEvent(new Event('load'))
+      expect(getComputedStyle(poster).display).toBe('block')
+      expect(poster.getBoundingClientRect().toJSON())
+        .toEqual(poster.closest('.image-frame')!.getBoundingClientRect().toJSON())
+    })
 
     await emitIntersection(videos[0], 1)
     expect(videos[0].getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
@@ -1272,5 +1325,14 @@ describe('Homepage browser lifecycle', () => {
     expect(document.querySelector('.gallery-stage__color')).not.toBeNull()
     posters[0].dispatchEvent(new Event('load'))
     expect(getComputedStyle(posters[0]).display).toBe('block')
+  })
+
+  it('keeps posters outside rotating homepage stages contained, including project video posters', async () => {
+    await render(<>
+      <img className="media-poster" alt="" />
+      <img className="media-poster photoshoot-video-poster" alt="" />
+    </>)
+    const posters = Array.from(document.querySelectorAll('.media-poster'))
+    expect(posters.map((poster) => getComputedStyle(poster).objectFit)).toEqual(['contain', 'contain'])
   })
 })

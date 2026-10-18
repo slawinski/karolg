@@ -168,6 +168,16 @@ export function mediaDimensions(media: MediaLike | null | undefined) {
   return width && height ? { width, height } : null
 }
 
+export function mediaRatio(media: MediaLike | null | undefined) {
+  const dimensions = mediaDimensions(media)
+  return dimensions ? dimensions.width / dimensions.height : null
+}
+
+export function isPortraitMedia(media: MediaLike | null | undefined) {
+  const ratio = mediaRatio(media)
+  return ratio !== null && ratio < 1
+}
+
 const normalizedStoredColor = (value: unknown) => {
   const color = stringValue(value)?.toLowerCase()
   return color && /^#[0-9a-f]{6}$/.test(color) ? color : null

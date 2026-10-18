@@ -1,5 +1,5 @@
 import type { MediaLike, PhotoshootLike } from './portfolio'
-import { isUsableMedia, mediaPresentationUrl, mediaPosterUrl } from './media'
+import { isPortraitMedia, isUsableMedia, mediaPresentationUrl, mediaPosterUrl, mediaRatio } from './media'
 
 export type RandomSource = () => number
 
@@ -191,11 +191,19 @@ export function composeHomepage(
 
   for (const pool of pools) {
     const indexes = pool.media.map((_, index) => index)
-    const selectedIndexes = sampleWithoutReplacement(
-      indexes,
-      initialMediaCount(indexes.length, random),
-      random,
-    )
+    const count = initialMediaCount(indexes.length, random)
+    const preferred: number[] = []
+    const remainder: number[] = []
+    for (const index of indexes) {
+      if (isPortraitMedia(pool.media[index])) preferred.push(index)
+      else remainder.push(index)
+    }
+    const selectedIndexes = preferred.length
+      ? [
+          ...sampleWithoutReplacement(preferred, count, random),
+          ...sampleWithoutReplacement(remainder, Math.max(0, count - preferred.length), random),
+        ]
+      : sampleWithoutReplacement(indexes, count, random)
 
     slotsByPool.set(
       pool.id,
@@ -218,6 +226,7 @@ type MediaCandidateSelection = {
   currentIndex: number
   assignedIndexes: readonly number[]
   excludedIndexes?: ReadonlySet<number>
+  accept?: (index: number) => boolean
 }
 
 export function selectNextMediaIndex({
@@ -225,6 +234,7 @@ export function selectNextMediaIndex({
   currentIndex,
   assignedIndexes,
   excludedIndexes = new Set(),
+  accept = () => true,
 }: MediaCandidateSelection) {
   if (poolSize <= 1) return null
 
@@ -257,7 +267,8 @@ export function selectNextMediaIndex({
   const legalCandidates = candidates.filter(
     (candidate) =>
       !excludedIndexes.has(candidate) &&
-      new Set([...siblingIndexes, candidate]).size >= visibleDiversity,
+      new Set([...siblingIndexes, candidate]).size >= visibleDiversity &&
+      accept(candidate),
   )
 
   if (!legalCandidates.length) return null
@@ -275,6 +286,22 @@ export const initialIndexForSlot = (
   slot: HomepageMasonrySlot,
   poolSize: number,
 ) => poolSize ? slot.initialMediaIndex % poolSize : 0
+
+// Mirrors .masonry-card-1 through .masonry-card-7 in styles.css.
+export const HOMEPAGE_LAYOUT_RATIOS = [3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3] as const
+export const HOMEPAGE_RATIO_WINDOW = 0.15
+
+export function homepageFrameRatio(
+  slot: HomepageMasonrySlot,
+  slots: readonly HomepageMasonrySlot[],
+  pool: HomepageMediaPool,
+) {
+  return mediaRatio(pool.media[initialIndexForSlot(slot, pool.media.length)]) ??
+    HOMEPAGE_LAYOUT_RATIOS[slots.indexOf(slot) % 7]
+}
+
+export const isWithinHomepageRatioWindow = (candidateRatio: number, frameRatio: number) =>
+  Math.abs(candidateRatio - frameRatio) / frameRatio <= HOMEPAGE_RATIO_WINDOW
 
 const indexForSlot = (
   slot: HomepageMasonrySlot,
@@ -354,6 +381,15 @@ export function scheduleNextSwap({
     ).filter((slot) => !eligibleSlotIds || eligibleSlotIds.has(slot.id))
     const exhaustedFailureKeys = new Set<string>()
     const options = orderedSlots.flatMap((slot) => {
+      if (!isPortraitMedia(pool.media[initialIndexForSlot(slot, poolSize)])) return []
+
+      const frameRatio = homepageFrameRatio(slot, slots, pool)
+      const accept = (index: number) => {
+        const media = pool.media[index]
+        const ratio = mediaRatio(media)
+        return isPortraitMedia(media) && ratio !== null &&
+          isWithinHomepageRatioWindow(ratio, frameRatio)
+      }
       const currentIndex = indexForSlot(slot, poolSize, currentIndexes)
       const key = failureKey(pool.id, slot.id)
       const excludedIndexes = new Set(schedulerState.failedCandidates[key] || [])
@@ -362,12 +398,14 @@ export function scheduleNextSwap({
         currentIndex,
         assignedIndexes,
         excludedIndexes,
+        accept,
       })
       if (nextIndex == null && excludedIndexes.size) {
         nextIndex = selectNextMediaIndex({
           poolSize,
           currentIndex,
           assignedIndexes,
+          accept,
         })
         exhaustedFailureKeys.add(key)
       }

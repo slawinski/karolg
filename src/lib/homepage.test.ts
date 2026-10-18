@@ -7,6 +7,10 @@ import {
   FALLBACK_TRANSITION_COLOR,
   composeHomepage,
   createActiveSwap,
+  HOMEPAGE_LAYOUT_RATIOS,
+  HOMEPAGE_RATIO_WINDOW,
+  homepageFrameRatio,
+  isWithinHomepageRatioWindow,
   type HomepageMasonrySlot,
   type HomepageMediaPool,
   normalizeTransitionColor,
@@ -108,6 +112,79 @@ describe('composeHomepage', () => {
     const second = composeHomepage([photoshoot], media, seededRandom(42))
 
     expect(first.slots).toEqual(second.slots)
+  })
+
+  it.each([
+    { draw: 0, count: 4 },
+    { draw: 0.75, count: 5 },
+  ])('prefers measurable portraits for all $count openings when enough exist', ({ draw, count }) => {
+    const photoshoot = shoot(1)
+    const media = [
+      image(1, photoshoot, { width: 1200, height: 800 }),
+      image(2, photoshoot, { width: 800, height: 800 }),
+      image(3, photoshoot, { height: 1200 }),
+      ...Array.from({ length: 6 }, (_, index) =>
+        image(index + 4, photoshoot, { width: 800, height: 1200 })),
+    ]
+    let draws = 0
+    const { pools, slots } = composeHomepage([photoshoot], media, () => draws++ === 0 ? draw : 0)
+
+    expect(pools[0].media).toEqual(media)
+    expect(slots).toHaveLength(count)
+    expect(slots.map((slot) => slot.initialMediaIndex))
+      .toEqual(Array.from({ length: count }, (_, index) => index + 3))
+  })
+
+  it('uses every available portrait before distinct remainder openings in each own pool', () => {
+    const photoshoots = [shoot(1), shoot(2)]
+    const media = photoshoots.flatMap((photoshoot, poolIndex) => [
+      image(poolIndex * 10 + 1, photoshoot, { width: 1015, height: 1000 }),
+      image(poolIndex * 10 + 2, photoshoot),
+      image(poolIndex * 10 + 3, photoshoot, { width: 985, height: 1000 }),
+      image(poolIndex * 10 + 4, photoshoot, { width: 985, height: 1000 }),
+      image(poolIndex * 10 + 5, photoshoot, { width: 1000, height: 1000 }),
+    ])
+    const { pools, slots } = composeHomepage(photoshoots, media, () => 0)
+
+    expect(slots).toHaveLength(8)
+    for (const pool of pools) {
+      const openings = slots.filter((slot) => slot.poolId === pool.id)
+      expect(openings.map((slot) => slot.initialMediaIndex)).toEqual([2, 3, 0, 1])
+      expect(new Set(openings.map((slot) => slot.initialMediaIndex)).size).toBe(4)
+      for (const opening of openings) {
+        expect(pool.media[opening.initialMediaIndex].photoshoot).toMatchObject({ slug: pool.photoshootSlug })
+        // Isolate each opening so sibling occupancy cannot hide the rotation gate.
+        const result = scheduleNextSwap({
+          pools: [pool], slots: [opening], currentIndexes: {}, schedulerState: schedulerState(),
+        })
+        if ([2, 3].includes(opening.initialMediaIndex)) {
+          expect(result.swap?.nextIndex).toBe(opening.initialMediaIndex === 2 ? 3 : 2)
+        } else {
+          expect(result.swap).toBeNull()
+        }
+      }
+    }
+  })
+
+  it.each([
+    { name: 'landscape', dimensions: { width: 1200, height: 800 } },
+    { name: 'square', dimensions: { width: 800, height: 800 } },
+    { name: 'unmeasurable', dimensions: {} },
+    { name: 'portrait', dimensions: { width: 800, height: 1200 } },
+  ])('preserves the old openings and random draws for an all-$name pool', ({ name, dimensions }) => {
+    const photoshoot = shoot(1)
+    const media = Array.from({ length: 7 }, (_, index) => image(index + 1, photoshoot, dimensions))
+    const random = sequenceRandom(0.75, 0.9, 0.8, 0.7, 0.6, 0.5)
+    let draws = 0
+    const composition = composeHomepage([photoshoot], media, () => { draws += 1; return random() })
+
+    expect(composition.slots.map((slot) => slot.initialMediaIndex)).toEqual([6, 5, 1, 2, 3])
+    expect(draws).toBe(11)
+    if (name !== 'portrait') {
+      expect(scheduleNextSwap({
+        ...composition, currentIndexes: {}, schedulerState: schedulerState(),
+      }).swap).toBeNull()
+    }
   })
 
   it('retains a complete deduplicated pool while sampling more than five media', () => {
@@ -266,6 +343,25 @@ describe('selectNextMediaIndex', () => {
       assignedIndexes: [],
     })).toBeNull()
   })
+
+  it('falls through refused candidates while retaining exclusions and sibling diversity', () => {
+    expect(selectNextMediaIndex({
+      poolSize: 6,
+      currentIndex: 0,
+      assignedIndexes: [0, 2],
+      excludedIndexes: new Set([3]),
+      accept: (index) => index !== 1,
+    })).toBe(4)
+  })
+
+  it('returns no candidate when the predicate refuses every legal index', () => {
+    expect(selectNextMediaIndex({
+      poolSize: 3,
+      currentIndex: 0,
+      assignedIndexes: [0],
+      accept: () => false,
+    })).toBeNull()
+  })
 })
 
 const schedulerState = (): SwapSchedulerState => ({
@@ -281,6 +377,8 @@ const pool = (id: string, size: number): HomepageMediaPool => ({
   media: Array.from({ length: size }, (_, index) => ({
     id: `${id}-${index}`,
     url: `/media/${id}-${index}.jpg`,
+    width: 800,
+    height: 1200,
   })),
 })
 
@@ -290,7 +388,153 @@ const slot = (
   initialMediaIndex = 0,
 ): HomepageMasonrySlot => ({ id, poolId, initialMediaIndex })
 
+describe('homepageFrameRatio', () => {
+  it('pins the frame to the opening media rather than another pool item', () => {
+    const mediaPool = pool('shoot', 2)
+    mediaPool.media[0] = { width: 985, height: 1000 }
+    mediaPool.media[1] = { width: 800, height: 1200 }
+    const openingSlot = slot('opening', 'shoot', 1)
+
+    expect(homepageFrameRatio(openingSlot, [openingSlot], mediaPool)).toBe(2 / 3)
+  })
+
+  it('falls back to each CSS layout-class ratio and wraps after seven slots', () => {
+    const mediaPool = pool('shoot', 1)
+    mediaPool.media[0] = { id: 'unmeasurable', url: '/media/unmeasurable.jpg' }
+    const slots = Array.from({ length: 8 }, (_, index) => slot(`slot-${index}`, 'shoot'))
+
+    expect(HOMEPAGE_LAYOUT_RATIOS).toEqual([3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3])
+    expect(slots.map((item) => homepageFrameRatio(item, slots, mediaPool)))
+      .toEqual([3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3, 3 / 4])
+  })
+})
+
+describe('isWithinHomepageRatioWindow', () => {
+  it('includes both 15% edges and excludes ratios just beyond them', () => {
+    expect(HOMEPAGE_RATIO_WINDOW).toBe(0.15)
+    expect(isWithinHomepageRatioWindow(17 / 32, 5 / 8)).toBe(true)
+    expect(isWithinHomepageRatioWindow(23 / 32, 5 / 8)).toBe(true)
+    expect(isWithinHomepageRatioWindow(17 / 32 - 0.000001, 5 / 8)).toBe(false)
+    expect(isWithinHomepageRatioWindow(23 / 32 + 0.000001, 5 / 8)).toBe(false)
+  })
+
+  it('rejects a near-square portrait against a 2:3 frame but accepts a matching portrait', () => {
+    expect(isWithinHomepageRatioWindow(985 / 1000, 2 / 3)).toBe(false)
+    expect(isWithinHomepageRatioWindow(2 / 3, 2 / 3)).toBe(true)
+  })
+})
+
 describe('scheduleNextSwap', () => {
+  it('rotates only compatible portraits in round-robin order through a mixed pool', () => {
+    const mediaPool = pool('mixed', 5)
+    mediaPool.media[1] = { width: 985, height: 1000 }
+    mediaPool.media[2] = { width: 1200, height: 800 }
+    mediaPool.media[3] = { url: '/media/unknown.jpg' }
+    const slots = [slot('mixed-slot', 'mixed')]
+    let currentIndexes: Record<string, number> = {}
+    let state = schedulerState()
+    const visited: number[] = []
+
+    for (let wave = 0; wave < 5; wave += 1) {
+      const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes, schedulerState: state })
+      expect(result.swap).not.toBeNull()
+      const swap = result.swap!
+      visited.push(swap.nextIndex)
+      currentIndexes = { ...currentIndexes, [swap.slotId]: swap.nextIndex }
+      state = result.schedulerState
+    }
+
+    expect(visited).toEqual([4, 0, 4, 0, 4])
+  })
+
+  it.each([
+    { name: 'landscape', media: { width: 1200, height: 800 } },
+    { name: 'square', media: { width: 1000, height: 1000 } },
+    { name: 'unmeasurable', media: { url: '/media/unknown.jpg' } },
+    { name: 'near-square portrait outside the window', media: { width: 985, height: 1000 } },
+  ])('holds the current media and scheduler state when only unused media are $name', ({ media }) => {
+    const mediaPool = pool('shoot', 2)
+    mediaPool.media[1] = media
+    const state = schedulerState()
+    const currentIndexes = { opening: 0 }
+    const result = scheduleNextSwap({
+      pools: [mediaPool], slots: [slot('opening', 'shoot')], currentIndexes, schedulerState: state,
+    })
+
+    expect(result.swap).toBeNull()
+    expect(result.schedulerState).toBe(state)
+    expect(currentIndexes).toEqual({ opening: 0 })
+  })
+
+  it.each([
+    { name: 'landscape', media: { width: 1015, height: 1000 } },
+    { name: 'unmeasurable', media: { url: '/media/unknown.jpg' } },
+  ])('refuses a $name opening even when a portrait fits its frame window', ({ media }) => {
+    const mediaPool = pool('shoot', 2)
+    mediaPool.media[0] = media
+    mediaPool.media[1] = { width: 985, height: 1000 }
+    const slots = [slot('opening', 'shoot')]
+    if (media.width === undefined) mediaPool.media[1] = { width: 720, height: 1000 }
+    const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes: {}, schedulerState: schedulerState() })
+
+    expect(result.swap).toBeNull()
+  })
+
+  it.each([0.84, 1.16])('rejects ratio factor %s at sixteen percent and accepts fourteen percent', (factor) => {
+    const mediaPool = pool('shoot', 3)
+    mediaPool.media[1] = { width: 800 * factor, height: 1200 }
+    mediaPool.media[2] = { width: 800 * (factor < 1 ? 0.86 : 1.14), height: 1200 }
+
+    expect(scheduleNextSwap({
+      pools: [mediaPool], slots: [slot('opening', 'shoot')], currentIndexes: {}, schedulerState: schedulerState(),
+    }).swap?.nextIndex).toBe(2)
+  })
+
+  it('keeps the window pinned to the opening across successive accepted swaps', () => {
+    const mediaPool = pool('shoot', 4)
+    mediaPool.media[1] = { width: 850, height: 1200 }
+    mediaPool.media[2] = { width: 912, height: 1200 }
+    mediaPool.media[3] = { width: 1000, height: 1200 }
+    const slots = [slot('opening', 'shoot')]
+    let currentIndexes: Record<string, number> = {}
+    let state = schedulerState()
+    const visited: number[] = []
+    for (let wave = 0; wave < 4; wave += 1) {
+      const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes, schedulerState: state })
+      expect(result.swap).not.toBeNull()
+      const swap = result.swap!
+      visited.push(swap.nextIndex)
+      currentIndexes = { [swap.slotId]: swap.nextIndex }
+      state = result.schedulerState
+    }
+
+    expect(visited).toEqual([1, 2, 0, 1])
+  })
+
+  it('retries exhausted failures without admitting an incompatible candidate', () => {
+    const mediaPool = pool('shoot', 3)
+    mediaPool.media[1] = { width: 985, height: 1000 }
+    const slots = [slot('opening', 'shoot')]
+    const state = { ...schedulerState(), failedCandidates: { 'shoot:opening': [2] } }
+    const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes: {}, schedulerState: state })
+
+    expect(result.swap).toMatchObject({ currentIndex: 0, nextIndex: 2 })
+    expect(result.schedulerState.failedCandidates).toEqual({})
+    expect(state.failedCandidates).toEqual({ 'shoot:opening': [2] })
+  })
+
+  it('accepts portrait videos using their video or poster dimensions', () => {
+    const mediaPool = pool('shoot', 3)
+    mediaPool.media[1] = { kind: 'video', videoWidth: 800, videoHeight: 1200 }
+    mediaPool.media[2] = { kind: 'video', posterWidth: 800, posterHeight: 1200 }
+    const slots = [slot('opening', 'shoot')]
+    for (const currentIndex of [0, 1]) {
+      expect(scheduleNextSwap({
+        pools: [mediaPool], slots, currentIndexes: { opening: currentIndex }, schedulerState: schedulerState(),
+      }).swap?.nextIndex).toBe(currentIndex + 1)
+    }
+  })
+
   it('only schedules slots included in the eligible set', () => {
     const pools = [pool('shoot', 4)]
     const slots = [

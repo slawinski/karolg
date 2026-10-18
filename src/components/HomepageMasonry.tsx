@@ -22,6 +22,7 @@ import {
   type HomepageMasonrySlot,
   type HomepageMediaPool,
   type HomepageWaveDirection,
+  homepageFrameRatio,
   initialIndexForSlot,
   scheduleNextSwap,
   recordFailedCandidate,
@@ -33,7 +34,6 @@ import {
 } from '@/lib/homepage'
 import {
   inferMediaKind,
-  mediaDimensions,
   mediaPosterUrl,
   mediaPresentationUrl,
   type MediaLike,
@@ -747,7 +747,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                     `${pool.photoshootTitle} portfolio ${inferMediaKind(currentMedia)}`
                   // A slot's frame belongs to the opening composition, not the
                   // currently rotating asset. Keep subsequent rows stationary.
-                  const dimensions = mediaDimensions(pool.media[initialIndexForSlot(slot, pool.media.length)])
+                  const frameRatio = homepageFrameRatio(slot, slots, pool)
 
                   return (
                     <article
@@ -758,9 +758,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                     >
                       <figure
                         className="image-frame"
-                        style={dimensions
-                          ? { aspectRatio: `${dimensions.width} / ${dimensions.height}` }
-                          : undefined}
+                        style={{ aspectRatio: frameRatio }}
                       >
                         {(isFirstRow || isSwapping) && currentSrc ? (
                           <div

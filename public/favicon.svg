@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="K">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Carla Gorecka">
   <rect width="64" height="64" fill="#f5f4f0"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#10100f" stroke-width="3"/>
   <path
-    d="M23 18v28M23 33l17-15M23 33l18 13"
+    d="M50 12C29 -1 10 13 10 32S29 65 50 52M50 23C37 14 26 22 26 33S40 50 50 41V33H40"
     fill="none"
     stroke="#10100f"
-    stroke-width="4"
-    stroke-linecap="square"
+    stroke-width="5.5"
     stroke-linejoin="miter"
   />
 </svg>

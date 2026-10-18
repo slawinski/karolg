@@ -1,5 +1,5 @@
 import type { MediaLike, PhotoshootLike } from './portfolio'
-import { isUsableMedia, mediaPresentationUrl, mediaPosterUrl, mediaRatio } from './media'
+import { isPortraitMedia, isUsableMedia, mediaPresentationUrl, mediaPosterUrl, mediaRatio } from './media'
 
 export type RandomSource = () => number
 
@@ -218,6 +218,7 @@ type MediaCandidateSelection = {
   currentIndex: number
   assignedIndexes: readonly number[]
   excludedIndexes?: ReadonlySet<number>
+  accept?: (index: number) => boolean
 }
 
 export function selectNextMediaIndex({
@@ -225,6 +226,7 @@ export function selectNextMediaIndex({
   currentIndex,
   assignedIndexes,
   excludedIndexes = new Set(),
+  accept = () => true,
 }: MediaCandidateSelection) {
   if (poolSize <= 1) return null
 
@@ -257,7 +259,8 @@ export function selectNextMediaIndex({
   const legalCandidates = candidates.filter(
     (candidate) =>
       !excludedIndexes.has(candidate) &&
-      new Set([...siblingIndexes, candidate]).size >= visibleDiversity,
+      new Set([...siblingIndexes, candidate]).size >= visibleDiversity &&
+      accept(candidate),
   )
 
   if (!legalCandidates.length) return null
@@ -370,6 +373,15 @@ export function scheduleNextSwap({
     ).filter((slot) => !eligibleSlotIds || eligibleSlotIds.has(slot.id))
     const exhaustedFailureKeys = new Set<string>()
     const options = orderedSlots.flatMap((slot) => {
+      if (!isPortraitMedia(pool.media[initialIndexForSlot(slot, poolSize)])) return []
+
+      const frameRatio = homepageFrameRatio(slot, slots, pool)
+      const accept = (index: number) => {
+        const media = pool.media[index]
+        const ratio = mediaRatio(media)
+        return isPortraitMedia(media) && ratio !== null &&
+          isWithinHomepageRatioWindow(ratio, frameRatio)
+      }
       const currentIndex = indexForSlot(slot, poolSize, currentIndexes)
       const key = failureKey(pool.id, slot.id)
       const excludedIndexes = new Set(schedulerState.failedCandidates[key] || [])
@@ -378,12 +390,14 @@ export function scheduleNextSwap({
         currentIndex,
         assignedIndexes,
         excludedIndexes,
+        accept,
       })
       if (nextIndex == null && excludedIndexes.size) {
         nextIndex = selectNextMediaIndex({
           poolSize,
           currentIndex,
           assignedIndexes,
+          accept,
         })
         exhaustedFailureKeys.add(key)
       }

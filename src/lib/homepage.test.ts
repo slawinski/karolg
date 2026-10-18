@@ -270,6 +270,25 @@ describe('selectNextMediaIndex', () => {
       assignedIndexes: [],
     })).toBeNull()
   })
+
+  it('falls through refused candidates while retaining exclusions and sibling diversity', () => {
+    expect(selectNextMediaIndex({
+      poolSize: 6,
+      currentIndex: 0,
+      assignedIndexes: [0, 2],
+      excludedIndexes: new Set([3]),
+      accept: (index) => index !== 1,
+    })).toBe(4)
+  })
+
+  it('returns no candidate when the predicate refuses every legal index', () => {
+    expect(selectNextMediaIndex({
+      poolSize: 3,
+      currentIndex: 0,
+      assignedIndexes: [0],
+      accept: () => false,
+    })).toBeNull()
+  })
 })
 
 const schedulerState = (): SwapSchedulerState => ({
@@ -285,6 +304,8 @@ const pool = (id: string, size: number): HomepageMediaPool => ({
   media: Array.from({ length: size }, (_, index) => ({
     id: `${id}-${index}`,
     url: `/media/${id}-${index}.jpg`,
+    width: 800,
+    height: 1200,
   })),
 })
 
@@ -306,6 +327,7 @@ describe('homepageFrameRatio', () => {
 
   it('falls back to each CSS layout-class ratio and wraps after seven slots', () => {
     const mediaPool = pool('shoot', 1)
+    mediaPool.media[0] = { id: 'unmeasurable', url: '/media/unmeasurable.jpg' }
     const slots = Array.from({ length: 8 }, (_, index) => slot(`slot-${index}`, 'shoot'))
 
     expect(HOMEPAGE_LAYOUT_RATIOS).toEqual([3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3])
@@ -330,6 +352,116 @@ describe('isWithinHomepageRatioWindow', () => {
 })
 
 describe('scheduleNextSwap', () => {
+  it('rotates only compatible portraits in round-robin order through a mixed pool', () => {
+    const mediaPool = pool('mixed', 5)
+    mediaPool.media[1] = { width: 985, height: 1000 }
+    mediaPool.media[2] = { width: 1200, height: 800 }
+    mediaPool.media[3] = { url: '/media/unknown.jpg' }
+    const slots = [slot('mixed-slot', 'mixed')]
+    let currentIndexes: Record<string, number> = {}
+    let state = schedulerState()
+    const visited: number[] = []
+
+    for (let wave = 0; wave < 5; wave += 1) {
+      const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes, schedulerState: state })
+      expect(result.swap).not.toBeNull()
+      const swap = result.swap!
+      visited.push(swap.nextIndex)
+      currentIndexes = { ...currentIndexes, [swap.slotId]: swap.nextIndex }
+      state = result.schedulerState
+    }
+
+    expect(visited).toEqual([4, 0, 4, 0, 4])
+  })
+
+  it.each([
+    { name: 'landscape', media: { width: 1200, height: 800 } },
+    { name: 'square', media: { width: 1000, height: 1000 } },
+    { name: 'unmeasurable', media: { url: '/media/unknown.jpg' } },
+    { name: 'near-square portrait outside the window', media: { width: 985, height: 1000 } },
+  ])('holds the current media and scheduler state when only unused media are $name', ({ media }) => {
+    const mediaPool = pool('shoot', 2)
+    mediaPool.media[1] = media
+    const state = schedulerState()
+    const currentIndexes = { opening: 0 }
+    const result = scheduleNextSwap({
+      pools: [mediaPool], slots: [slot('opening', 'shoot')], currentIndexes, schedulerState: state,
+    })
+
+    expect(result.swap).toBeNull()
+    expect(result.schedulerState).toBe(state)
+    expect(currentIndexes).toEqual({ opening: 0 })
+  })
+
+  it.each([
+    { name: 'landscape', media: { width: 1015, height: 1000 } },
+    { name: 'unmeasurable', media: { url: '/media/unknown.jpg' } },
+  ])('refuses a $name opening even when a portrait fits its frame window', ({ media }) => {
+    const mediaPool = pool('shoot', 2)
+    mediaPool.media[0] = media
+    mediaPool.media[1] = { width: 985, height: 1000 }
+    const slots = [slot('opening', 'shoot')]
+    if (media.width === undefined) mediaPool.media[1] = { width: 720, height: 1000 }
+    const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes: {}, schedulerState: schedulerState() })
+
+    expect(result.swap).toBeNull()
+  })
+
+  it.each([0.84, 1.16])('rejects ratio factor %s at sixteen percent and accepts fourteen percent', (factor) => {
+    const mediaPool = pool('shoot', 3)
+    mediaPool.media[1] = { width: 800 * factor, height: 1200 }
+    mediaPool.media[2] = { width: 800 * (factor < 1 ? 0.86 : 1.14), height: 1200 }
+
+    expect(scheduleNextSwap({
+      pools: [mediaPool], slots: [slot('opening', 'shoot')], currentIndexes: {}, schedulerState: schedulerState(),
+    }).swap?.nextIndex).toBe(2)
+  })
+
+  it('keeps the window pinned to the opening across successive accepted swaps', () => {
+    const mediaPool = pool('shoot', 4)
+    mediaPool.media[1] = { width: 850, height: 1200 }
+    mediaPool.media[2] = { width: 912, height: 1200 }
+    mediaPool.media[3] = { width: 1000, height: 1200 }
+    const slots = [slot('opening', 'shoot')]
+    let currentIndexes: Record<string, number> = {}
+    let state = schedulerState()
+    const visited: number[] = []
+    for (let wave = 0; wave < 4; wave += 1) {
+      const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes, schedulerState: state })
+      expect(result.swap).not.toBeNull()
+      const swap = result.swap!
+      visited.push(swap.nextIndex)
+      currentIndexes = { [swap.slotId]: swap.nextIndex }
+      state = result.schedulerState
+    }
+
+    expect(visited).toEqual([1, 2, 0, 1])
+  })
+
+  it('retries exhausted failures without admitting an incompatible candidate', () => {
+    const mediaPool = pool('shoot', 3)
+    mediaPool.media[1] = { width: 985, height: 1000 }
+    const slots = [slot('opening', 'shoot')]
+    const state = { ...schedulerState(), failedCandidates: { 'shoot:opening': [2] } }
+    const result = scheduleNextSwap({ pools: [mediaPool], slots, currentIndexes: {}, schedulerState: state })
+
+    expect(result.swap).toMatchObject({ currentIndex: 0, nextIndex: 2 })
+    expect(result.schedulerState.failedCandidates).toEqual({})
+    expect(state.failedCandidates).toEqual({ 'shoot:opening': [2] })
+  })
+
+  it('accepts portrait videos using their video or poster dimensions', () => {
+    const mediaPool = pool('shoot', 3)
+    mediaPool.media[1] = { kind: 'video', videoWidth: 800, videoHeight: 1200 }
+    mediaPool.media[2] = { kind: 'video', posterWidth: 800, posterHeight: 1200 }
+    const slots = [slot('opening', 'shoot')]
+    for (const currentIndex of [0, 1]) {
+      expect(scheduleNextSwap({
+        pools: [mediaPool], slots, currentIndexes: { opening: currentIndex }, schedulerState: schedulerState(),
+      }).swap?.nextIndex).toBe(currentIndex + 1)
+    }
+  })
+
   it('only schedules slots included in the eligible set', () => {
     const pools = [pool('shoot', 4)]
     const slots = [

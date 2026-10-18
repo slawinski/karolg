@@ -6,13 +6,26 @@ const [base, output] = process.argv.slice(2)
 const browser = await chromium.launch()
 const report = { routes: [], checks: [] }
 try {
-  const sitemap = await (await fetch(new URL('/sitemap.xml', base))).text()
-  for (const [, url] of sitemap.matchAll(/<loc>(.*?)<\/loc>/g)) {
+  const sitemapResponse = await fetch(new URL('/sitemap.xml', base))
+  assert.equal(sitemapResponse.status, 200, 'Sitemap discovery failed')
+  const sitemap = await sitemapResponse.text()
+  assert(/<urlset(?:\s[^>]*)?>[\s\S]*<\/urlset>/.test(sitemap), 'Expected a sitemap URL list')
+  const urls = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(([, loc]) => {
+    const canonical = new URL(loc.trim().replaceAll('&amp;', '&'))
+    assert(['http:', 'https:'].includes(canonical.protocol), 'Expected an HTTP sitemap URL')
+    const target = new URL(base)
+    target.pathname = canonical.pathname
+    target.search = canonical.search
+    target.hash = ''
+    return target
+  })
+  assert(urls.length > 0, 'Sitemap URL list is empty')
+  for (const url of urls) {
     const response = await fetch(url)
     const html = await response.text()
-    assert.equal(response.status, 200)
-    assert(html.includes('<h1'))
-    report.routes.push({ path: new URL(url).pathname, status: response.status })
+    report.routes.push({ path: url.pathname, url: url.href, status: response.status })
+    assert.equal(response.status, 200, `Route failed: ${url.href}`)
+    assert(html.includes('<h1'), `Route has no heading: ${url.href}`)
   }
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })
   const page = await context.newPage()

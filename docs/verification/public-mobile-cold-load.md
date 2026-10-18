@@ -269,3 +269,75 @@ actual delayed autoplay, cancellation/fallback/cleanup tests; R7: document phase
 404→200 robots correction and bounded live uncertainty. AE4: responsive reserved
 frames and full-cycle zero-shift observations. External exceptions are WebKit
 execution and post-deployment/live performance, not missing implementation units.
+
+## Review fixes — findings #2 and #1 (2026-10-18)
+
+Source: temporary `ce-code-review/performance-final/review.json`. These are
+localized follow-up fixes, not changes to the plan's media behavior or budgets.
+
+- **#2, incoming visibility:** `HomepageVideo` now omits inline opacity while
+  preparing. The existing incoming-layer CSS and `gallery-in` animation own the
+  reveal; normal active/outgoing playback still uses inline opacity 0/1.
+  Extended the existing connected-candidate/stagger browser proof before editing
+  production code. Chromium failed at the new preparation assertion with
+  **expected `0`, received `1`**. After the fix, computed opacity is 0 before
+  readiness, while a ready peer waits for the last candidate, and through 239ms
+  of the queued stagger. At the 240ms launch, the real CSS animation exists;
+  seeking its clock verifies opacity 0 at 750ms, positive at 1125ms and 1 at
+  1500ms. Seeking is intentional: fake JS timers do not advance CSS animation
+  time. Existing identity, stagger, commit and cleanup assertions remain intact.
+  The active-video lifecycle proof also checks computed opacity 1 during play
+  and 0 after moving offscreen.
+- **#1, verifier target:** sitemap discovery must return 200 and a nonempty URL
+  list with valid HTTP(S) locations. Each location's pathname and search are
+  assigned to the requested BASE; query `&amp;` is decoded. Reports now record
+  the exact requested URL and status, including a failing route before asserting.
+  Added `scripts/verify-public-navigation.test.ts`, invoking the actual CLI
+  against an ephemeral loopback server. Its sitemap advertises a different
+  canonical origin, `/work/ok?revision=2&amp;view=full`, and `/work/broken`.
+  Before the fix the target received only `/sitemap.xml`, failing the expected
+  project-request assertion; empty discovery also incorrectly entered browser
+  navigation and timed out. After the fix the server receives both target
+  project paths, including the decoded search, records the exact target URLs
+  with statuses 200 and 500, and the CLI fails specifically on the broken target
+  route. Three additional cases reject a 500 sitemap, empty list and invalid URL.
+- **Optional review coverage:** added deterministic browser cases for 500ms
+  visible + 5000ms hidden + the remaining 1000ms visible readiness budget,
+  including actual source acquisition and autoplay after publication. Added
+  separate deferred play promises across hide/resume and source replacement:
+  the newer promise settles first, the obsolete one last, without pausing the
+  current owner or restoring its poster. Both pass without production hook or
+  readiness changes.
+
+Final local checks on this follow-up tree:
+
+```text
+pnpm test
+  24 files / 168 tests passed (includes all 4 CLI fixture cases)
+pnpm typecheck
+  passed
+pnpm test:browser src/components/HomepageMasonry.browser.test.tsx \
+  src/components/PhotoshootVideo.browser.test.tsx \
+  src/components/PublicMediaReadiness.browser.test.tsx \
+  --browser.screenshotDirectory=/var/folders/zl/fkgnlthd363175f4ffymzcjh0000gn/T/opencode \
+  --attachmentsDir=/var/folders/zl/fkgnlthd363175f4ffymzcjh0000gn/T/opencode
+  Chromium: 3 files / 56 tests passed
+git diff --check
+  passed
+```
+
+The earlier production navigation receipts did not record checked origins and
+must not be treated as all-route proof for BASE. This follow-up proves the
+verifier correction with controlled servers; it does **not** claim a fresh
+full production-navigation run. Port 3110's prior production copy was not
+synced/rebuilt or used as evidence for this fix. The existing full-build receipt
+above remains prior evidence; no new build was needed for the one-line opacity
+binding and standalone verifier changes after Chromium/type verification.
+WebKit and live-deployment limitations above remain unchanged.
+
+No commits, pushes, real CMS or `.env` edits, or port-3108 operations were made.
+The pre-existing `src/lib/homepage.ts` simplification is preserved. Excluded
+artifact directories remain uncommitted: the first deliberate red browser run
+emitted a failure screenshot despite `--browser.screenshotFailures=false`;
+subsequent runs redirected artifact paths outside the checkout. No artifact
+cleanup or edits to pre-existing user artifacts were attempted.

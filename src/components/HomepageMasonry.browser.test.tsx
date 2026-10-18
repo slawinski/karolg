@@ -385,11 +385,13 @@ describe('Homepage browser lifecycle', () => {
 
     await emitIntersection(video, 0.1)
     await vi.waitFor(() => expect(play).toHaveBeenCalled())
+    expect(getComputedStyle(video).opacity).toBe('1')
     const pauseBeforeOffscreen = pause.mock.calls.length
     await emitIntersection(video, 0.09)
     await vi.waitFor(() => {
       expect(pause.mock.calls.length).toBeGreaterThan(pauseBeforeOffscreen)
     })
+    expect(getComputedStyle(video).opacity).toBe('0')
 
     await emitIntersection(video, 0.5)
     await vi.waitFor(() => expect(play.mock.calls.length).toBeGreaterThan(1))
@@ -703,6 +705,7 @@ describe('Homepage browser lifecycle', () => {
     expect(nodes).toHaveLength(5)
     expect(nodes.every((node) => node.isConnected)).toBe(true)
     expect(createdVideos.filter((video) => video.hasAttribute('src'))).toEqual(nodes)
+    nodes.forEach((node) => expect(getComputedStyle(node).opacity).toBe('0'))
     await act(async () => {
       nodes.slice(1).reverse().forEach((node) => node.dispatchEvent(new Event('canplay')))
       // A later error cannot override a ready terminal result.
@@ -710,13 +713,28 @@ describe('Homepage browser lifecycle', () => {
     })
     expect(document.querySelector('.is-swapping')).toBeNull()
     expect(incomingNodes()).toEqual(nodes)
+    nodes.forEach((node) => expect(getComputedStyle(node).opacity).toBe('0'))
     await act(async () => { nodes[0].dispatchEvent(new Event('canplay')) })
     expect(nodes[0].closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(true)
     expect(nodes[1].closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(false)
+    expect(getComputedStyle(nodes[1]).opacity).toBe('0')
     await advance(239)
     expect(incomingNodes()).toEqual(nodes)
     expect(nodes[1].closest('.gallery-stage')?.classList.contains('is-swapping')).toBe(false)
-    await advance(721)
+    expect(getComputedStyle(nodes[1]).opacity).toBe('0')
+    await advance(1)
+    // Seek the real CSS animation: JS fake timers do not advance the browser animation clock.
+    const reveal = nodes[1].getAnimations().find((animation) =>
+      animation instanceof CSSAnimation && animation.animationName === 'gallery-in')!
+    expect(reveal).toBeDefined()
+    reveal.pause()
+    reveal.currentTime = 750
+    expect(getComputedStyle(nodes[1]).opacity).toBe('0')
+    reveal.currentTime = 1125
+    expect(Number(getComputedStyle(nodes[1]).opacity)).toBeGreaterThan(0)
+    reveal.currentTime = 1500
+    expect(getComputedStyle(nodes[1]).opacity).toBe('1')
+    await advance(720)
     expect(incomingNodes()).toEqual(nodes)
     expect(document.querySelectorAll('.gallery-stage.is-swapping')).toHaveLength(5)
     await act(async () => {

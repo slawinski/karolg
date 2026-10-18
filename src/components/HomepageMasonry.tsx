@@ -119,7 +119,7 @@ export function HomepageVideo({
       aria-label={hidden ? undefined : alt}
       aria-hidden={hidden || undefined}
       className={className}
-      style={{ opacity: playing || preparing ? 1 : 0 }}
+      style={preparing ? undefined : { opacity: playing ? 1 : 0 }}
       loop
       muted
       playsInline

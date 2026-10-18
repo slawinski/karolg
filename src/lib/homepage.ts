@@ -1,5 +1,5 @@
 import type { MediaLike, PhotoshootLike } from './portfolio'
-import { isUsableMedia, mediaPresentationUrl, mediaPosterUrl } from './media'
+import { isUsableMedia, mediaPresentationUrl, mediaPosterUrl, mediaRatio } from './media'
 
 export type RandomSource = () => number
 
@@ -275,6 +275,22 @@ export const initialIndexForSlot = (
   slot: HomepageMasonrySlot,
   poolSize: number,
 ) => poolSize ? slot.initialMediaIndex % poolSize : 0
+
+// Mirrors .masonry-card-1 through .masonry-card-7 in styles.css.
+export const HOMEPAGE_LAYOUT_RATIOS = [3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3] as const
+export const HOMEPAGE_RATIO_WINDOW = 0.15
+
+export function homepageFrameRatio(
+  slot: HomepageMasonrySlot,
+  slots: readonly HomepageMasonrySlot[],
+  pool: HomepageMediaPool,
+) {
+  return mediaRatio(pool.media[initialIndexForSlot(slot, pool.media.length)]) ??
+    HOMEPAGE_LAYOUT_RATIOS[slots.indexOf(slot) % 7]
+}
+
+export const isWithinHomepageRatioWindow = (candidateRatio: number, frameRatio: number) =>
+  Math.abs(candidateRatio - frameRatio) / frameRatio <= HOMEPAGE_RATIO_WINDOW
 
 const indexForSlot = (
   slot: HomepageMasonrySlot,

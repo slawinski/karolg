@@ -7,6 +7,10 @@ import {
   FALLBACK_TRANSITION_COLOR,
   composeHomepage,
   createActiveSwap,
+  HOMEPAGE_LAYOUT_RATIOS,
+  HOMEPAGE_RATIO_WINDOW,
+  homepageFrameRatio,
+  isWithinHomepageRatioWindow,
   type HomepageMasonrySlot,
   type HomepageMediaPool,
   normalizeTransitionColor,
@@ -289,6 +293,41 @@ const slot = (
   poolId: string,
   initialMediaIndex = 0,
 ): HomepageMasonrySlot => ({ id, poolId, initialMediaIndex })
+
+describe('homepageFrameRatio', () => {
+  it('pins the frame to the opening media rather than another pool item', () => {
+    const mediaPool = pool('shoot', 2)
+    mediaPool.media[0] = { width: 985, height: 1000 }
+    mediaPool.media[1] = { width: 800, height: 1200 }
+    const openingSlot = slot('opening', 'shoot', 1)
+
+    expect(homepageFrameRatio(openingSlot, [openingSlot], mediaPool)).toBe(2 / 3)
+  })
+
+  it('falls back to each CSS layout-class ratio and wraps after seven slots', () => {
+    const mediaPool = pool('shoot', 1)
+    const slots = Array.from({ length: 8 }, (_, index) => slot(`slot-${index}`, 'shoot'))
+
+    expect(HOMEPAGE_LAYOUT_RATIOS).toEqual([3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3])
+    expect(slots.map((item) => homepageFrameRatio(item, slots, mediaPool)))
+      .toEqual([3 / 4, 4 / 5, 1, 2 / 3, 5 / 4, 3 / 5, 4 / 3, 3 / 4])
+  })
+})
+
+describe('isWithinHomepageRatioWindow', () => {
+  it('includes both 15% edges and excludes ratios just beyond them', () => {
+    expect(HOMEPAGE_RATIO_WINDOW).toBe(0.15)
+    expect(isWithinHomepageRatioWindow(17 / 32, 5 / 8)).toBe(true)
+    expect(isWithinHomepageRatioWindow(23 / 32, 5 / 8)).toBe(true)
+    expect(isWithinHomepageRatioWindow(17 / 32 - 0.000001, 5 / 8)).toBe(false)
+    expect(isWithinHomepageRatioWindow(23 / 32 + 0.000001, 5 / 8)).toBe(false)
+  })
+
+  it('rejects a near-square portrait against a 2:3 frame but accepts a matching portrait', () => {
+    expect(isWithinHomepageRatioWindow(985 / 1000, 2 / 3)).toBe(false)
+    expect(isWithinHomepageRatioWindow(2 / 3, 2 / 3)).toBe(true)
+  })
+})
 
 describe('scheduleNextSwap', () => {
   it('only schedules slots included in the eligible set', () => {

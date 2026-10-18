@@ -4,6 +4,8 @@ import {
   hasPublishedVideoDerivatives,
   isUsableMedia,
   mediaDimensions,
+  mediaRatio,
+  isPortraitMedia,
   mediaPosterUrl,
   mediaPresentationUrl,
   mediaStatus,
@@ -11,6 +13,26 @@ import {
 } from './media'
 
 describe('canonical media model', () => {
+  it('reads portrait ratios from image, video, and poster dimensions', () => {
+    for (const media of [
+      { width: 800, height: 1200 },
+      { kind: 'video' as const, videoWidth: 800, videoHeight: 1200 },
+      { kind: 'video' as const, posterWidth: 800, posterHeight: 1200 },
+    ]) {
+      expect(mediaRatio(media)).toBe(2 / 3)
+      expect(isPortraitMedia(media)).toBe(true)
+    }
+    expect(isPortraitMedia({ width: 800, height: 800 })).toBe(false)
+    expect(isPortraitMedia({ width: 1200, height: 800 })).toBe(false)
+  })
+
+  it('does not assign a ratio or portrait orientation without dimensions', () => {
+    for (const media of [{}, { width: 0, height: 1200 }, { width: 800 }, { kind: 'video' as const }]) {
+      expect(mediaRatio(media)).toBeNull()
+      expect(isPortraitMedia(media)).toBe(false)
+    }
+  })
+
   it('versions image identities idempotently while preserving other URL parts', () => {
     const image = { id: 7, url: '/api/media/file/portrait.jpg?size=card&v=old#photo', processingRevision: 2 }
     expect(mediaPresentationUrl(image)).toBe('/api/media/file/portrait.jpg?size=card&v=2#photo')

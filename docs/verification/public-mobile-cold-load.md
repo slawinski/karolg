@@ -84,3 +84,188 @@ when the first-row swap committed a different aspect ratio. A regression test
 failed with a frame changing from 114.19 to 360.88px high. Slot geometry is now
 reserved from its opening media, retaining object-fit crops and the composition
 instead of changing the rail topology speculatively.
+
+## U6 — recovered verification and final refinements
+
+The interrupted native run's implementation was retained, not reimplemented.
+Its raw artifacts were inspected on resume. Earlier worker transcripts are not
+available: historical characterization below comes from saved artifacts/source,
+**not** an invented red-test observation. The geometry failure above is a receipt
+already recorded by the earlier host. On resume, the hidden-mount readiness test
+actually failed (`expected 'false' to be 'true'`, 3-second timeout): visibility
+initialization cancelled the frame responsible for discovering critical images.
+The scan now has its own frame handle; visibility still cancels the two final
+paint-opportunity frames. The same regression then passed with the full suite.
+Cached critical images also finish decoding before readiness, with decode failure
+treated as settled. The minimum foreground delay remains 1500ms; no audit-specific
+timing, retries, manual controls, quality changes or production data edits added.
+
+### Repository gates
+
+| Command | Final observed result |
+|---|---|
+| `pnpm typecheck` | Passed |
+| `pnpm test` | 23 files, 164 tests passed (includes real SQLite/media processing compatibility tests) |
+| `pnpm test:browser` | 5 files, 62 Chromium tests passed; initial resume run was 61 passed / 1 failed, then fixed |
+| `pnpm test:browser:webkit src/components/PhotoshootVideo.browser.test.tsx src/components/PhotoshootGallery.browser.test.tsx src/components/HomepageMasonry.browser.test.tsx src/components/PublicMediaReadiness.browser.test.tsx` | Infrastructure failure: browser session connection timeout after 60 seconds; **no tests executed** |
+| `pnpm build` | Passed in isolated production copy; dynamic home/project and static robots/sitemap present |
+| `git diff --check` | Passed |
+
+The build uses the canonical tracked `src` files copied byte-for-byte (87 files,
+combined path/content SHA256 `d7529ed3fd920033d75c31b424f429633cdf7c3ffd3a6844da5ee572d10b304c`).
+Building in the isolated copy avoids replacing `.next` under the user's running
+3108 server. That server and the development server were not restarted. Only the
+verified work-owned 3110 process was restarted. Build dependencies/config are
+unchanged. The temporary query instrumentation used for freshness proof is not in
+the final source/build. Test-generated failure screenshots are excluded, along
+with all pre-existing `.vitest-attachments/` and `src/components/__screenshots__/`
+artifacts; no cleanup or staging of those directories is part of this resume.
+
+### Matched local-production results
+
+`public-mobile-cold-load-results.json` contains extracted per-run metrics, opening
+identities, checks, and SHA256 identities of the raw input artifacts. Raw full
+reports, network logs, traces and screenshots remain under the temporary directory
+named in U1, not in Git. They are required for reproducing the full diagnostics;
+the committed JSON is a summary, not a substitute HAR or Lighthouse report.
+
+Recovered observed Chromium experiment: three cold contexts and three paired warm
+loads per route, warm server optimizer cache, protocol from U1. Values below are
+LCP median (min–max), milliseconds. Every final sample's CLS is 0.
+
+| Route/class | Before cold | After cold | Before warm | After warm |
+|---|---:|---:|---:|---:|
+| `/`, randomized selections | 748 (720–10884) | 748 (736–756) | 468 (376–528) | 444 (204–580) |
+| `/work/A`, still | 712 (712–716) | 728 (716–728) | 200 (200–204) | 200 (200–212) |
+| `/work/B`, still | 732 (724–732) | 728 (716–732) | 200 (196–204) | 212 (208–216) |
+| `/work/c`, larger still gallery | 724 (708–748) | 716 (712–720) | 184 (184–216) | 200 (200–204) |
+| `/work/d`, mixed/video-first | 2500 (2496–2512) | 716 (712–724) | 200 (196–200) | 212 (212–216) |
+
+The mixed gallery's cold LCP decreased 71.4%. Completed resource bytes at the
+same visual cutoff (both visible video posters ready, including the baseline's
+native posters) fell from 409,256 to 82,492 (79.8%). Warm resource bytes at this
+cutoff were already zero. Do **not** compare only eager-image bytes here: adding
+critical video posters changes that set between revisions. These are completed
+resource transfer sizes, not partially transferred in-flight bytes or total
+session traffic. Rich media is still downloaded and played later.
+
+Homepage decoded document median fell from 101,146 to 75,964 bytes (24.9%);
+opening media remain random and all eligible pool members are retained. Project
+HTML increases slightly from the readiness/poster markup (mixed page 18,772 to
+24,437 bytes); project queries no longer load unrelated portfolio data. The
+home's initial LCP was already subsecond in most trace samples: the original
+median did not improve, although the outlier range narrowed. No uniform speedup
+across still-only pages is claimed.
+
+Investigation of `/work/A`'s one-frame cold increase: repeat on the final
+uninstrumented production build gave cold 716 (712–716), warm 196 (196–208),
+blocking 30ms cold / 0 warm, CLS 0. Thus the 16ms increase was not sustained.
+A fresh randomized homepage repeat gave cold 716 (700–732), warm 208 (204–460),
+blocking 28–30ms cold / 0 warm, CLS 0. These are separate final rechecks, not a
+replacement for the original comparison. The corrected measurement script saves
+opening identities before swaps. Older homepage `criticalEnd`/playback-before-
+critical fields sampled eager nodes after a swap and can refer to incoming media:
+they do **not** prove an acquisition violation or quantify initial-byte savings.
+Use the readiness-tagged acquisition and delayed-poster network checks below.
+
+`/work/B` was also rechecked rather than averaging away its 12ms warm difference:
+cold 736 (732–740), warm 204 (200–208), blocking 29–32ms cold / 0 warm, CLS 0.
+The warm median returns to the baseline range; the cold median is 4ms above the
+baseline's maximum, versus 4ms below in the original after run. This is a
+single-frame-scale variation, not evidence of a uniform regression or gain.
+Still-only cold LCP is already about 0.7 seconds, and warm LCP about 0.2 seconds;
+scoped-query reduction and acquisition priority, not manufactured millisecond
+gains, are the relevant proof at that floor. Three runs are not a statistical
+guarantee against future regressions.
+
+Observed long-task blocking (not Lighthouse TBT) was 28–59ms cold home before,
+28–30ms after; still galleries changed by single-digit milliseconds (before
+27–32, after 26–36). Mixed gallery was 29–30 before, 34 after. This small extra
+client boundary cost is disclosed, not described as a TBT improvement.
+
+### Lighthouse, separately from observed traces
+
+Recovered full `cold-lh-{before,after}-{home,video}-{1,2,3}.json` and matching
+`-0.trace.json`/`-0.devtoolslog.json` files contain Lighthouse 13.4.1 / Chrome 155,
+mobile simulated throttling, 412×823 DPR1.75, 4× CPU, 150ms RTT and 1638.4Kbps
+throughput. These are local controlled-data runs, not the user's live Moto G Power
+capture. Earlier `canary-cold-lh-*` attempts are preserved separately and are not
+mixed into this comparison. All twelve selected reports have complete performance
+metrics; there is no recorded runtime error in the extracted reports.
+
+| Metric, median (range) | Home before | Home after | Video before | Video after |
+|---|---:|---:|---:|---:|
+| Performance score | 96 (87–98) | 96 (96–96) | 91 (91–92) | 98 (98–98) |
+| LCP, ms | 2718 (2418–3118) | 2789 (2785–2792) | 3460 (3386–3461) | 2411 (2409–2412) |
+| TBT, ms | 18.5 (17–326.5) | 16.5 (15.5–17) | 31 (30–32) | 15.5 (14.5–16) |
+| FCP, ms | 909 (906–915) | 906 (904–908) | 911 (910–911) | 905 (905–905) |
+| Speed Index, ms | 909 (906–1283) | 906 (904–908) | 911 (910–911) | 905 (905–905) |
+| CLS | 0 | 0 | 0 | 0 |
+
+The home LCP increase is inside its baseline selection range; this is not proof
+of improved homepage Lighthouse LCP. Score ≥90 and TBT ≤200ms are attained in
+these final local samples; LCP ≤2500ms is attained for video, **not home**.
+Robots passes after the root move. These results do not establish live scores,
+CrUX behavior, a hosting cause, or resolution of an intermittent live timeout.
+
+### Motion, visual, navigation and freshness evidence
+
+- Recovered `public-motion-chromium-final.json`: DPR2 at widths 390, 700, 900,
+  1440 and 1920. Project videos actually advance playback, muted/inline with no
+  controls; source attachment occurs only with readiness true at 1607–1611ms.
+  Offscreen media remains unacquired at the widest tier. Figure rectangles are
+  identical before poster load/play and afterwards; no raw poster duplicates.
+  Reduced motion pauses playing videos. Five screenshot pairs are preserved;
+  mobile project and desktop homepage photographs were also inspected on resume.
+- Homepage observation lasts 35 seconds per tier: 6/6/6/12/12 animation-end
+  events (multiple swap cycles), CLS 0 at all five widths, then real silent
+  autoplay after programmatic scroll. This is not audit-window-only silence.
+- `public-navigation.json`, independently repeated on the final production build
+  as `public-navigation-resumed.json`: every sitemap route (`/`, `/work/A`,
+  `/work/B`, `/work/c`, `/work/d`) returns 200 with content. A deliberately delayed
+  optimized critical poster blocks **source acquisition** beyond the minimum
+  delay; autoplay follows readiness. Actual Next Link navigation resets readiness
+  and sources. Reduced-motion entry has no acquired source or manual controls.
+- Browser lifecycle tests cover offscreen/hidden/reduced transitions, late play
+  resolution, expected cancellation versus rejected-autoplay fallback, media error,
+  source-revision cleanup, route reset, swap deadlines and breakpoint cancellation.
+- Recovered `public-freshness.json` and `public-cold-load/verify-freshness.ts`:
+  copied-database settings/project edits appear in content/metadata on the next
+  production request. Temporary query logging records four queries for four
+  requests, rather than metadata/page duplicates. Actual FFmpeg replacement
+  processing retains published revision 1 while pending, then publishes revision
+  2; the next response uses its poster and playback identities. No TTL awaited.
+  Existing media-replacement integration tests cover retained derivatives on
+  failure. No live database was edited and legacy revision-zero behavior stays.
+- `public-empty-gallery.json` records a temporary long-title, empty-gallery
+  fixture returning a usable 200 shell, subsequently removed from the copied DB.
+- Direct WebKit 27.2 production probe failed before opening a page:
+  `Protocol error (Page.overrideSetting): Unknown setting: PushAPIEnabled`.
+  The focused Vitest retry on resume also failed at session startup (above).
+  WebKit autoplay/visual compatibility is **unverified**, not a poster fallback
+  pass. Next check: run with a functioning matching Playwright WebKit installation
+  or real mobile Safari; no dependency upgrade was made as a workaround.
+- The isolated server logs contain `ERR_INVALID_STATE: Controller is already
+  closed` during browser navigation/cancellation. All enumerated responses and
+  assertions completed; no source attribution establishes a cause. This is
+  retained diagnostic evidence, not grounds for speculative delivery changes.
+
+### Unit evidence and requirement coverage
+
+| Unit | Evidence strategy / final proof |
+|---|---|
+| U1 | Non-behavioral measurement; deliberate no-unit-test exception. Saved baseline resources/doc phases and independent robots requests are the characterization. |
+| U2 | Inspected/extended portfolio, homepage and public-rendering tests; revision/media-replacement compatibility tests retained. Baseline source and decoded HTML characterize redundant work; historical test-first ordering is unavailable. Scoped-read assertions, paginated member/attribution/revision checks, and copied-DB production freshness/query receipts pass. |
+| U3 | Inspected/extended homepage/readiness browser tests. Saved baseline shows early playback acquisition; historical red order is unavailable. Pending/error/cached/decoded image, route-reset, visibility/reduced, cleanup, delayed-source, preparation and multiple-cycle checks pass. Hidden-mount failure was witnessed red and fixed on resume. |
+| U4 | Inspected/changed Visual, candidate, gallery and video tests replacing old manual-control expectations. Historical red order unavailable; baseline source has controls. Actual silent delayed playback, optimized responsive poster priority, four-identity budget, rejection/cancellation/error fallback and stable geometry are covered. |
+| U5 | Baseline 404 is saved before-characterization; unchanged robots handler moved to supported root, robots tests pass and production responds 200. No speculative optimizer/bundle fix. |
+| U6 | Integrated regression evidence above, fresh repository gates and uninstrumented production navigation/rechecks; no final simplify/review/PR/CI performed. WebKit exception and live-deployment checkpoint remain explicit. |
+
+R1/R8: every current page, controlled cold/warm classes and responsive motion;
+R2: reserved opening-slot geometry, stable project figures and zero final CLS;
+R3/AE3: request-local query reuse plus actual copied-DB publication proof;
+R4–R6/AE1–AE2: image/decode/foreground readiness gates acquisition, no controls,
+actual delayed autoplay, cancellation/fallback/cleanup tests; R7: document phases,
+404→200 robots correction and bounded live uncertainty. AE4: responsive reserved
+frames and full-cycle zero-shift observations. External exceptions are WebKit
+execution and post-deployment/live performance, not missing implementation units.

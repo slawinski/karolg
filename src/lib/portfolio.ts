@@ -132,6 +132,8 @@ export async function getPhotoshootMedia(
       ...pagination,
       sort: 'filename',
       overrideAccess: false,
+      select: mediaSelect,
+      populate: publicPopulate,
     }))
 
     return docs
@@ -147,7 +149,12 @@ export async function getPortfolioData() {
   try {
     const payload = await getPayloadClient()
     const [site, photoshoots, media] = await Promise.all([
-      payload.findGlobal({ slug: 'site-settings', depth: 2 }),
+      payload.findGlobal({ slug: 'site-settings', depth: 2,
+        select: { name: true, roles: true, heroEyebrow: true, heroHeadline: true,
+          handwrittenLine: true, intro: true, heroMedia: true, locations: true,
+          profileFacts: true, instagram: true, email: true, seoDescription: true },
+        populate: { ...publicPopulate, media: mediaSelect },
+      }),
       loadAllDocuments((pagination) => payload.find({
         collection: 'projects',
         depth: 1,

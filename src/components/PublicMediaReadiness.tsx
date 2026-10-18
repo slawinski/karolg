@@ -23,7 +23,7 @@ function Readiness({ children }: { children: ReactNode }) {
     let frame = 0
     const cleanupImages: (() => void)[] = []
     const finish = () => {
-      if (!imagesSettled || !delaySettled || document.visibilityState !== 'visible') return
+      if (cancelled || !imagesSettled || !delaySettled || document.visibilityState !== 'visible') return
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
         frame = requestAnimationFrame(() => {
@@ -42,13 +42,14 @@ function Readiness({ children }: { children: ReactNode }) {
       } else cancelAnimationFrame(frame)
     }
     // Scan after hydration's responsive topology update, not window.load.
-    frame = requestAnimationFrame(() => {
+    const scanFrame = requestAnimationFrame(() => {
       const images = [...(root.current?.querySelectorAll<HTMLImageElement>('img[data-public-critical]') || [])]
       let pending = images.length
       const settle = () => { if (--pending === 0) { imagesSettled = true; finish() } }
       images.forEach((image) => {
-        if (image.complete) { settle(); return }
-        const done = () => { image.removeEventListener('load', done); image.removeEventListener('error', done); settle() }
+        const decoded = () => { void image.decode().catch(() => undefined).then(settle) }
+        if (image.complete) { decoded(); return }
+        const done = () => { image.removeEventListener('load', done); image.removeEventListener('error', done); decoded() }
         image.addEventListener('load', done)
         image.addEventListener('error', done)
         cleanupImages.push(() => { image.removeEventListener('load', done); image.removeEventListener('error', done) })
@@ -60,6 +61,7 @@ function Readiness({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
       clearTimeout(timer)
+      cancelAnimationFrame(scanFrame)
       cancelAnimationFrame(frame)
       cleanupImages.forEach((cleanup) => cleanup())
       document.removeEventListener('visibilitychange', visibility)

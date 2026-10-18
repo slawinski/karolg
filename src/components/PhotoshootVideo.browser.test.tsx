@@ -81,6 +81,17 @@ it('keeps the poster after policy rejection without retries or controls', async 
   expect(document.querySelector('video')!.controls).toBe(false)
 })
 
+it('retains the poster on media failure and does not latch expected play cancellation', async () => {
+  vi.mocked(HTMLMediaElement.prototype.play).mockRejectedValueOnce(new DOMException('paused', 'AbortError'))
+  await renderClip(); await emit(1)
+  await visibility(false); await visibility(true)
+  expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2)
+  await act(async () => document.querySelector('video')!.dispatchEvent(new Event('error')))
+  expect(document.querySelector('img')!.style.opacity).toBe('1')
+  await visibility(false); await visibility(true)
+  expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2)
+})
+
 it('ignores expected cancellation, stops a late hidden start, and resumes later', async () => {
   let resolve!: () => void
   vi.mocked(HTMLMediaElement.prototype.play).mockImplementationOnce(() => new Promise<void>((done) => { resolve = done }))

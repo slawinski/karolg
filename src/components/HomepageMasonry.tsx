@@ -746,7 +746,9 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
                   const alt = currentMedia?.alt ||
                     `${pool.photoshootTitle} portfolio ${inferMediaKind(currentMedia)}`
                   const isVideo = inferMediaKind(currentMedia) === 'video'
-                  const dimensions = mediaDimensions(currentMedia)
+                  // A slot's frame belongs to the opening composition, not the
+                  // currently rotating asset. Keep subsequent rows stationary.
+                  const dimensions = mediaDimensions(pool.media[initialIndexForSlot(slot, pool.media.length)])
 
                   return (
                     <article

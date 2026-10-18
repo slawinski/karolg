@@ -1,0 +1,2812 @@
+{
+  "lighthouse": [
+    {
+      "file": "cold-lh-after-home-1.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3110/",
+      "fetchTime": "2026-10-17T23:44:53.490Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.96,
+      "fcp": 907.5899999999999,
+      "lcp": 2791.59,
+      "tbt": 17,
+      "cls": 0,
+      "speedIndex": 907.5899999999999,
+      "robots": 1,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/1tu1v_sr19s7i.js",
+          "transferSize": 3835
+        },
+        {
+          "url": "/_next/static/chunks/0segbedqwgtaw.js",
+          "transferSize": 5636
+        },
+        {
+          "url": "/_next/static/chunks/15ivnwx3jx27r.js",
+          "transferSize": 10552
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-after-home-2.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3110/",
+      "fetchTime": "2026-10-17T23:45:04.203Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.96,
+      "fcp": 906.4560000000001,
+      "lcp": 2789.456,
+      "tbt": 16.5,
+      "cls": 0,
+      "speedIndex": 906.4560000000001,
+      "robots": 1,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/1tu1v_sr19s7i.js",
+          "transferSize": 3835
+        },
+        {
+          "url": "/_next/static/chunks/0segbedqwgtaw.js",
+          "transferSize": 5636
+        },
+        {
+          "url": "/_next/static/chunks/15ivnwx3jx27r.js",
+          "transferSize": 10552
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-after-home-3.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3110/",
+      "fetchTime": "2026-10-17T23:45:14.901Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.96,
+      "fcp": 904.2375000000001,
+      "lcp": 2785.2374999999993,
+      "tbt": 15.5,
+      "cls": 0,
+      "speedIndex": 904.2375000000001,
+      "robots": 1,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/1tu1v_sr19s7i.js",
+          "transferSize": 3835
+        },
+        {
+          "url": "/_next/static/chunks/0segbedqwgtaw.js",
+          "transferSize": 5636
+        },
+        {
+          "url": "/_next/static/chunks/15ivnwx3jx27r.js",
+          "transferSize": 10552
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-after-video-1.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3110/work/d",
+      "fetchTime": "2026-10-17T23:45:25.632Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.98,
+      "fcp": 904.8405,
+      "lcp": 2408.8405,
+      "tbt": 14.5,
+      "cls": 0,
+      "speedIndex": 904.8405,
+      "robots": 1,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/32b9cqhszn65s.js",
+          "transferSize": 1383
+        },
+        {
+          "url": "/_next/static/chunks/15ivnwx3jx27r.js",
+          "transferSize": 10552
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-after-video-2.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3110/work/d",
+      "fetchTime": "2026-10-17T23:45:36.053Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.98,
+      "fcp": 904.8105,
+      "lcp": 2410.8104999999996,
+      "tbt": 15.5,
+      "cls": 0,
+      "speedIndex": 904.8105,
+      "robots": 1,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/32b9cqhszn65s.js",
+          "transferSize": 1383
+        },
+        {
+          "url": "/_next/static/chunks/15ivnwx3jx27r.js",
+          "transferSize": 10552
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-after-video-3.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3110/work/d",
+      "fetchTime": "2026-10-17T23:45:46.460Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.98,
+      "fcp": 904.7639999999999,
+      "lcp": 2411.764,
+      "tbt": 16,
+      "cls": 0,
+      "speedIndex": 904.7639999999999,
+      "robots": 1,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/32b9cqhszn65s.js",
+          "transferSize": 1383
+        },
+        {
+          "url": "/_next/static/chunks/15ivnwx3jx27r.js",
+          "transferSize": 10552
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-before-home-1.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3111/",
+      "fetchTime": "2026-10-17T23:27:43.065Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.87,
+      "fcp": 915.06,
+      "lcp": 3118.1,
+      "tbt": 326.5,
+      "cls": 0,
+      "speedIndex": 1283.2139080924987,
+      "robots": null,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/1tu1v_sr19s7i.js",
+          "transferSize": 3835
+        },
+        {
+          "url": "/_next/static/chunks/2fqgaz1r5-8wb.js",
+          "transferSize": 5735
+        },
+        {
+          "url": "/_next/static/chunks/1h_zq7nv7g9w5.js",
+          "transferSize": 9684
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-before-home-2.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3111/",
+      "fetchTime": "2026-10-17T23:27:55.792Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.96,
+      "fcp": 906.108,
+      "lcp": 2718.108,
+      "tbt": 18.5,
+      "cls": 0,
+      "speedIndex": 906.108,
+      "robots": null,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/1tu1v_sr19s7i.js",
+          "transferSize": 3835
+        },
+        {
+          "url": "/_next/static/chunks/2fqgaz1r5-8wb.js",
+          "transferSize": 5735
+        },
+        {
+          "url": "/_next/static/chunks/1h_zq7nv7g9w5.js",
+          "transferSize": 9684
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-before-home-3.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3111/",
+      "fetchTime": "2026-10-17T23:28:06.615Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.98,
+      "fcp": 909.4079999999999,
+      "lcp": 2418.408,
+      "tbt": 17,
+      "cls": 0,
+      "speedIndex": 909.4079999999999,
+      "robots": null,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/1tu1v_sr19s7i.js",
+          "transferSize": 3835
+        },
+        {
+          "url": "/_next/static/chunks/2fqgaz1r5-8wb.js",
+          "transferSize": 5735
+        },
+        {
+          "url": "/_next/static/chunks/1h_zq7nv7g9w5.js",
+          "transferSize": 9684
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-before-video-1.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3111/work/d",
+      "fetchTime": "2026-10-17T23:28:17.357Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.92,
+      "fcp": 911.2529999999999,
+      "lcp": 3386.2529999999997,
+      "tbt": 30,
+      "cls": 0,
+      "speedIndex": 911.2529999999999,
+      "robots": null,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/3g4av6js-jh14.js",
+          "transferSize": 1069
+        },
+        {
+          "url": "/_next/static/chunks/1h_zq7nv7g9w5.js",
+          "transferSize": 9684
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-before-video-2.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3111/work/d",
+      "fetchTime": "2026-10-17T23:28:27.976Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.91,
+      "fcp": 910.1370000000001,
+      "lcp": 3460.1369999999997,
+      "tbt": 32,
+      "cls": 0,
+      "speedIndex": 910.1370000000001,
+      "robots": null,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/3g4av6js-jh14.js",
+          "transferSize": 1069
+        },
+        {
+          "url": "/_next/static/chunks/1h_zq7nv7g9w5.js",
+          "transferSize": 9684
+        }
+      ]
+    },
+    {
+      "file": "cold-lh-before-video-3.json",
+      "lighthouse": "13.4.1",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "requestedUrl": "http://localhost:3111/work/d",
+      "fetchTime": "2026-10-17T23:28:38.407Z",
+      "throttlingMethod": "simulate",
+      "formFactor": "mobile",
+      "score": 0.91,
+      "fcp": 910.773,
+      "lcp": 3460.773,
+      "tbt": 31,
+      "cls": 0,
+      "speedIndex": 910.773,
+      "robots": null,
+      "screen": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "chunks": [
+        {
+          "url": "/_next/static/chunks/11gub0x0uzffb.js",
+          "transferSize": 4271
+        },
+        {
+          "url": "/_next/static/chunks/400u_ln3v76fr.js",
+          "transferSize": 8737
+        },
+        {
+          "url": "/_next/static/chunks/2979zqtwx6pl0.js",
+          "transferSize": 72524
+        },
+        {
+          "url": "/_next/static/chunks/1r2edgdtvvnk-.js",
+          "transferSize": 44807
+        },
+        {
+          "url": "/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+          "transferSize": 4898
+        },
+        {
+          "url": "/_next/static/chunks/40j-sm7qwwogn.js",
+          "transferSize": 4054
+        },
+        {
+          "url": "/_next/static/chunks/3g4av6js-jh14.js",
+          "transferSize": 1069
+        },
+        {
+          "url": "/_next/static/chunks/1h_zq7nv7g9w5.js",
+          "transferSize": 9684
+        }
+      ]
+    }
+  ],
+  "traces": [
+    {
+      "version": "before",
+      "browser": "156.0.8078.4",
+      "protocol": "390x844 DPR2, 4x CPU, 150ms RTT / 1.6Mbps down / 750Kbps up; warm optimizer",
+      "runs": [
+        {
+          "path": "/",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 748,
+          "cls": 0.004449421021029258,
+          "blocking": 28,
+          "bytesBeforeCritical": 291765,
+          "criticalEnd": 8239,
+          "documentBytes": 103775,
+          "ttfb": 16.100000381469727,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8825.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840012-Edit.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 1,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 528,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 20371,
+          "criticalEnd": 511.59999990463257,
+          "documentBytes": 103212,
+          "ttfb": 19.899999618530273,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0465.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3906.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 3,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 10884,
+          "cls": 0,
+          "blocking": 59,
+          "bytesBeforeCritical": 292532,
+          "criticalEnd": 9337.299999713898,
+          "documentBytes": 98816,
+          "ttfb": 20.399999618530273,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5330.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8852.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 4,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 376,
+          "cls": 0.0006580188686885878,
+          "blocking": 0,
+          "bytesBeforeCritical": 55653,
+          "criticalEnd": 6552.200000286102,
+          "documentBytes": 103703,
+          "ttfb": 17,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8862.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840008-2-Edit.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 3,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 720,
+          "cls": 0.011225552244971978,
+          "blocking": 29,
+          "bytesBeforeCritical": 296439,
+          "criticalEnd": 8262.39999961853,
+          "documentBytes": 101146,
+          "ttfb": 14.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 3,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 468,
+          "cls": 0.030750807106603825,
+          "blocking": 0,
+          "bytesBeforeCritical": 75375,
+          "criticalEnd": 6491.900000095367,
+          "documentBytes": 101029,
+          "ttfb": 26.300000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3916.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 4,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 31,
+          "bytesBeforeCritical": 24499,
+          "criticalEnd": 656.1999998092651,
+          "documentBytes": 36835,
+          "ttfb": 18.700000286102295,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 170.2000002861023,
+          "documentBytes": 36835,
+          "ttfb": 17.09999990463257,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 712,
+          "cls": 0,
+          "blocking": 31,
+          "bytesBeforeCritical": 24499,
+          "criticalEnd": 657,
+          "documentBytes": 36835,
+          "ttfb": 15.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 204,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 172.7999997138977,
+          "documentBytes": 36835,
+          "ttfb": 18,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 712,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 24499,
+          "criticalEnd": 657.5999999046326,
+          "documentBytes": 36835,
+          "ttfb": 17.40000009536743,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 167.90000009536743,
+          "documentBytes": 36835,
+          "ttfb": 14.699999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 732,
+          "cls": 0,
+          "blocking": 27,
+          "bytesBeforeCritical": 30824,
+          "criticalEnd": 709.5,
+          "documentBytes": 59681,
+          "ttfb": 17.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 204,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 167.30000019073486,
+          "documentBytes": 59681,
+          "ttfb": 18.899999618530273,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 724,
+          "cls": 0,
+          "blocking": 32,
+          "bytesBeforeCritical": 30824,
+          "criticalEnd": 701.9000000953674,
+          "documentBytes": 59681,
+          "ttfb": 17.800000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 196,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 167.30000019073486,
+          "documentBytes": 59681,
+          "ttfb": 15.400000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 732,
+          "cls": 0,
+          "blocking": 29,
+          "bytesBeforeCritical": 30824,
+          "criticalEnd": 709.5999999046326,
+          "documentBytes": 59681,
+          "ttfb": 17,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 167.19999980926514,
+          "documentBytes": 59681,
+          "ttfb": 15.600000381469727,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 708,
+          "cls": 0,
+          "blocking": 32,
+          "bytesBeforeCritical": 29244,
+          "criticalEnd": 685.6999998092651,
+          "documentBytes": 93071,
+          "ttfb": 19,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 216,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 176,
+          "documentBytes": 93071,
+          "ttfb": 22.199999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 724,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 29244,
+          "criticalEnd": 686.1999998092651,
+          "documentBytes": 93071,
+          "ttfb": 19.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 184,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 171.30000019073486,
+          "documentBytes": 93071,
+          "ttfb": 18.300000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 748,
+          "cls": 0,
+          "blocking": 29,
+          "bytesBeforeCritical": 29244,
+          "criticalEnd": 685.9000000953674,
+          "documentBytes": 93071,
+          "ttfb": 20.100000381469727,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 184,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 168,
+          "documentBytes": 93071,
+          "ttfb": 18.600000381469727,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/d",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 2500,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 16503,
+          "criticalEnd": 687.1000003814697,
+          "documentBytes": 18772,
+          "ttfb": 13.799999713897705,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 2598.800000190735,
+          "completedResourceBytesAtPosterReady": 409256
+        },
+        {
+          "path": "/work/d",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 196,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 166,
+          "documentBytes": 18772,
+          "ttfb": 15.199999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 167.89999961853027,
+          "completedResourceBytesAtPosterReady": 0
+        },
+        {
+          "path": "/work/d",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 2512,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 16503,
+          "criticalEnd": 686.9000000953674,
+          "documentBytes": 18772,
+          "ttfb": 14.099999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 2584,
+          "completedResourceBytesAtPosterReady": 409256
+        },
+        {
+          "path": "/work/d",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 168,
+          "documentBytes": 18772,
+          "ttfb": 14.600000381469727,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 170.09999990463257,
+          "completedResourceBytesAtPosterReady": 0
+        },
+        {
+          "path": "/work/d",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 2496,
+          "cls": 0,
+          "blocking": 29,
+          "bytesBeforeCritical": 16503,
+          "criticalEnd": 702,
+          "documentBytes": 18772,
+          "ttfb": 14,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 2584.199999809265,
+          "completedResourceBytesAtPosterReady": 409256
+        },
+        {
+          "path": "/work/d",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 169,
+          "documentBytes": 18772,
+          "ttfb": 15,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 170.40000009536743,
+          "completedResourceBytesAtPosterReady": 0
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "browser": "156.0.8078.4",
+      "protocol": "390x844 DPR2, 4x CPU, 150ms RTT / 1.6Mbps down / 750Kbps up; warm optimizer",
+      "runs": [
+        {
+          "path": "/",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 748,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 282877,
+          "criticalEnd": 9730.89999961853,
+          "documentBytes": 75756,
+          "ttfb": 12.699999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 1,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 580,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 91399,
+          "criticalEnd": 8003.200000286102,
+          "documentBytes": 78190,
+          "ttfb": 14.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3815.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8825.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 756,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 296820,
+          "criticalEnd": 9768,
+          "documentBytes": 75964,
+          "ttfb": 12.699999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0295.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F61%2Fposter%3Fv%3D2&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 1,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 204,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 68183,
+          "criticalEnd": 7951,
+          "documentBytes": 75879,
+          "ttfb": 15.400000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0465.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 736,
+          "cls": 0,
+          "blocking": 28,
+          "bytesBeforeCritical": 292119,
+          "criticalEnd": 9725.199999809265,
+          "documentBytes": 78505,
+          "ttfb": 11.299999713897705,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840012-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9309.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 444,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 78537,
+          "criticalEnd": 8030,
+          "documentBytes": 78212,
+          "ttfb": 12.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0618.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 728,
+          "cls": 0,
+          "blocking": 26,
+          "bytesBeforeCritical": 24512,
+          "criticalEnd": 672,
+          "documentBytes": 37446,
+          "ttfb": 8.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 212,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 179.19999980926514,
+          "documentBytes": 37446,
+          "ttfb": 8.199999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 728,
+          "cls": 0,
+          "blocking": 28,
+          "bytesBeforeCritical": 24512,
+          "criticalEnd": 672.1999998092651,
+          "documentBytes": 37446,
+          "ttfb": 8.800000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 172.2000002861023,
+          "documentBytes": 37446,
+          "ttfb": 11.599999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 31,
+          "bytesBeforeCritical": 24512,
+          "criticalEnd": 656.4000000953674,
+          "documentBytes": 37446,
+          "ttfb": 8.800000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 169.2000002861023,
+          "documentBytes": 37446,
+          "ttfb": 9.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 728,
+          "cls": 0,
+          "blocking": 34,
+          "bytesBeforeCritical": 30837,
+          "criticalEnd": 709.2000002861023,
+          "documentBytes": 60652,
+          "ttfb": 9.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 208,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 172,
+          "documentBytes": 60652,
+          "ttfb": 8.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 36,
+          "bytesBeforeCritical": 30837,
+          "criticalEnd": 709.8999996185303,
+          "documentBytes": 60652,
+          "ttfb": 8.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 212,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 173.90000009536743,
+          "documentBytes": 60652,
+          "ttfb": 10.200000286102295,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 732,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 30837,
+          "criticalEnd": 709.5,
+          "documentBytes": 60652,
+          "ttfb": 8.599999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 216,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 165,
+          "documentBytes": 60652,
+          "ttfb": 12.599999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 712,
+          "cls": 0,
+          "blocking": 36,
+          "bytesBeforeCritical": 29257,
+          "criticalEnd": 686.6999998092651,
+          "documentBytes": 94575,
+          "ttfb": 12,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 176,
+          "documentBytes": 94575,
+          "ttfb": 11.800000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 32,
+          "bytesBeforeCritical": 29257,
+          "criticalEnd": 686.8999996185303,
+          "documentBytes": 94575,
+          "ttfb": 11.099999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 173.59999990463257,
+          "documentBytes": 94575,
+          "ttfb": 12.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 720,
+          "cls": 0,
+          "blocking": 34,
+          "bytesBeforeCritical": 29257,
+          "criticalEnd": 686.5,
+          "documentBytes": 94575,
+          "ttfb": 10.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/c",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 204,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 174.30000019073486,
+          "documentBytes": 94575,
+          "ttfb": 11.700000286102295,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F000729840002-Edit.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0490.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/d",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 724,
+          "cls": 0,
+          "blocking": 34,
+          "bytesBeforeCritical": 24617,
+          "criticalEnd": 701.7000002861023,
+          "documentBytes": 24437,
+          "ttfb": 7.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 1300.9000000953674,
+          "completedResourceBytesAtPosterReady": 82492
+        },
+        {
+          "path": "/work/d",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 212,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 184.5,
+          "documentBytes": 24437,
+          "ttfb": 11.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 198.90000009536743,
+          "completedResourceBytesAtPosterReady": 0
+        },
+        {
+          "path": "/work/d",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 712,
+          "cls": 0,
+          "blocking": 34,
+          "bytesBeforeCritical": 24617,
+          "criticalEnd": 694.0999999046326,
+          "documentBytes": 24437,
+          "ttfb": 8.299999713897705,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 1302,
+          "completedResourceBytesAtPosterReady": 82492
+        },
+        {
+          "path": "/work/d",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 212,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 180.7000002861023,
+          "documentBytes": 24437,
+          "ttfb": 9,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 193.2000002861023,
+          "completedResourceBytesAtPosterReady": 0
+        },
+        {
+          "path": "/work/d",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 34,
+          "bytesBeforeCritical": 24617,
+          "criticalEnd": 693.6999998092651,
+          "documentBytes": 24437,
+          "ttfb": 7.099999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 1302.0999999046326,
+          "completedResourceBytesAtPosterReady": 82492
+        },
+        {
+          "path": "/work/d",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 216,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 183.60000038146973,
+          "documentBytes": 24437,
+          "ttfb": 8.800000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5329.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2F62%2Fposter%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": 195.90000009536743,
+          "completedResourceBytesAtPosterReady": 0
+        }
+      ]
+    },
+    {
+      "version": "resumed",
+      "browser": "156.0.8078.4",
+      "protocol": "390x844 DPR2, 4x CPU, 150ms RTT / 1.6Mbps down / 750Kbps up; warm optimizer",
+      "runs": [
+        {
+          "path": "/",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 28,
+          "bytesBeforeCritical": 18781,
+          "criticalEnd": 648.2000002861023,
+          "documentBytes": 76062,
+          "ttfb": 11,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9304.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 460,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 0,
+          "documentBytes": 78382,
+          "ttfb": 16.800000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3906.JPG%3Fv%3D1&w=3840&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8865.JPEG%3Fv%3D1&w=3840&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 700,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 21497,
+          "criticalEnd": 664.5999999046326,
+          "documentBytes": 73734,
+          "ttfb": 13.699999809265137,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0352.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8865.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 204,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 171.40000009536743,
+          "documentBytes": 76016,
+          "ttfb": 14.400000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3906.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_5330.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 732,
+          "cls": 0,
+          "blocking": 29,
+          "bytesBeforeCritical": 20292,
+          "criticalEnd": 656.6999998092651,
+          "documentBytes": 78077,
+          "ttfb": 13.599999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2F3N7A0492.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 208,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 173.69999980926514,
+          "documentBytes": 78083,
+          "ttfb": 14.799999713897705,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9104.JPEG%3Fv%3D1&w=3840&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 24512,
+          "criticalEnd": 656.6999998092651,
+          "documentBytes": 37446,
+          "ttfb": 9.5,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 196,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 169.40000009536743,
+          "documentBytes": 37446,
+          "ttfb": 8.099999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 716,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 24512,
+          "criticalEnd": 656.5999999046326,
+          "documentBytes": 37446,
+          "ttfb": 9.900000095367432,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 208,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 178.5,
+          "documentBytes": 37446,
+          "ttfb": 8.799999713897705,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 712,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 24512,
+          "criticalEnd": 655.7000002861023,
+          "documentBytes": 37446,
+          "ttfb": 8.299999713897705,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/A",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 196,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 165,
+          "documentBytes": 37446,
+          "ttfb": 8.599999904632568,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3814.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3834.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_3912.JPG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        }
+      ]
+    },
+    {
+      "version": "resumed-still",
+      "browser": "156.0.8078.4",
+      "protocol": "390x844 DPR2, 4x CPU, 150ms RTT / 1.6Mbps down / 750Kbps up; warm optimizer",
+      "runs": [
+        {
+          "path": "/work/B",
+          "repeat": 0,
+          "cache": "cold",
+          "lcp": 736,
+          "cls": 0,
+          "blocking": 32,
+          "bytesBeforeCritical": 30837,
+          "criticalEnd": 709,
+          "documentBytes": 60652,
+          "ttfb": 10,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 0,
+          "cache": "warm",
+          "lcp": 204,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 168.30000019073486,
+          "documentBytes": 60652,
+          "ttfb": 10.300000190734863,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 1,
+          "cache": "cold",
+          "lcp": 732,
+          "cls": 0,
+          "blocking": 29,
+          "bytesBeforeCritical": 30837,
+          "criticalEnd": 709.5999999046326,
+          "documentBytes": 60652,
+          "ttfb": 10.399999618530273,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 1,
+          "cache": "warm",
+          "lcp": 208,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 175,
+          "documentBytes": 60652,
+          "ttfb": 13.899999618530273,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 2,
+          "cache": "cold",
+          "lcp": 740,
+          "cls": 0,
+          "blocking": 30,
+          "bytesBeforeCritical": 30837,
+          "criticalEnd": 709.2999997138977,
+          "documentBytes": 60652,
+          "ttfb": 11,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        },
+        {
+          "path": "/work/B",
+          "repeat": 2,
+          "cache": "warm",
+          "lcp": 200,
+          "cls": 0,
+          "blocking": 0,
+          "bytesBeforeCritical": 0,
+          "criticalEnd": 167.69999980926514,
+          "documentBytes": 60652,
+          "ttfb": 10.200000286102295,
+          "criticalImages": [
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_1178.JPG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_8987.JPEG%3Fv%3D1&w=384&q=75",
+            "/_next/image?url=%2Fapi%2Fmedia%2Ffile%2FIMG_9109.JPEG%3Fv%3D1&w=384&q=75"
+          ],
+          "playbackBeforeCritical": 0,
+          "posterEnd": null,
+          "completedResourceBytesAtPosterReady": null
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "public-motion-chromium-final.json": {
+      "base": "http://localhost:3110",
+      "engine": "chromium",
+      "browser": "156.0.8078.4",
+      "samples": [
+        {
+          "width": 390,
+          "videos": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            }
+          ],
+          "acquisitions": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "time": 1610.8000001907349,
+              "ready": "true"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "time": 1610.9000000953674,
+              "ready": "true"
+            }
+          ],
+          "figuresStable": true,
+          "rawPosterRequests": 0
+        },
+        {
+          "width": 700,
+          "videos": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            }
+          ],
+          "acquisitions": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "time": 1607.8000001907349,
+              "ready": "true"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "time": 1607.8000001907349,
+              "ready": "true"
+            }
+          ],
+          "figuresStable": true,
+          "rawPosterRequests": 0
+        },
+        {
+          "width": 900,
+          "videos": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            }
+          ],
+          "acquisitions": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "time": 1611.2000002861023,
+              "ready": "true"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "time": 1611.2000002861023,
+              "ready": "true"
+            }
+          ],
+          "figuresStable": true,
+          "rawPosterRequests": 0
+        },
+        {
+          "width": 1440,
+          "videos": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            }
+          ],
+          "acquisitions": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "time": 1609.3000001907349,
+              "ready": "true"
+            },
+            {
+              "src": "/api/media/62/playback?v=1",
+              "time": 1609.3000001907349,
+              "ready": "true"
+            }
+          ],
+          "figuresStable": true,
+          "rawPosterRequests": 0
+        },
+        {
+          "width": 1920,
+          "videos": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": true,
+              "poster": null,
+              "label": "asdf"
+            },
+            {
+              "src": null,
+              "controls": false,
+              "muted": true,
+              "inline": true,
+              "playing": false,
+              "poster": null,
+              "label": "asdf"
+            }
+          ],
+          "acquisitions": [
+            {
+              "src": "/api/media/61/playback?v=2",
+              "time": 1607.2000002861023,
+              "ready": "true"
+            }
+          ],
+          "figuresStable": true,
+          "rawPosterRequests": 0
+        }
+      ],
+      "failures": [],
+      "home": [
+        {
+          "width": 390,
+          "swaps": 6,
+          "cls": 0,
+          "videos": [
+            {
+              "src": null,
+              "playing": false
+            },
+            {
+              "src": null,
+              "playing": false
+            }
+          ],
+          "autoplayAfterProgrammaticScroll": true
+        },
+        {
+          "width": 700,
+          "swaps": 6,
+          "cls": 0,
+          "videos": [
+            {
+              "src": null,
+              "playing": false
+            },
+            {
+              "src": null,
+              "playing": false
+            }
+          ],
+          "autoplayAfterProgrammaticScroll": true
+        },
+        {
+          "width": 900,
+          "swaps": 6,
+          "cls": 0,
+          "videos": [
+            {
+              "src": null,
+              "playing": false
+            },
+            {
+              "src": null,
+              "playing": false
+            }
+          ],
+          "autoplayAfterProgrammaticScroll": true
+        },
+        {
+          "width": 1440,
+          "swaps": 12,
+          "cls": 0,
+          "videos": [
+            {
+              "src": null,
+              "playing": false
+            },
+            {
+              "src": null,
+              "playing": false
+            }
+          ],
+          "autoplayAfterProgrammaticScroll": true
+        },
+        {
+          "width": 1920,
+          "swaps": 12,
+          "cls": 0,
+          "videos": [
+            {
+              "src": null,
+              "playing": false
+            },
+            {
+              "src": null,
+              "playing": false
+            }
+          ],
+          "autoplayAfterProgrammaticScroll": true
+        }
+      ]
+    },
+    "public-motion-webkit.json": {
+      "base": "http://localhost:3110",
+      "engine": "webkit",
+      "browser": "27.2",
+      "samples": [],
+      "failures": [
+        {
+          "message": "browserContext.newPage: Protocol error (Page.overrideSetting): Unknown setting: PushAPIEnabled",
+          "stack": "browserContext.newPage: Protocol error (Page.overrideSetting): Unknown setting: PushAPIEnabled\n    at /Users/psla/private-space/karolg/scripts/verify-public-motion.mjs:12:32"
+        }
+      ]
+    },
+    "public-navigation.json": {
+      "routes": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/work/A",
+          "status": 200
+        },
+        {
+          "path": "/work/d",
+          "status": 200
+        },
+        {
+          "path": "/work/c",
+          "status": 200
+        },
+        {
+          "path": "/work/B",
+          "status": 200
+        }
+      ],
+      "checks": [
+        "Delayed critical poster blocks real playback requests; autoplay follows readiness",
+        "Actual Next Link navigation resets readiness and resumes silent autoplay",
+        "Reduced motion suppresses acquisition before initial readiness with no controls"
+      ]
+    },
+    "public-navigation-resumed.json": {
+      "routes": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/work/A",
+          "status": 200
+        },
+        {
+          "path": "/work/d",
+          "status": 200
+        },
+        {
+          "path": "/work/c",
+          "status": 200
+        },
+        {
+          "path": "/work/B",
+          "status": 200
+        }
+      ],
+      "checks": [
+        "Delayed critical poster blocks real playback requests; autoplay follows readiness",
+        "Actual Next Link navigation resets readiness and resumes silent autoplay",
+        "Reduced motion suppresses acquisition before initial readiness with no controls"
+      ]
+    },
+    "public-freshness.json": {
+      "settingsAndMetadataFresh": true,
+      "requestScopedSlugQueries": {
+        "requests": 4,
+        "queries": 4
+      },
+      "pendingRetainsPublishedRevision": 1,
+      "workerPublishesRevision": 2,
+      "freshPosterAndPlaybackOnNextRequest": true,
+      "actualFFmpeg": true,
+      "fixtureOnly": true
+    },
+    "public-empty-gallery.json": {
+      "fixtureOnly": true,
+      "status": 200,
+      "longTitle": "Editorial Portraits in Natural Light and Movement",
+      "emptyGalleryShellUsable": true
+    }
+  },
+  "artifacts": [
+    {
+      "file": "cold-lh-after-home-1.json",
+      "sha256": "0b83866f2776a8e5e1846f375a839e1f52e9e11c300ada77573ff229fb654695"
+    },
+    {
+      "file": "cold-lh-after-home-2.json",
+      "sha256": "da97754b3552505c9afbfe059e3cc46d72bf9adb86ec3c19a1f94c4eec254937"
+    },
+    {
+      "file": "cold-lh-after-home-3.json",
+      "sha256": "ced5e980072100edb56537a1137c9b16a7903d561b86686f639973f7ce7facae"
+    },
+    {
+      "file": "cold-lh-after-video-1.json",
+      "sha256": "80b8d6c17d89194416de069160a33d27f245b29f64256f52e263151ee7d5d78d"
+    },
+    {
+      "file": "cold-lh-after-video-2.json",
+      "sha256": "0c60d2a4e68cfc809fbead877de2855b4a1e6695f207def05a62937785fe965f"
+    },
+    {
+      "file": "cold-lh-after-video-3.json",
+      "sha256": "b7a81f49d2ac80672873d1a1044f901468cd37452faa1c093f06b4d34cc770b4"
+    },
+    {
+      "file": "cold-lh-before-home-1.json",
+      "sha256": "b84784ac160950cba1223519c2b6f72931ae173704a6a0077f8c1fd9990f59b7"
+    },
+    {
+      "file": "cold-lh-before-home-2.json",
+      "sha256": "3b16f53c06f7b5eefd23f827ad63a348411b3c94a2f994d639e8db1349882080"
+    },
+    {
+      "file": "cold-lh-before-home-3.json",
+      "sha256": "77bb2138d44e6e9be31ac1b79d5da8eaef4a181210d8cada0751146ada75ad92"
+    },
+    {
+      "file": "cold-lh-before-video-1.json",
+      "sha256": "c9b65339925a26d69e4ffd316b444dce08974286ffea5eb68315c1f82e06d9fe"
+    },
+    {
+      "file": "cold-lh-before-video-2.json",
+      "sha256": "14f30de019de5205dcaca6f2489ea8460adb41488faddea572d1dbcd9ab7e953"
+    },
+    {
+      "file": "cold-lh-before-video-3.json",
+      "sha256": "eb638f556d975403f264a94537db214d7ec0c9c4bc9c71e30daa2d633dfeccf9"
+    },
+    {
+      "file": "cold-load-before-controlled.json",
+      "sha256": "c9bfdf746d86a16d9c5b327841a1f2a427cda1f63e97b381420c99931482672b"
+    },
+    {
+      "file": "cold-load-after-controlled.json",
+      "sha256": "6f3272ac8e6f0eb7defd52b2ffa75cbf9c5019bde8a50fb3cb9ef455d1cde5bd"
+    },
+    {
+      "file": "cold-load-resumed.json",
+      "sha256": "6ecef2d0829f00d6ec938044a9502b086f029af529fa90b66ae310ebfc35b997"
+    },
+    {
+      "file": "cold-load-resumed-still.json",
+      "sha256": "3d60bcbc1e59511c26dce0c61ccfc8d5cf4095592c938eea16fff42c272c0f26"
+    },
+    {
+      "file": "public-motion-chromium-final.json",
+      "sha256": "b8ba2866bfc9c396b72aa5d55b6978727c2e8968b37f9bba22d69fc15c18adc8"
+    },
+    {
+      "file": "public-motion-webkit.json",
+      "sha256": "a601a991f21f520c6661b135956bc02542ea1d99f801229a3c1138ffea76a518"
+    },
+    {
+      "file": "public-navigation.json",
+      "sha256": "0e442b58eb40594706f23712e173fe67235c734b0e6e2e885a7422e4a53a839d"
+    },
+    {
+      "file": "public-navigation-resumed.json",
+      "sha256": "0e442b58eb40594706f23712e173fe67235c734b0e6e2e885a7422e4a53a839d"
+    },
+    {
+      "file": "public-freshness.json",
+      "sha256": "9a0da5aa5e44aa681ac4ba229ff75f4a87cf5b0e05066dabdbce7e6b4022fa5d"
+    },
+    {
+      "file": "public-empty-gallery.json",
+      "sha256": "ac97eacf33c48051a3f93033872b70824c3d0269c5fec5e0b82e6c7e6874a696"
+    }
+  ]
+}

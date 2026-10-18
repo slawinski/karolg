@@ -69,23 +69,6 @@ const emitIntersection = async (element: Element, ratio: number) => {
   })
 }
 
-const emitNearIntersection = async (element: Element) => {
-  if (!observerFor(element, true)) {
-    await vi.waitFor(() => {
-      expect(observerFor(element, true)).toBeDefined()
-    })
-  }
-  const observer = observerFor(element, true)!
-
-  await act(async () => {
-    observer.callback([{
-      target: element,
-      isIntersecting: true,
-      intersectionRatio: 0,
-    } as IntersectionObserverEntry], {} as IntersectionObserver)
-  })
-}
-
 const pools: HomepageMediaPool[] = [{
   id: 'shoot',
   photoshootSlug: 'shoot',
@@ -252,9 +235,19 @@ afterEach(async () => {
 })
 
 describe('Homepage browser lifecycle', () => {
+  it('preserves slot geometry when a swap changes the media aspect ratio', async () => {
+    vi.useFakeTimers()
+    await renderEligible(pools, slots)
+    const before = document.querySelector('figure')!.getBoundingClientRect().toJSON()
+    await advance(6000)
+    await readyIncoming()
+    await finishAnimations()
+    expect(document.querySelector('figure')!.getBoundingClientRect().toJSON()).toEqual(before)
+  })
   it('holds current acquisition and incoming preparation behind initial image readiness', async () => {
     vi.useFakeTimers()
     vi.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockReturnValue(false)
+    vi.spyOn(HTMLImageElement.prototype, 'decode').mockResolvedValue()
     await render(<PublicMediaReadiness routeKey="home"><div className="masonry-stage">
       <h1 className="masonry-name">Carla</h1>
       <HomepageMasonry pools={pools} slots={slots} />

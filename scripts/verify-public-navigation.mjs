@@ -66,6 +66,28 @@ try {
     report.checks.push(`Photoshoot starts at the top on client entry, reload, Back and Forward at ${width}px`)
   }
   await page.setViewportSize({ width: 390, height: 844 })
+  let releaseImages
+  const imagesReleased = new Promise((resolve) => { releaseImages = resolve })
+  const delayImages = async (route) => {
+    if (route.request().resourceType() === 'image') await imagesReleased
+    await route.continue()
+  }
+  await page.route('**/*', delayImages)
+  try {
+    await page.goto(photoshoot.href, { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(1200)
+    await page.mouse.wheel(0, 500)
+    await page.waitForFunction(() => window.scrollY > 0)
+    assert.equal(await page.evaluate(() => document.readyState), 'interactive', 'Images must still delay load')
+    releaseImages()
+    await page.waitForLoadState('load')
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+    assert(await page.evaluate(() => window.scrollY > 0), 'Late image loading reset deliberate visitor scrolling')
+    report.checks.push('Late image loading preserves deliberate scrolling after photoshoot entry')
+  } finally {
+    releaseImages()
+    await page.unroute('**/*', delayImages)
+  }
   await page.route('**/_next/image?**', async (route) => {
     if (new URL(route.request().url()).searchParams.get('url')?.includes('/poster')) {
       await new Promise((done) => setTimeout(done, 3000))

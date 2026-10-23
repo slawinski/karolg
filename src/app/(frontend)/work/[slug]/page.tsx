@@ -5,7 +5,6 @@ import { Arrow } from '@/components/Arrow'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
 import { PublicMediaReadiness } from '@/components/PublicMediaReadiness'
-import { PhotoshootScrollReset } from '@/components/PhotoshootScrollReset'
 import { photoshootPresentationImage, selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import { awaitPublicRequest } from '@/lib/public-rendering'
 import {
@@ -50,7 +49,6 @@ export default async function WorkPage({ params }: Props) {
 
   return (
     <PublicMediaReadiness routeKey={`/work/${slug}`}><main className="photoshoot-page">
-      <PhotoshootScrollReset slug={slug} />
       <PortfolioHeader instagram={instagram} />
 
       <section className="photoshoot-head">

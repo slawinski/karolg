@@ -54,7 +54,7 @@ export const viewport: Viewport = {
 
 export default function FrontendLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={chase.variable}>
+    <html lang="en" className={chase.variable} data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   )

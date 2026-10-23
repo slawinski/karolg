@@ -67,5 +67,5 @@ function Readiness({ children }: { children: ReactNode }) {
       document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
-  return <MediaReady value={ready}><div ref={root} style={{ display: 'contents' }} data-public-media-ready={ready}>{children}</div></MediaReady>
+  return <MediaReady value={ready}><div ref={root} data-public-media-ready={ready}>{children}</div></MediaReady>
 }

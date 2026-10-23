@@ -2,6 +2,7 @@ import { afterEach, expect, it } from 'vitest'
 import { page } from 'vitest/browser'
 import { cleanup, render } from 'vitest-browser-react'
 import { PortfolioHeader } from './PortfolioHeader'
+import { PhotoshootGallery } from './PhotoshootGallery'
 import { candidateViewports, controlledMedia, controlledVideo, regressionMedia, regressionPhotoshoot } from '@/test/fixtures/photoshoot-candidates'
 import type { MediaLike } from '@/lib/media'
 import { photoshootPresentationImage, selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
@@ -13,14 +14,15 @@ async function gallery(media: MediaLike[], title = regressionPhotoshoot.title) {
   await render(<main className="photoshoot-page">
     <PortfolioHeader instagram="https://example.com" />
     <section className="photoshoot-head"><h1>{title}</h1></section>
-    <section className="photoshoot-gallery" aria-label={`${title} portfolio`}>
+    <PhotoshootGallery media={media} title={title}>
       {media.map((item, index) => <figure key={index}
         className={`photoshoot-gallery-item photoshoot-gallery-item-${index % 7 + 1} image-frame`}>
         {item.kind === 'video'
           ? <><video className="visual-img visual-video" muted playsInline preload="none" /><img className="media-poster photoshoot-video-poster" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style={{ position: 'absolute', width: '100%', height: '100%', inset: 0 }} /></>
           : <img className="visual-img" alt={`Slot ${index}`} src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style={{ position: 'absolute', width: '100%', height: '100%', inset: 0 }} />}
+        <button className="photoshoot-gallery-trigger" data-media-index={index} aria-label={`Open slot ${index}`} />
       </figure>)}
-    </section>
+    </PhotoshootGallery>
   </main>)
   return Array.from(document.querySelectorAll('figure')).map((node) => node.getBoundingClientRect())
 }

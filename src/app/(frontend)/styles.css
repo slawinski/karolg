@@ -474,7 +474,8 @@ video.gallery-static-image { pointer-events:none; }
 .photoshoot-viewer-photo { object-fit:contain; }
 .photoshoot-viewer-stage { touch-action:pan-y pinch-zoom; }
 .photoshoot-viewer-video-stage { padding-block:44px; display:flex; align-items:center; justify-content:center; }
-.photoshoot-viewer-video-region { width:100%; height:100%; min-height:0; }
+.photoshoot-viewer-video-region { width:100%; height:100%; min-height:0; object-fit:contain; touch-action:auto; }
+.photoshoot-viewer-unavailable { margin:auto; padding:24px; max-width:40ch; text-align:center; font-size:16px; }
 
 .photoshoot-info {
   display:grid;

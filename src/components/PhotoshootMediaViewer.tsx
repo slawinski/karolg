@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { useId, useLayoutEffect, useRef } from 'react'
-import { inferMediaKind, mediaPresentationUrl, type MediaLike } from '@/lib/media'
+import { useId, useLayoutEffect, useRef, useState, type MutableRefObject } from 'react'
+import { inferMediaKind, mediaPosterUrl, mediaPresentationUrl, type MediaLike } from '@/lib/media'
 import { mediaRevision } from '@/lib/media-revision'
 
 export function PhotoshootMediaViewer({ media, index, title, opener, onClose, onChange }: {
@@ -11,13 +11,18 @@ export function PhotoshootMediaViewer({ media, index, title, opener, onClose, on
   const dialog = useRef<HTMLDialogElement>(null)
   const close = useRef<HTMLButtonElement>(null)
   const restore = useRef<(() => void) | null>(null)
+  const release = useRef<(() => void) | null>(null)
+  const dismissed = useRef(false)
   const instructions = useId()
   const touch = useRef<{ x: number; y: number; id: number } | null>(null)
   const navigate = (direction: number) => {
     const next = index + direction
-    if (next >= 0 && next < media.length) onChange(next)
+    if (next >= 0 && next < media.length) { release.current?.(); touch.current = null; onChange(next) }
   }
   const dismiss = () => {
+    if (dismissed.current) return
+    dismissed.current = true
+    release.current?.()
     dialog.current?.close()
     restore.current?.()
     opener?.isConnected && opener.focus({ preventScroll: true })
@@ -51,7 +56,7 @@ export function PhotoshootMediaViewer({ media, index, title, opener, onClose, on
       restore.current()
       onClose()
     }
-    return () => { node.close(); restore.current?.() }
+    return () => { release.current?.(); node.close(); restore.current?.() }
     // The modal session retains the original opener and scroll position across slides.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -68,7 +73,7 @@ export function PhotoshootMediaViewer({ media, index, title, opener, onClose, on
       }
     }}
     onCancel={(event) => { event.preventDefault(); dismiss() }}
-    onClose={onClose}>
+    onClose={() => { if (!dialog.current?.open) dismiss() }}>
     <div className="photoshoot-viewer-toolbar">
       <button ref={close} type="button" className="photoshoot-viewer-close" onClick={dismiss}>Close</button>
     </div>
@@ -92,9 +97,43 @@ export function PhotoshootMediaViewer({ media, index, title, opener, onClose, on
         const dx = end.clientX - start.x, dy = end.clientY - start.y
         if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.5) navigate(dx < 0 ? 1 : -1)
       }}>
-      {video ? <div className="photoshoot-viewer-video-region" aria-label={item.alt || `${title} video ${index + 1}`} /> :
-      <Image key={index} src={mediaPresentationUrl(item)!} alt={item.alt || `${title} image ${index + 1}`}
-        fill sizes="100vw" unoptimized={mediaRevision(item.processingRevision) === null} className="photoshoot-viewer-photo" />}
+      <ActiveMedia key={index} item={item} alt={item.alt || `${title} ${video ? 'video' : 'image'} ${index + 1}`} release={release} />
     </div>
   </dialog>
+}
+
+function ActiveMedia({ item, alt, release }: { item: MediaLike; alt: string; release: MutableRefObject<(() => void) | null> }) {
+  const video = useRef<HTMLVideoElement>(null)
+  const generation = useRef(0)
+  const [failed, setFailed] = useState(false)
+  const isVideo = inferMediaKind(item) === 'video'
+  useLayoutEffect(() => {
+    const node = video.current
+    if (!node) return
+    const attempt = ++generation.current
+    let active = true
+    const stop = () => {
+      active = false
+      node.pause()
+      if (node.hasAttribute('src')) { node.removeAttribute('src'); node.load() }
+    }
+    release.current = stop
+    node.src = mediaPresentationUrl(item)!
+    node.muted = false
+    node.play().then(() => {
+      // Effect replay can reuse this element; an older attempt must not pause
+      // its newer playback. Different slides always own different elements.
+      if (!active && generation.current === attempt) node.pause()
+    }).catch(() => {
+      // Policy denial and cancellation leave native play available. Resource
+      // failures are reported by the media error event instead.
+    })
+    return () => { stop(); if (release.current === stop) release.current = null }
+  }, [release])
+  if (failed) return <p className="photoshoot-viewer-unavailable" role="status">This media is unavailable. Browse another item or close the viewer.</p>
+  return isVideo ? <video ref={video} className="photoshoot-viewer-video-region" aria-label={alt}
+    src={mediaPresentationUrl(item)!} poster={mediaPosterUrl(item) || undefined}
+    controls playsInline preload="auto" onError={() => { release.current?.(); setFailed(true) }} /> :
+    <Image src={mediaPresentationUrl(item)!} alt={alt} fill sizes="100vw"
+      unoptimized={mediaRevision(item.processingRevision) === null} className="photoshoot-viewer-photo" onError={() => setFailed(true)} />
 }

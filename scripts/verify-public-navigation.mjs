@@ -30,6 +30,42 @@ try {
   browser = await chromium.launch()
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })
   const page = await context.newPage()
+  const photoshoot = urls.find((url) => url.pathname.startsWith('/work/'))
+  assert(photoshoot, 'Expected a photoshoot for navigation checks')
+  const assertPhotoshootTop = async (entry) => {
+    await page.waitForFunction(() => document.querySelector('[data-public-media-ready="true"]'))
+    assert.equal(await page.evaluate(() => window.scrollY), 0, `${entry} retained the previous scroll position`)
+    const heading = await page.locator('h1').boundingBox()
+    assert(heading && heading.y >= 0 && heading.y < page.viewportSize().height, `${entry} hid the photoshoot title`)
+  }
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 844 })
+    await page.goto(base, { waitUntil: 'networkidle' })
+    await page.evaluate(() => window.scrollTo({ top: 1200, behavior: 'instant' }))
+    assert(await page.evaluate(() => window.scrollY > 0), 'Homepage must be scrolled before entry')
+    // DOM click exercises Next Link without Playwright scrolling the card back into view first.
+    await page.locator(`a[href="${photoshoot.pathname}"]`).first().evaluate((link) => link.click())
+    await page.waitForURL(photoshoot.href)
+    await assertPhotoshootTop(`Client entry at ${width}px`)
+    await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }))
+    assert(await page.evaluate(() => window.scrollY > 0), 'Photoshoot must remain freely scrollable')
+    await page.reload({ waitUntil: 'networkidle' })
+    await assertPhotoshootTop(`Reload at ${width}px`)
+    await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }))
+    await page.locator('a[href="/#work"]').first().click()
+    await page.waitForURL((url) => url.pathname === '/' && url.hash === '#work')
+    await page.goBack()
+    await page.waitForURL(photoshoot.href)
+    await assertPhotoshootTop(`Back entry at ${width}px`)
+    await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }))
+    await page.goBack()
+    await page.waitForURL((url) => url.pathname === '/')
+    await page.goForward()
+    await page.waitForURL(photoshoot.href)
+    await assertPhotoshootTop(`Forward entry at ${width}px`)
+    report.checks.push(`Photoshoot starts at the top on client entry, reload, Back and Forward at ${width}px`)
+  }
+  await page.setViewportSize({ width: 390, height: 844 })
   await page.route('**/_next/image?**', async (route) => {
     if (new URL(route.request().url()).searchParams.get('url')?.includes('/poster')) {
       await new Promise((done) => setTimeout(done, 3000))

@@ -84,3 +84,63 @@ it('supports keyboard activation and empty and single-item galleries', async () 
     await act(async () => close().click())
   }
 })
+
+const key = async (target: Element, value: string, options: KeyboardEventInit = {}) => act(async () => {
+  target.dispatchEvent(new KeyboardEvent('keydown', { key: value, bubbles: true, cancelable: true, ...options }))
+})
+async function swipe(target: Element, dx: number, dy = 0, kind = 'touchend', multiple = false) {
+  const touch = (x: number, y: number) => new Touch({ identifier: 1, target, clientX: x, clientY: y })
+  await act(async () => {
+    target.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: multiple ? [touch(150, 150), touch(160, 150)] : [touch(150, 150)] }))
+    target.dispatchEvent(new TouchEvent(kind, { bubbles: true, changedTouches: [touch(150 + dx, 150 + dy)] }))
+  })
+}
+const activeAlt = () => dialog().querySelector('img')?.alt
+
+it('navigates in array order with bounded arrows and returns to the original opener', async () => {
+  await gallery(photos.slice(0, 3))
+  await act(async () => trigger(1).click())
+  await key(close(), 'ArrowRight')
+  expect(activeAlt()).toBe('Portrait 3')
+  await key(close(), 'ArrowRight')
+  expect(activeAlt()).toBe('Portrait 3')
+  await key(close(), 'ArrowLeft', { ctrlKey: true })
+  expect(activeAlt()).toBe('Portrait 3')
+  await key(close(), 'ArrowLeft')
+  await key(close(), 'ArrowLeft')
+  await key(close(), 'ArrowLeft')
+  expect(activeAlt()).toBe('Portrait 1')
+  expect(dialog().querySelectorAll('button')).toHaveLength(1)
+  await act(async () => close().click())
+  expect(document.activeElement).toBe(trigger(1))
+})
+
+it('accepts only horizontal single-touch swipes, once per release', async () => {
+  await gallery(photos.slice(0, 3))
+  await act(async () => trigger().click())
+  const stage = document.querySelector('.photoshoot-viewer-stage')!
+  for (const [dx, dy, kind, multi] of [[-20, 0, 'touchend', false], [-70, 80, 'touchend', false], [-70, 0, 'touchcancel', false], [-70, 0, 'touchend', true]] as const) {
+    await swipe(stage, dx, dy, kind, multi)
+    expect(activeAlt()).toBe('Portrait 1')
+  }
+  await swipe(stage, -70)
+  expect(activeAlt()).toBe('Portrait 2')
+  await swipe(stage, 70)
+  expect(activeAlt()).toBe('Portrait 1')
+})
+
+it('ignores editable, video and already-handled keyboard events', async () => {
+  await gallery()
+  await act(async () => trigger().click())
+  for (const tag of ['input', 'video']) {
+    const target = document.createElement(tag)
+    dialog().append(target)
+    await key(target, 'ArrowRight')
+    expect(activeAlt()).toBe('Portrait 1')
+    target.remove()
+  }
+  const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })
+  event.preventDefault()
+  await act(async () => close().dispatchEvent(event))
+  expect(activeAlt()).toBe('Portrait 1')
+})

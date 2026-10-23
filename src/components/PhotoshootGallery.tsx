@@ -17,6 +17,6 @@ export function PhotoshootGallery({ media, title, children }: { media: MediaLike
       setSelected(index)
     }}>{children}</section>
     {selected !== null && <PhotoshootMediaViewer media={media} index={selected} title={title}
-      opener={opener.current} onClose={() => setSelected(null)} />}
+      opener={opener.current} onChange={setSelected} onClose={() => setSelected(null)} />}
   </>
 }

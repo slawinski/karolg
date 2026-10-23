@@ -60,12 +60,34 @@ try {
     await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }))
     await page.goBack()
     await page.waitForURL((url) => url.pathname === '/')
+    assert.equal(await page.evaluate(() => window.history.scrollRestoration), 'auto', 'Photoshoot policy leaked onto homepage history')
     await page.goForward()
     await page.waitForURL(photoshoot.href)
     await assertPhotoshootTop(`Forward entry at ${width}px`)
     report.checks.push(`Photoshoot starts at the top on client entry, reload, Back and Forward at ${width}px`)
   }
   await page.setViewportSize({ width: 390, height: 844 })
+  await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }))
+  assert(await page.evaluate(() => window.scrollY > 0), 'Photoshoot must be scrolled before delayed reload')
+  let releaseReloadImages
+  const reloadImagesReleased = new Promise((resolve) => { releaseReloadImages = resolve })
+  const delayReloadImages = async (route) => {
+    if (route.request().resourceType() === 'image') await reloadImagesReleased
+    await route.continue()
+  }
+  await page.route('**/*', delayReloadImages)
+  try {
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(1200)
+    assert.equal(await page.evaluate(() => document.readyState), 'interactive', 'Images must still delay reload')
+    releaseReloadImages()
+    await page.waitForLoadState('load')
+    await assertPhotoshootTop('Reload after delayed images')
+    report.checks.push('Delayed reload does not restore the old photoshoot scroll position')
+  } finally {
+    releaseReloadImages()
+    await page.unroute('**/*', delayReloadImages)
+  }
   let releaseImages
   const imagesReleased = new Promise((resolve) => { releaseImages = resolve })
   const delayImages = async (route) => {

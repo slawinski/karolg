@@ -4,6 +4,8 @@ import { useLayoutEffect } from 'react'
 
 export function PhotoshootScrollReset({ slug }: { slug: string }) {
   useLayoutEffect(() => {
+    const restoration = window.history.scrollRestoration
+    window.history.scrollRestoration = 'manual'
     let frame = 0
     const reset = () => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
@@ -17,6 +19,7 @@ export function PhotoshootScrollReset({ slug }: { slug: string }) {
     reset()
     window.addEventListener('pageshow', restore)
     return () => {
+      if (restoration === 'auto') window.history.scrollRestoration = restoration
       cancelAnimationFrame(frame)
       window.removeEventListener('pageshow', restore)
     }

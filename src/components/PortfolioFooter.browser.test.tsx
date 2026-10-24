@@ -1,8 +1,9 @@
 import { act, StrictMode } from 'react'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 import { cleanup, render } from 'vitest-browser-react'
 import { PortfolioFooter } from './PortfolioFooter'
+import { PhotoshootGallery } from './PhotoshootGallery'
 import '@/app/(frontend)/styles.css'
 
 afterEach(async () => { await cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals() })
@@ -84,4 +85,35 @@ it('responds to live motion preferences and cancels work on unmount', async () =
   preference.matches = true
   preference.dispatchEvent(new Event('change'))
   expect(removed.getAttribute('style')).toBe(before)
+})
+
+it('preserves footer progress through viewer dismissal and route unmount', async () => {
+  await page.viewport(1366, 768)
+  const media = [{ id: 1, url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', alt: 'Portrait' }]
+  const view = await render(<main>
+    <div style={{ height: 1800 }} />
+    <PhotoshootGallery media={media} title="Story">
+      <button data-media-index={0}>Open portrait</button>
+    </PhotoshootGallery>
+    <PortfolioFooter />
+  </main>)
+  const opener = document.querySelector<HTMLButtonElement>('[data-media-index]')!
+  for (const method of ['button', 'Escape']) {
+    await reveal(.5)
+    await expect.poll(shade).toBeCloseTo(.3, 2)
+    const y = scrollY
+    await act(async () => opener.click())
+    expect(document.querySelector('dialog')?.matches(':modal')).toBe(true)
+    await new Promise(requestAnimationFrame)
+    expect(shade()).toBeCloseTo(.3, 2)
+    if (method === 'Escape') await userEvent.keyboard('{Escape}')
+    else await act(async () => document.querySelector<HTMLButtonElement>('.photoshoot-viewer-close')!.click())
+    await expect.poll(() => document.querySelector('dialog')).toBeNull()
+    expect(scrollY).toBe(y)
+    expect(document.activeElement).toBe(opener)
+    await expect.poll(shade).toBeCloseTo(.3, 2)
+  }
+  await act(async () => opener.click())
+  await view.unmount()
+  expect(document.body.style.position).not.toBe('fixed')
 })

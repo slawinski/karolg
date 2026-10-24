@@ -500,37 +500,105 @@ video.gallery-static-image { pointer-events:none; }
   gap:10px;
   margin-top:20px;
 }
-.site-footer,
-.project-footer {
-  min-height:112px;
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:center;
-  gap:24px;
-  padding:24px clamp(18px,2.8vw,46px);
-  padding-bottom:max(24px,env(safe-area-inset-bottom));
-  background:#111;
-  color:#9c978f;
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.14em;
+.portfolio-footer {
+  position:relative;
+  isolation:isolate;
+  overflow:clip;
+  background:var(--paper);
+  color:var(--ink);
 }
-.site-footer a,
-.project-footer a {
+.portfolio-footer__inner {
+  position:relative;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:clamp(80px,14svh,180px);
+  padding:clamp(28px,4vw,64px) clamp(18px,2.8vw,46px) max(18px,env(safe-area-inset-bottom));
+  transform:translateY(var(--footer-shift,0%));
+}
+.portfolio-footer__main {
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:clamp(24px,4vw,72px);
+}
+.portfolio-footer__statement > p:first-child {
+  max-width:18ch;
+  margin:0;
+  font:400 clamp(32px,3.7vw,72px)/1.03 var(--serif);
+  letter-spacing:-.025em;
+  text-wrap:balance;
+  text-transform:lowercase;
+}
+.portfolio-footer__statement > p:first-child::first-letter { text-transform:uppercase; }
+.portfolio-footer__location {
+  margin:32px 0 0;
+  font-size:13px;
+}
+.portfolio-footer__links {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.portfolio-footer__links h2 {
+  margin:0 0 18px;
+  font-size:14px;
+  line-height:1.5;
+  font-weight:400;
+}
+.portfolio-footer__links a {
   min-height:44px;
   display:flex;
   align-items:center;
-  color:#f0eee8;
+  gap:10px;
+  font-size:clamp(18px,1.7vw,28px);
+  line-height:1.2;
+  text-decoration-thickness:1px;
+  text-underline-offset:5px;
 }
-.site-footer a:last-child,
-.project-footer a:last-child { justify-self:end; }
+.portfolio-footer a:focus-visible {
+  outline:2px solid currentColor;
+  outline-offset:5px;
+}
+.portfolio-footer__bottom {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:32px;
+}
+.portfolio-footer__wordmark {
+  flex:0 0 72%;
+  margin:0 0 -.055em;
+  font:400 clamp(64px,11.5vw,250px)/.82 var(--sans);
+  letter-spacing:-.04em;
+  overflow-wrap:anywhere;
+}
+.portfolio-footer__wordmark span { display:block; }
+.portfolio-footer__copyright {
+  margin:0;
+  font-size:12px;
+  line-height:1.5;
+  text-align:right;
+}
+.portfolio-footer__shade {
+  position:absolute;
+  inset:0;
+  background:#201d1d;
+  opacity:var(--footer-shade,.1);
+  pointer-events:none;
+}
+.portfolio-footer:has(:focus-visible) .portfolio-footer__inner { transform:none; }
+.portfolio-footer:has(:focus-visible) .portfolio-footer__shade { opacity:.1; }
+@media (prefers-reduced-motion:reduce) {
+  .portfolio-footer__inner { transform:none; }
+  .portfolio-footer__shade { opacity:.1; }
+}
 
 @media (hover:hover) {
   .nav a:hover,
   .menu-link:hover,
-  .site-footer a:hover,
-  .project-footer a:hover,
   .photoshoot-info a:hover { opacity:.55; }
+  .portfolio-footer__links a:hover { text-decoration:underline; }
 }
 
 @media (max-width:1100px) {
@@ -583,15 +651,17 @@ video.gallery-static-image { pointer-events:none; }
   }
   .profile-facts div:first-child { border-top:0; }
 
-  .site-footer,
-  .project-footer {
-    min-height:96px;
-    grid-template-columns:1fr auto;
-    padding:18px 14px;
-    padding-bottom:max(18px,env(safe-area-inset-bottom));
+  .portfolio-footer__inner { padding:32px 18px max(18px,env(safe-area-inset-bottom)); }
+  .portfolio-footer__main {
+    grid-template-columns:1fr 1fr;
+    gap:40px 20px;
   }
-  .site-footer span:nth-child(2),
-  .project-footer span { display:none; }
+  .portfolio-footer__statement { grid-column:1 / -1; }
+  .portfolio-footer__statement > p:first-child { font-size:clamp(32px,8vw,52px); }
+  .portfolio-footer__location { margin-top:24px; }
+  .portfolio-footer__bottom { flex-direction:column; align-items:stretch; gap:28px; }
+  .portfolio-footer__wordmark { max-width:100%; font-size:clamp(52px,17vw,120px); }
+  .portfolio-footer__copyright { text-align:left; }
 
   .photoshoot-head {
     padding-top:clamp(110px,26vw,150px);

@@ -1,6 +1,7 @@
 import { HomepageMasonry } from '@/components/HomepageMasonry'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { PublicMediaReadiness } from '@/components/PublicMediaReadiness'
+import { PortfolioFooter } from '@/components/PortfolioFooter'
 import { compactHomepage, composeHomepage } from '@/lib/homepage'
 import { getPortfolioData } from '@/lib/portfolio'
 import { awaitPublicRequest } from '@/lib/public-rendering'
@@ -46,11 +47,7 @@ export default async function HomePage() {
         </dl>
       </section>
 
-      <footer className="site-footer">
-        <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
-        <span>{locationLine}</span>
-        <a href="#top">Back to top</a>
-      </footer>
+      <PortfolioFooter name={site.name} statement={site.heroHeadline} instagram={instagram} email={site.email} locations={locationLine} />
     </main></PublicMediaReadiness>
   )
 }

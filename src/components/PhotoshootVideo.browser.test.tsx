@@ -6,8 +6,9 @@ import { PhotoshootVideo } from './PhotoshootVideo'
 import { PublicMediaReadiness } from './PublicMediaReadiness'
 import '@/app/(frontend)/styles.css'
 
+const clipUrl = new URL('../test/fixtures/clip.mp4', import.meta.url).href
 const clip: MediaLike = { id: 9, kind: 'video', processingRevision: 1,
-  playbackFilename: 'generated/9/r1/playback.mp4', playbackUrl: '/__controlled__/clip.mp4',
+  playbackFilename: 'generated/9/r1/playback.mp4', playbackUrl: clipUrl,
   posterFilename: 'generated/9/r1/poster.jpg',
   posterUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' }
 let intersect: IntersectionObserverCallback
@@ -51,7 +52,7 @@ it('shows the eager responsive poster before silent inline control-free autoplay
   expect(poster.sizes).toBe('50vw')
   expect(poster.style.opacity).toBe('1')
   await emit(1)
-  expect(video.getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
+  expect(video.getAttribute('src')).toBe(`${clipUrl}?v=1`)
   expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1)
   expect(poster.style.opacity).toBe('0')
   await emit(0)
@@ -84,6 +85,7 @@ it('keeps the poster after policy rejection without retries or controls', async 
 it('retains the poster on media failure and does not latch expected play cancellation', async () => {
   vi.mocked(HTMLMediaElement.prototype.play).mockRejectedValueOnce(new DOMException('paused', 'AbortError'))
   await renderClip(); await emit(1)
+  await expect.poll(() => document.querySelector('video')!.readyState).toBeGreaterThanOrEqual(1)
   await visibility(false); await visibility(true)
   expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2)
   await act(async () => document.querySelector('video')!.dispatchEvent(new Event('error')))

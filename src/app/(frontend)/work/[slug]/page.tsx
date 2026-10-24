@@ -6,6 +6,7 @@ import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
 import { PhotoshootGallery } from '@/components/PhotoshootGallery'
 import { PublicMediaReadiness } from '@/components/PublicMediaReadiness'
+import { PortfolioFooter } from '@/components/PortfolioFooter'
 import { photoshootPresentationImage, selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import { awaitPublicRequest } from '@/lib/public-rendering'
 import {
@@ -49,7 +50,7 @@ export default async function WorkPage({ params }: Props) {
   const instagram = site.instagram || 'https://www.instagram.com/carlagorecka/'
 
   return (
-    <PublicMediaReadiness routeKey={`/work/${slug}`}><main className="photoshoot-page">
+    <PublicMediaReadiness routeKey={`/work/${slug}`}><main className="photoshoot-page" id="top">
       <PortfolioHeader instagram={instagram} />
 
       <section className="photoshoot-head">
@@ -86,11 +87,8 @@ export default async function WorkPage({ params }: Props) {
         </div>
       </section>
 
-      <footer className="project-footer">
-        <Link href="/#work">Selected work</Link>
-        <span>© {new Date().getFullYear()} {site.name || 'Carla Gorecka'}</span>
-        <Link href="/#about">Profile</Link>
-      </footer>
+      <PortfolioFooter name={site.name} statement={site.heroHeadline} instagram={instagram} email={site.email}
+        locations={(site.locations || []).map((location) => location.label?.trim()).filter(Boolean).join(' / ')} />
     </main></PublicMediaReadiness>
   )
 }

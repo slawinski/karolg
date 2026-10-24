@@ -90,10 +90,14 @@ const key = async (target: Element, value: string, options: KeyboardEventInit = 
   target.dispatchEvent(new KeyboardEvent('keydown', { key: value, bubbles: true, cancelable: true, ...options }))
 })
 async function swipe(target: Element, dx: number, dy = 0, kind = 'touchend', multiple = false) {
-  const touch = (x: number, y: number) => new Touch({ identifier: 1, target, clientX: x, clientY: y })
+  const touch = (x: number, y: number) => ({ identifier: 1, target, clientX: x, clientY: y })
   await act(async () => {
-    target.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: multiple ? [touch(150, 150), touch(160, 150)] : [touch(150, 150)] }))
-    target.dispatchEvent(new TouchEvent(kind, { bubbles: true, changedTouches: [touch(150 + dx, 150 + dy)] }))
+    target.dispatchEvent(Object.assign(new Event('touchstart', { bubbles: true }), {
+      touches: multiple ? [touch(150, 150), touch(160, 150)] : [touch(150, 150)],
+    }))
+    target.dispatchEvent(Object.assign(new Event(kind, { bubbles: true }), {
+      touches: [], changedTouches: [touch(150 + dx, 150 + dy)],
+    }))
   })
 }
 const activeAlt = () => dialog().querySelector('img')?.alt

@@ -150,8 +150,9 @@ it('ignores editable, video and already-handled keyboard events', async () => {
   expect(activeAlt()).toBe('Portrait 1')
 })
 
+const clipUrl = new URL('../test/fixtures/clip.mp4', import.meta.url).href
 const clip: MediaLike = { id: 9, kind: 'video', alt: 'Studio film', processingRevision: 1,
-  playbackFilename: 'generated/9/r1/playback.mp4', playbackUrl: '/__controlled__/clip.mp4',
+  playbackFilename: 'generated/9/r1/playback.mp4', playbackUrl: clipUrl,
   posterFilename: 'generated/9/r1/poster.jpg', posterUrl: pixel }
 function playback() {
   vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
@@ -168,7 +169,7 @@ it('enters unmuted inline videos in array order with native controls and video i
   expect(video).not.toBeNull()
   expect(video.controls && video.playsInline).toBe(true)
   expect(video.muted || video.loop).toBe(false)
-  expect(video.getAttribute('src')).toBe('/__controlled__/clip.mp4?v=1')
+  expect(video.getAttribute('src')).toBe(`${clipUrl}?v=1`)
   expect(video.poster).toContain(pixel)
   expect(play).toHaveBeenCalledTimes(1)
   await key(video, 'ArrowRight')
@@ -252,6 +253,7 @@ it('keeps the modal and current video usable through Strict Mode effect replay',
   await act(async () => trigger().click())
   expect(dialog()?.open).toBe(true)
   expect(dialog().querySelector('video')?.hasAttribute('src')).toBe(true)
+  await expect.poll(() => dialog().querySelector('video')!.readyState).toBeGreaterThanOrEqual(1)
   const pauses = vi.mocked(HTMLMediaElement.prototype.pause).mock.calls.length
   await act(async () => pending[0]())
   expect(HTMLMediaElement.prototype.pause).toHaveBeenCalledTimes(pauses)

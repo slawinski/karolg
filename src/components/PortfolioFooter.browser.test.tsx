@@ -117,3 +117,16 @@ it('preserves footer progress through viewer dismissal and route unmount', async
   await view.unmount()
   expect(document.body.style.position).not.toBe('fixed')
 })
+
+it('activates a partially revealed link on the first pointer click', async () => {
+  await page.viewport(1366, 768)
+  await fixture()
+  await reveal(.5)
+  await expect.poll(shade).toBeCloseTo(.3, 2)
+  const link = document.querySelector<HTMLAnchorElement>('.portfolio-footer a')!
+  let activations = 0
+  link.addEventListener('click', (event) => { event.preventDefault(); activations++ })
+  await userEvent.click(link)
+  expect(activations).toBe(1)
+  expect(shade()).toBeCloseTo(.3, 2)
+})

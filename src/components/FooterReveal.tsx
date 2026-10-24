@@ -9,17 +9,21 @@ export function FooterReveal({ children }: { children: ReactNode }) {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0
     let disposed = false
+    let lastProgress = NaN
     let modal = Boolean(document.querySelector('.photoshoot-viewer[open]'))
     const update = () => {
       frame = 0
       if (disposed) return
       if (motion.matches) {
+        lastProgress = NaN
         node.style.removeProperty('--footer-shift')
         node.style.removeProperty('--footer-shade')
         return
       }
       if (document.visibilityState !== 'visible' || modal) return
       const progress = Math.max(0, Math.min(1, (innerHeight - node.getBoundingClientRect().top) / innerHeight))
+      if (progress === lastProgress) return
+      lastProgress = progress
       node.style.setProperty('--footer-shift', `${-25 * (1 - progress)}%`)
       node.style.setProperty('--footer-shade', String(.5 - .4 * progress))
     }

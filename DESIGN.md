@@ -16,7 +16,7 @@ Each major viewport should feel intentionally art-directed rather than assembled
 2. editorial index or portfolio navigation
 3. immersive project spreads
 4. one compact profile-facts section
-5. a restrained utility footer
+5. a full-height editorial footer inspired by ViV, with a serif statement, grouped links, oversized Carla identity, and a scroll-linked parallax/dimming reveal
 
 The site may scroll normally, horizontally, or use composed transitions where appropriate, but it should never feel like a generic header → hero → cards → footer template.
 
@@ -171,7 +171,8 @@ The site must remain fully understandable with prefers-reduced-motion enabled.
 Navigation should be quiet, obvious, and secondary to the work.
 
 - Instagram remains a quiet utility link in the sticky header
-- the homepage ends with one compact profile-facts section and a utility footer
+- the homepage ends with one compact profile-facts section and the shared editorial footer; photoshoot pages use the same footer
+- footer content remains static and readable with reduced motion or without JavaScript; its layout may grow beyond a viewport to keep every link reachable
 - project navigation may feel like an editorial index
 - horizontal galleries must still work naturally on touch
 - no interaction may depend on hover

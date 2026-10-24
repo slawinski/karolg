@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Arrow } from '@/components/Arrow'
 import { PortfolioHeader } from '@/components/PortfolioHeader'
 import { Visual } from '@/components/Visual'
+import { PhotoshootGallery } from '@/components/PhotoshootGallery'
 import { PublicMediaReadiness } from '@/components/PublicMediaReadiness'
 import { photoshootPresentationImage, selectPhotoshootCandidates } from '@/lib/photoshoot-candidates'
 import { awaitPublicRequest } from '@/lib/public-rendering'
@@ -55,7 +56,7 @@ export default async function WorkPage({ params }: Props) {
         <h1>{photoshoot.title}</h1>
       </section>
 
-      <section className="photoshoot-gallery" aria-label={`${photoshoot.title} portfolio`}>
+      <PhotoshootGallery key={slug} media={images} title={photoshoot.title}>
         {images.map((image, index) => (
           <figure
             className={`photoshoot-gallery-item photoshoot-gallery-item-${(index % 7) + 1} image-frame`}
@@ -68,9 +69,11 @@ export default async function WorkPage({ params }: Props) {
               sizes="(max-width: 700px) calc(50vw - 4px), (max-width: 1100px) calc((100vw - clamp(18px, 2.8vw, 46px) * 2 - clamp(12px, 1.5vw, 24px)) / 2), calc((100vw - clamp(18px, 2.8vw, 46px) * 2 - clamp(12px, 1.5vw, 24px) * 2) / 3)"
               variant={index + 1}
             />
+            <button type="button" className="photoshoot-gallery-trigger" data-media-index={index}
+              aria-label={`Open ${image.alt || `${photoshoot.title} media ${index + 1}`}`} aria-haspopup="dialog" />
           </figure>
         ))}
-      </section>
+      </PhotoshootGallery>
 
       <section className="photoshoot-info">
         <div>

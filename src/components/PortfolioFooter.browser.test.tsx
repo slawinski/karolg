@@ -30,3 +30,58 @@ it('keeps footer links and copyright reachable at phone and landscape sizes', as
     await cleanup()
   }
 })
+
+const footer = () => document.querySelector<HTMLElement>('.portfolio-footer')!
+const shade = () => Number(getComputedStyle(document.querySelector('.portfolio-footer__shade')!).opacity)
+const shift = () => new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.portfolio-footer__inner')!).transform).m42
+async function reveal(progress: number) {
+  const top = footer().getBoundingClientRect().top + window.scrollY
+  await act(async () => window.scrollTo({ top: top - innerHeight * (1 - progress), behavior: 'instant' }))
+}
+
+it('scrubs parallax and shading in both scroll directions', async () => {
+  await page.viewport(1366, 768)
+  await fixture()
+  const height = document.querySelector('.portfolio-footer__inner')!.getBoundingClientRect().height
+  for (const progress of [0, .5, 1, .5, 0]) {
+    await reveal(progress)
+    await expect.poll(shade).toBeCloseTo(.5 - .4 * progress, 2)
+    expect(shift()).toBeCloseTo(-.25 * (1 - progress) * height, 0)
+  }
+})
+
+it('resamples layout changes and makes focused navigation fully readable', async () => {
+  await page.viewport(1366, 768)
+  await fixture()
+  await reveal(.5)
+  await expect.poll(shade).toBeCloseTo(.3, 2)
+  document.querySelector<HTMLElement>('[data-preceding-content]')!.style.height = '1900px'
+  await expect.poll(() => Math.abs(shade() - .3)).toBeGreaterThan(.01)
+  document.querySelector<HTMLAnchorElement>('.portfolio-footer a')!.focus({ preventScroll: true })
+  await expect.poll(shift).toBe(0)
+  expect(shade()).toBe(.1)
+})
+
+it('responds to live motion preferences and cancels work on unmount', async () => {
+  const preference = Object.assign(new EventTarget(), { matches: false })
+  vi.stubGlobal('matchMedia', () => preference)
+  await page.viewport(1366, 768)
+  const view = await fixture()
+  await reveal(.5)
+  await expect.poll(shade).toBeCloseTo(.3, 2)
+  preference.matches = true
+  preference.dispatchEvent(new Event('change'))
+  expect(shift()).toBe(0)
+  expect(shade()).toBe(.1)
+  preference.matches = false
+  preference.dispatchEvent(new Event('change'))
+  expect(shade()).toBeCloseTo(.3, 2)
+  const removed = footer()
+  const before = removed.getAttribute('style')
+  window.dispatchEvent(new Event('scroll'))
+  await view.unmount()
+  await new Promise(requestAnimationFrame)
+  preference.matches = true
+  preference.dispatchEvent(new Event('change'))
+  expect(removed.getAttribute('style')).toBe(before)
+})

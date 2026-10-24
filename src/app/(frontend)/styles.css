@@ -515,6 +515,7 @@ video.gallery-static-image { pointer-events:none; }
   justify-content:space-between;
   gap:clamp(80px,14svh,180px);
   padding:clamp(28px,4vw,64px) clamp(18px,2.8vw,46px) max(18px,env(safe-area-inset-bottom));
+  transform:translateY(var(--footer-shift,0%));
 }
 .portfolio-footer__main {
   display:grid;
@@ -583,8 +584,14 @@ video.gallery-static-image { pointer-events:none; }
   position:absolute;
   inset:0;
   background:#201d1d;
-  opacity:.1;
+  opacity:var(--footer-shade,.1);
   pointer-events:none;
+}
+.portfolio-footer:focus-within .portfolio-footer__inner { transform:none; }
+.portfolio-footer:focus-within .portfolio-footer__shade { opacity:.1; }
+@media (prefers-reduced-motion:reduce) {
+  .portfolio-footer__inner { transform:none; }
+  .portfolio-footer__shade { opacity:.1; }
 }
 
 @media (hover:hover) {

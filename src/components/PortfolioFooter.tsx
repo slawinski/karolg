@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { SiteLike } from '@/lib/portfolio'
+import { FooterReveal } from './FooterReveal'
 
 type PortfolioFooterProps = Pick<SiteLike, 'name' | 'instagram' | 'email'> & {
   statement?: string | null
@@ -9,7 +10,7 @@ type PortfolioFooterProps = Pick<SiteLike, 'name' | 'instagram' | 'email'> & {
 export function PortfolioFooter({ name, statement, instagram, email, locations }: PortfolioFooterProps) {
   const identity = name?.trim() || 'CARLA GORECKA'
   const address = email?.trim()
-  return <footer className="portfolio-footer" aria-label="Portfolio and contact">
+  return <FooterReveal>
     <div className="portfolio-footer__inner">
       <div className="portfolio-footer__main">
         <div className="portfolio-footer__statement">
@@ -34,5 +35,5 @@ export function PortfolioFooter({ name, statement, instagram, email, locations }
       </div>
       <div className="portfolio-footer__shade" aria-hidden="true" />
     </div>
-  </footer>
+  </FooterReveal>
 }

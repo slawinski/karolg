@@ -382,8 +382,6 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       current += (target - current) * easing
       apply()
 
-      // A moving column edge can leave a stationary pointer above the skyline.
-      // Latch that exit so centering cannot reactivate tracking by itself.
       if (tracking && !isBelowSkyline()) returnToCenter()
 
       if (Math.abs(target - current) > 0.00015) {

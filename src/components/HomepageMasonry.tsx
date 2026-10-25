@@ -341,6 +341,34 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     let target = 0.5
     let animationFrame = 0
     let returningToCenter = false
+    let pointer: { x: number; y: number } | null = null
+    let tracking = false
+
+    const isBelowSkyline = () => {
+      if (!pointer) return false
+      const bounds = viewport.getBoundingClientRect()
+      if (pointer.x < bounds.left || pointer.x > bounds.right ||
+          pointer.y < bounds.top || pointer.y > bounds.bottom) return false
+
+      let previous: DOMRect | undefined
+      for (const column of rail.children) {
+        const card = column.querySelector('.masonry-card')
+        const rect = card?.getBoundingClientRect()
+        if (!rect || !rect.width || !rect.height) continue
+        if (pointer.x < rect.left) {
+          return pointer.y >= Math.max(previous?.top ?? rect.top, rect.top)
+        }
+        if (pointer.x <= rect.right) return pointer.y >= rect.top
+        previous = rect
+      }
+      return Boolean(previous && pointer.y >= previous.top)
+    }
+
+    const returnToCenter = () => {
+      tracking = false
+      returningToCenter = true
+      target = 0.5
+    }
 
     const apply = () => {
       const overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
@@ -353,6 +381,8 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       const easing = returningToCenter ? 0.045 : 0.14
       current += (target - current) * easing
       apply()
+
+      if (tracking && !isBelowSkyline()) returnToCenter()
 
       if (Math.abs(target - current) > 0.00015) {
         animationFrame = window.requestAnimationFrame(tick)
@@ -367,23 +397,40 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(tick)
     }
 
-    const handlePointerMove = (event: PointerEvent) => {
-      const bounds = viewport.getBoundingClientRect()
-      returningToCenter = false
-      target = clamp((event.clientX - bounds.left) / bounds.width, 0, 1)
+    const updatePointerTarget = () => {
+      if (isBelowSkyline() && pointer) {
+        const bounds = viewport.getBoundingClientRect()
+        tracking = true
+        returningToCenter = false
+        target = clamp((pointer.x - bounds.left) / bounds.width, 0, 1)
+      } else {
+        returnToCenter()
+      }
       animateToTarget()
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      pointer = { x: event.clientX, y: event.clientY }
+      updatePointerTarget()
     }
 
     const handlePointerLeave = () => {
-      returningToCenter = true
-      target = 0.5
+      pointer = null
+      returnToCenter()
       animateToTarget()
     }
 
-    const resizeObserver = new ResizeObserver(apply)
+    const handleViewportChange = () => {
+      apply()
+      if (pointer) updatePointerTarget()
+    }
+
+    const resizeObserver = new ResizeObserver(handleViewportChange)
 
     viewport.addEventListener('pointermove', handlePointerMove)
     viewport.addEventListener('pointerleave', handlePointerLeave)
+    window.addEventListener('scroll', handleViewportChange, { passive: true })
+    window.addEventListener('resize', handleViewportChange)
     resizeObserver.observe(viewport)
     resizeObserver.observe(rail)
     apply()
@@ -391,6 +438,8 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     return () => {
       viewport.removeEventListener('pointermove', handlePointerMove)
       viewport.removeEventListener('pointerleave', handlePointerLeave)
+      window.removeEventListener('scroll', handleViewportChange)
+      window.removeEventListener('resize', handleViewportChange)
       resizeObserver.disconnect()
 
       if (animationFrame) window.cancelAnimationFrame(animationFrame)

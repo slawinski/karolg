@@ -23,6 +23,13 @@ const incomingNodes = () => Array.from(document.querySelectorAll<HTMLMediaElemen
 const advance = async (ms: number) => {
   await act(async () => { await vi.advanceTimersByTimeAsync(ms) })
 }
+const scrollPage = async (top: number) => {
+  await act(async () => {
+    window.scrollTo({ top, behavior: 'instant' })
+    window.dispatchEvent(new Event('scroll'))
+  })
+  expect(window.scrollY).toBe(top)
+}
 const readyIncoming = async () => {
   await act(async () => {
     incomingNodes().forEach((node) => node.dispatchEvent(new Event(node.tagName === 'VIDEO' ? 'canplay' : 'load')))
@@ -185,6 +192,7 @@ it('commits a prepared swap while the outer scroll transform and horizontal rail
 })
 
 beforeEach(() => {
+  window.scrollTo({ top: 0, behavior: 'instant' })
   observers = []
   preloadSources = []
   createdVideos = []
@@ -261,6 +269,7 @@ afterEach(async () => {
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
   await cleanup()
+  window.scrollTo({ top: 0, behavior: 'instant' })
 })
 
 describe('Homepage browser lifecycle', () => {
@@ -655,18 +664,73 @@ describe('Homepage browser lifecycle', () => {
     await advance(1)
     expect(column(2).querySelector('.is-swapping')).not.toBeNull()
 
-    await emitIntersection(title, 0)
-    for (const card of firstCards) await emitIntersection(card, 0)
+    await scrollPage(1)
     await advance(10_000)
     expect(document.querySelector('.is-swapping')).toBeNull()
 
-    await emitIntersection(title, 1)
+    await scrollPage(0)
     await advance(6_999)
     expect(incomingNodes()).toHaveLength(0)
     await advance(1)
     await readyIncoming()
     expect(column(5).querySelector('.is-swapping')).not.toBeNull()
     expect(preloadSources).toEqual([])
+  })
+
+  it.each([1200, 600])('waits for a fresh initial delay after returning to the top at %ipx', async (width) => {
+    vi.useFakeTimers()
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: width })
+    await renderEligible()
+    await advance(3_000)
+    await scrollPage(1)
+    await advance(10_000)
+    expectIdleCards()
+    await scrollPage(0)
+    await advance(5_999)
+    expectIdleCards()
+    await advance(1)
+    expect(incomingNodes().length).toBeGreaterThan(0)
+  })
+
+  it('does not schedule replacements when mounted below the top with visible hero intersections', async () => {
+    vi.useFakeTimers()
+    await render(<div style={{ height: 4000 }} />)
+    await scrollPage(1)
+    await renderEligible()
+    await advance(10_000)
+    expectIdleCards()
+  })
+
+  it('discards preparing replacements on scroll and ignores their late readiness events', async () => {
+    vi.useFakeTimers()
+    await renderEligible()
+    await advance(6_000)
+    const stale = incomingNodes()
+    expect(stale.length).toBeGreaterThan(0)
+    await scrollPage(1)
+    await act(async () => {
+      stale.forEach((node) => node.dispatchEvent(new Event('canplay')))
+    })
+    await advance(10_000)
+    expectIdleCards()
+  })
+
+  it.each(['hidden', 'reduced-motion'])('does not restart at the top while %s', async (condition) => {
+    vi.useFakeTimers()
+    await renderEligible()
+    await scrollPage(1)
+    await act(async () => {
+      if (condition === 'hidden') {
+        pageVisible = 'hidden'
+        document.dispatchEvent(new Event('visibilitychange'))
+      } else {
+        reducedMotion = true
+        motionListeners.forEach((listener) => listener({ matches: true } as MediaQueryListEvent))
+      }
+    })
+    await scrollPage(0)
+    await advance(10_000)
+    expectIdleCards()
   })
 
   it('cancels a wave for reduced motion and waits before restarting', async () => {
@@ -1080,7 +1144,7 @@ describe('Homepage browser lifecycle', () => {
     expectIdleCards()
   })
 
-  it.each(['stagger', 'animation', 'resize-stagger'] as const)(
+  it.each(['stagger', 'animation', 'resize-stagger', 'scroll-stagger', 'scroll-animation'] as const)(
     'commits only launched swaps once on %s cancellation and discards queued nodes',
     async (phase) => {
       vi.useFakeTimers()
@@ -1088,13 +1152,17 @@ describe('Homepage browser lifecycle', () => {
       await advance(6_000)
       const stale = incomingNodes()
       await readyIncoming()
-      await advance(phase === 'animation' ? 960 : 240)
-      const launched = phase === 'animation' ? 5 : 2
+      await advance(phase.endsWith('animation') ? 960 : 240)
+      const launched = phase.endsWith('animation') ? 5 : 2
       expect(document.querySelectorAll('.gallery-stage.is-swapping')).toHaveLength(launched)
       await act(async () => {
         if (phase === 'resize-stagger') {
           Object.defineProperty(window, 'innerWidth', { configurable: true, value: 600 })
           window.dispatchEvent(new Event('resize'))
+        } else if (phase.startsWith('scroll-')) {
+          window.scrollTo({ top: 1, behavior: 'instant' })
+          window.dispatchEvent(new Event('scroll'))
+          expect(window.scrollY).toBe(1)
         } else {
           pageVisible = 'hidden'
           document.dispatchEvent(new Event('visibilitychange'))
@@ -1119,10 +1187,14 @@ describe('Homepage browser lifecycle', () => {
         await advance(5_000)
         expectIdleCards()
         expect(currentSources()).toEqual(expected)
-        await act(async () => {
-          pageVisible = 'visible'
-          document.dispatchEvent(new Event('visibilitychange'))
-        })
+        if (phase.startsWith('scroll-')) {
+          await scrollPage(0)
+        } else {
+          await act(async () => {
+            pageVisible = 'visible'
+            document.dispatchEvent(new Event('visibilitychange'))
+          })
+        }
       }
       await advance(6_999)
       expectIdleCards()

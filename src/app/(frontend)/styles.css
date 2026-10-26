@@ -8,6 +8,7 @@
 }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; background:var(--paper); }
+html.lenis { scroll-behavior:auto; }
 body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); }
 a { color:inherit; text-decoration:none; }
 img { display:block; }

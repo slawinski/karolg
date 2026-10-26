@@ -5,6 +5,7 @@ import { HomepageMasonry, HomepageVideo } from './HomepageMasonry'
 import { PublicMediaReadiness } from './PublicMediaReadiness'
 import type { HomepageMediaPool, HomepageMasonrySlot } from '@/lib/homepage'
 import '@/app/(frontend)/styles.css'
+import { gsap } from 'gsap'
 
 type ObserverRecord = {
   callback: IntersectionObserverCallback
@@ -155,6 +156,34 @@ const renderEligible = async (
   return rendered
 }
 
+it('commits a prepared swap while the outer scroll transform and horizontal rail retain ownership', async () => {
+  vi.useFakeTimers()
+  await renderEligible([imagePool], Array.from({ length: 10 }, (_, index) => ({
+    id: `combined-${index}`, poolId: imagePool.id, initialMediaIndex: 0,
+  })))
+  await advance(6000)
+  await readyIncoming()
+  const column = document.querySelector<HTMLElement>('.cursor-masonry__column')!
+  const inner = column.querySelector<HTMLElement>('.cursor-masonry__column-motion')!
+  expect(inner.classList.contains('is-swapping')).toBe(true)
+  window.dispatchEvent(new WheelEvent('wheel', { deltaY: 120 }))
+  const tween = gsap.getTweensOf(column)[0]
+  expect(tween).toBeDefined()
+  tween.progress(.4).pause()
+  const offset = new DOMMatrix(getComputedStyle(column).transform).m42
+  expect(offset).toBeLessThan(0)
+  const rail = document.querySelector<HTMLElement>('.cursor-masonry__rail')!
+  expect(rail.style.transform).toContain('translate3d')
+  const incoming = column.querySelector('.gallery-stage__incoming')?.getAttribute('src')
+  expect(incoming).toBeTruthy()
+  await act(async () => inner.dispatchEvent(new AnimationEvent('animationend', {
+    bubbles: true, animationName: 'gallery-column-move',
+  })))
+  expect(column.querySelector('.gallery-stage__outgoing')?.getAttribute('src')).toBe(incoming)
+  expect(new DOMMatrix(getComputedStyle(column).transform).m42).toBe(offset)
+  expect(rail.style.transform).toContain('translate3d')
+})
+
 beforeEach(() => {
   observers = []
   preloadSources = []
@@ -191,7 +220,7 @@ beforeEach(() => {
     disconnect() {}
   })
   vi.stubGlobal('matchMedia', (query: string) => ({
-    matches: query.includes('prefers-reduced-motion') ? reducedMotion : true,
+    matches: query.includes('no-preference') ? !reducedMotion : query.includes('prefers-reduced-motion') ? reducedMotion : true,
     media: query,
     onchange: null,
     addEventListener: (_name: string, listener: (event: MediaQueryListEvent) => void) => {

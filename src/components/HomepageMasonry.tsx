@@ -40,6 +40,7 @@ import {
 } from '@/lib/media'
 import { useDeferredVideoSource } from './useDeferredVideoSource'
 import { usePublicMediaReady } from './PublicMediaReadiness'
+import { useHomepageColumnScroll } from './useHomepageColumnScroll'
 
 const galleryMotion = {
   totalMs: 1500,
@@ -219,6 +220,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
   const mediaReady = usePublicMediaReady()
   const viewportRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
+  const invalidatePointerRef = useRef<() => void>(() => {})
   const currentIndexesRef = useRef<Record<string, number>>({})
   const activeSwapsRef = useRef<ActiveMediaSwaps>({})
   const pendingWaveSwapsRef = useRef(0)
@@ -242,6 +244,14 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
   const [incoming, setIncoming] = useState<Record<string, WaveCandidate>>({})
   const [heroEligible, setHeroEligible] = useState(false)
   const [cycle, setCycle] = useState(0)
+  const [pointerMode, setPointerMode] = useState(0)
+
+  useEffect(() => {
+    const queries = [matchMedia('(hover: hover) and (pointer: fine)'), matchMedia('(prefers-reduced-motion: reduce)')]
+    const update = () => setPointerMode((mode) => mode + 1)
+    queries.forEach((query) => query.addEventListener('change', update))
+    return () => queries.forEach((query) => query.removeEventListener('change', update))
+  }, [])
 
   const usablePools = useMemo(
     () =>
@@ -272,6 +282,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     () => arrangeSlotsInColumns(slots, columnCount),
     [columnCount, slots],
   )
+  useHomepageColumnScroll(viewportRef, railRef, invalidatePointerRef, `${columnCount}:${topologyKey}`)
   const topRowSlotIds = useMemo(
     () => new Set(columns.flatMap((column) => column[0]?.id || [])),
     [columns],
@@ -425,6 +436,13 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       if (pointer) updatePointerTarget()
     }
 
+    invalidatePointerRef.current = () => {
+      if (tracking && !isBelowSkyline()) {
+        returnToCenter()
+        animateToTarget()
+      }
+    }
+
     const resizeObserver = new ResizeObserver(handleViewportChange)
 
     viewport.addEventListener('pointermove', handlePointerMove)
@@ -436,6 +454,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     apply()
 
     return () => {
+      invalidatePointerRef.current = () => {}
       viewport.removeEventListener('pointermove', handlePointerMove)
       viewport.removeEventListener('pointerleave', handlePointerLeave)
       window.removeEventListener('scroll', handleViewportChange)
@@ -445,7 +464,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       rail.style.removeProperty('transform')
     }
-  }, [columnCount])
+  }, [columnCount, pointerMode])
 
   useEffect(() => {
     const viewport = viewportRef.current

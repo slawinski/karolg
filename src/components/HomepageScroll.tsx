@@ -3,8 +3,7 @@
 import { type ReactNode, useEffect } from 'react'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
-
-export const homepageMotionQuery = '(min-width: 701px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
+import { homepageMotionQuery } from '@/lib/homepage-motion'
 
 export function HomepageScroll({ children }: { children: ReactNode }) {
   useEffect(() => {

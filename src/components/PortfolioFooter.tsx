@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { SiteLike } from '@/lib/portfolio'
 import { FooterReveal } from './FooterReveal'
 
@@ -19,8 +18,8 @@ export function PortfolioFooter({ name, statement, instagram, email, locations }
         </div>
         <nav className="portfolio-footer__links" aria-label="Explore">
           <h2>Explore</h2>
-          <Link href="/#work">Selected work</Link>
-          <Link href="/#about">Profile</Link>
+          <a href="/#work">Selected work</a>
+          <a href="/#about">Profile</a>
           <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
         </nav>
         <nav className="portfolio-footer__links" aria-label="Connect">

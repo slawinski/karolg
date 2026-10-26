@@ -35,6 +35,16 @@ export function FooterReveal({ children }: { children: ReactNode }) {
       frame = 0
       schedule()
     }
+    const retainKeyboardFocus = (event: Event) => {
+      if (event.type === 'keydown' || (event.target instanceof Element && event.target.matches(':focus-visible'))) {
+        node.setAttribute('data-keyboard-focus', '')
+      }
+    }
+    const releaseKeyboardFocus = (event: FocusEvent) => {
+      if (!(event.relatedTarget instanceof Node) || !node.contains(event.relatedTarget)) {
+        node.removeAttribute('data-keyboard-focus')
+      }
+    }
     const dialogs = new MutationObserver(() => {
       const open = Boolean(document.querySelector('.photoshoot-viewer[open]'))
       if (open !== modal) {
@@ -51,6 +61,9 @@ export function FooterReveal({ children }: { children: ReactNode }) {
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('resize', schedule)
     window.addEventListener('pageshow', schedule)
+    node.addEventListener('focusin', retainKeyboardFocus)
+    node.addEventListener('keydown', retainKeyboardFocus)
+    node.addEventListener('focusout', releaseKeyboardFocus)
     document.addEventListener('visibilitychange', visibility)
     motion.addEventListener('change', update)
     void document.fonts.ready.then(schedule)
@@ -63,6 +76,10 @@ export function FooterReveal({ children }: { children: ReactNode }) {
       window.removeEventListener('scroll', schedule)
       window.removeEventListener('resize', schedule)
       window.removeEventListener('pageshow', schedule)
+      node.removeEventListener('focusin', retainKeyboardFocus)
+      node.removeEventListener('keydown', retainKeyboardFocus)
+      node.removeEventListener('focusout', releaseKeyboardFocus)
+      node.removeAttribute('data-keyboard-focus')
       document.removeEventListener('visibilitychange', visibility)
       motion.removeEventListener('change', update)
     }

@@ -4,6 +4,7 @@ import { page, userEvent } from 'vitest/browser'
 import { cleanup, render } from 'vitest-browser-react'
 import { PortfolioFooter } from './PortfolioFooter'
 import { PhotoshootGallery } from './PhotoshootGallery'
+import { HomepageScroll } from './HomepageScroll'
 import '@/app/(frontend)/styles.css'
 
 afterEach(async () => { await cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals() })
@@ -129,4 +130,17 @@ it('activates a partially revealed link on the first pointer click', async () =>
   await userEvent.click(link)
   expect(activations).toBe(1)
   expect(shade()).toBeCloseTo(.3, 2)
+})
+
+it('keeps the intended link under the pointer when keyboard focus yields during page inertia', async () => {
+  await page.viewport(1440, 1000)
+  await render(<HomepageScroll><main><div style={{ height: 1800 }} /><PortfolioFooter /></main></HomepageScroll>)
+  await reveal(.6)
+  const links = document.querySelectorAll<HTMLAnchorElement>('.portfolio-footer a')
+  links[0].focus({ preventScroll: true })
+  await userEvent.keyboard('{ArrowDown}')
+  let activations = 0
+  links[1].addEventListener('click', (event) => { event.preventDefault(); activations++ })
+  await userEvent.click(links[1])
+  expect(activations).toBe(1)
 })

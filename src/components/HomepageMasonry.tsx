@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { flushSync } from 'react-dom'
 import { mediaRevision } from '@/lib/media-revision'
 import {
   type AnimationEvent,
@@ -40,6 +41,7 @@ import {
 } from '@/lib/media'
 import { useDeferredVideoSource } from './useDeferredVideoSource'
 import { usePublicMediaReady } from './PublicMediaReadiness'
+import { useHomepageColumnScroll } from './useHomepageColumnScroll'
 
 const galleryMotion = {
   totalMs: 1500,
@@ -50,7 +52,7 @@ const galleryMotion = {
 } as const
 
 const homepageCardSizes =
-  '(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)'
+  '(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(8px, 1vw, 16px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (hover: hover) and (pointer: fine) calc((125vw - clamp(8px, 1vw, 16px) * 4) / 5), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)'
 
 const waveDirections: readonly HomepageWaveDirection[] = [
   'left-to-right',
@@ -219,6 +221,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
   const mediaReady = usePublicMediaReady()
   const viewportRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLDivElement>(null)
+  const invalidatePointerRef = useRef<() => void>(() => {})
   const currentIndexesRef = useRef<Record<string, number>>({})
   const activeSwapsRef = useRef<ActiveMediaSwaps>({})
   const pendingWaveSwapsRef = useRef(0)
@@ -242,6 +245,14 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
   const [incoming, setIncoming] = useState<Record<string, WaveCandidate>>({})
   const [heroEligible, setHeroEligible] = useState(false)
   const [cycle, setCycle] = useState(0)
+  const [pointerMode, setPointerMode] = useState(0)
+
+  useEffect(() => {
+    const queries = [matchMedia('(hover: hover) and (pointer: fine)'), matchMedia('(prefers-reduced-motion: reduce)')]
+    const update = () => setPointerMode((mode) => mode + 1)
+    queries.forEach((query) => query.addEventListener('change', update))
+    return () => queries.forEach((query) => query.removeEventListener('change', update))
+  }, [])
 
   const usablePools = useMemo(
     () =>
@@ -272,6 +283,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     () => arrangeSlotsInColumns(slots, columnCount),
     [columnCount, slots],
   )
+  useHomepageColumnScroll(viewportRef, railRef, invalidatePointerRef, `${columnCount}:${topologyKey}`)
   const topRowSlotIds = useMemo(
     () => new Set(columns.flatMap((column) => column[0]?.id || [])),
     [columns],
@@ -318,9 +330,11 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     updateColumns()
-    window.addEventListener('resize', updateColumns)
+    // Native hash navigation can measure the gallery immediately after a resize.
+    const handleResize = () => flushSync(updateColumns)
+    window.addEventListener('resize', handleResize)
 
-    return () => window.removeEventListener('resize', updateColumns)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   useEffect(() => {
@@ -343,6 +357,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     let returningToCenter = false
     let pointer: { x: number; y: number } | null = null
     let tracking = false
+    let overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
 
     const isBelowSkyline = () => {
       if (!pointer) return false
@@ -371,7 +386,6 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     const apply = () => {
-      const overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
       rail.style.transform = `translate3d(${-overflow * current}px, 0, 0)`
     }
 
@@ -425,27 +439,39 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       if (pointer) updatePointerTarget()
     }
 
-    const resizeObserver = new ResizeObserver(handleViewportChange)
+    invalidatePointerRef.current = () => {
+      if (tracking && !isBelowSkyline()) {
+        returnToCenter()
+        animateToTarget()
+      }
+    }
+
+    const handleResize = () => {
+      overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
+      handleViewportChange()
+    }
+    const resizeObserver = new ResizeObserver(handleResize)
 
     viewport.addEventListener('pointermove', handlePointerMove)
     viewport.addEventListener('pointerleave', handlePointerLeave)
     window.addEventListener('scroll', handleViewportChange, { passive: true })
-    window.addEventListener('resize', handleViewportChange)
+    window.addEventListener('resize', handleResize)
     resizeObserver.observe(viewport)
     resizeObserver.observe(rail)
     apply()
 
     return () => {
+      invalidatePointerRef.current = () => {}
       viewport.removeEventListener('pointermove', handlePointerMove)
       viewport.removeEventListener('pointerleave', handlePointerLeave)
       window.removeEventListener('scroll', handleViewportChange)
-      window.removeEventListener('resize', handleViewportChange)
+      window.removeEventListener('resize', handleResize)
       resizeObserver.disconnect()
 
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       rail.style.removeProperty('transform')
     }
-  }, [columnCount])
+  }, [columnCount, pointerMode])
 
   useEffect(() => {
     const viewport = viewportRef.current

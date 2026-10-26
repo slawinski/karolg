@@ -503,7 +503,8 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
         (ratio) => ratio >= 0.1,
       )
 
-      const eligible = mediaReady && (titleVisible || firstRowVisible) && pageVisible && !reduced
+      const eligible = mediaReady && window.scrollY <= 0 &&
+        (titleVisible || firstRowVisible) && pageVisible && !reduced
       eligibleRef.current = eligible
       if (!eligible) cancelWaveRef.current()
       setHeroEligible(eligible)
@@ -544,11 +545,14 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('scroll', updateEligibility, { passive: true })
     reducedMotion.addEventListener('change', handleMotionPreference)
+    updateEligibility()
 
     return () => {
       observer.disconnect()
       document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('scroll', updateEligibility)
       reducedMotion.removeEventListener('change', handleMotionPreference)
     }
   }, [columnCount, topologyKey, mediaReady])

@@ -24,6 +24,14 @@ export function useHomepageColumnScroll(
 
       let target = 0
       let bound = 0
+      let pointerDirty = false
+      const checkPointer = () => {
+        if (!pointerDirty) return
+        pointerDirty = false
+        invalidatePointer.current()
+      }
+      // Read the skyline after GSAP has written every column, not between writes.
+      gsap.ticker.add(checkPointer)
       const tweens = new Map<HTMLElement, ReturnType<typeof gsap.quickTo>>()
       const retarget = (next: number) => {
         next = Math.max(-bound, Math.min(0, next))
@@ -45,11 +53,11 @@ export function useHomepageColumnScroll(
         }
         for (const column of columns) {
           if (tweens.has(column)) continue
-          gsap.set(column, { y: target })
+          gsap.set(column, { y: target, force3D: true })
           const index = Number(column.dataset.column) - 1
           tweens.set(column, gsap.quickTo(column, 'y', {
             duration: durations[index], ease: 'power3.out',
-            onUpdate: () => invalidatePointer.current(),
+            onUpdate: () => { pointerDirty = true },
           }))
           observer.observe(column)
         }
@@ -67,6 +75,7 @@ export function useHomepageColumnScroll(
       window.addEventListener('wheel', wheel, { passive: true })
       window.addEventListener('resize', reconcile)
       dispose = () => {
+        gsap.ticker.remove(checkPointer)
         reconcileRef.current = () => {}
         window.removeEventListener('wheel', wheel)
         window.removeEventListener('resize', reconcile)

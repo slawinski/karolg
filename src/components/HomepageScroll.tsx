@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect } from 'react'
 import Lenis from 'lenis'
+import { gsap } from 'gsap'
 import 'lenis/dist/lenis.css'
 import { homepageMotionQuery } from '@/lib/homepage-motion'
 
@@ -18,9 +19,11 @@ export function HomepageScroll({ children }: { children: ReactNode }) {
       const previousBehavior = root.getAttribute('data-scroll-behavior')
       root.setAttribute('data-scroll-behavior', 'auto')
       const lenis = new Lenis({
-        autoRaf: true, autoResize: true, lerp: 0.1,
+        autoRaf: false, autoResize: true, lerp: 0.1,
         smoothWheel: true, wheelMultiplier: 1, syncTouch: false, anchors: false,
       })
+      const advance = (time: number) => lenis.raf(time * 1000)
+      gsap.ticker.add(advance, false, true)
       let frame = 0
       const synchronize = () => {
         lenis.resize()
@@ -56,6 +59,7 @@ export function HomepageScroll({ children }: { children: ReactNode }) {
       window.addEventListener('popstate', interrupt)
       window.addEventListener('hashchange', interrupt)
       dispose = () => {
+        gsap.ticker.remove(advance)
         cancelAnimationFrame(frame)
         document.removeEventListener('click', click, true)
         document.removeEventListener('keydown', key, true)

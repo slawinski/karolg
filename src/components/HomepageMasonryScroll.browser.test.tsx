@@ -5,6 +5,8 @@ import { HomepageMasonry } from './HomepageMasonry'
 import type { HomepageMediaPool, HomepageMasonrySlot } from '@/lib/homepage'
 import '@/app/(frontend)/styles.css'
 import { gsap } from 'gsap'
+import { useRef } from 'react'
+import { useHomepageColumnScroll } from './useHomepageColumnScroll'
 
 const pools: HomepageMediaPool[] = [{
   id: 'scroll', photoshootSlug: 'scroll', photoshootTitle: 'Scroll',
@@ -23,6 +25,30 @@ async function fixture() {
   return render(<div className="masonry-stage"><h1 className="masonry-name">Title</h1><HomepageMasonry pools={pools} slots={slots} /><div style={{ height: 2000 }} /></div>)
 }
 afterEach(async () => { await cleanup(); vi.unstubAllGlobals(); window.scrollTo({ top: 0, behavior: 'instant' }) })
+
+it('checks the pointer once after all column transforms have updated in a frame', async () => {
+  const onFrame = vi.fn()
+  function Fixture() {
+    const viewport = useRef<HTMLDivElement>(null)
+    const rail = useRef<HTMLDivElement>(null)
+    const invalidate = useRef(onFrame)
+    useHomepageColumnScroll(viewport, rail, invalidate, 'five')
+    return <div ref={viewport}><div ref={rail}>
+      {[1, 2, 3, 4, 5].map((index) => <div key={index} data-column={index} className="cursor-masonry__column" style={{ height: 1000 }}>
+        <span className="masonry-card" />
+      </div>)}
+    </div></div>
+  }
+  await page.viewport(1440, 900)
+  await render(<Fixture />)
+  wheel(120)
+  onFrame.mockClear()
+  columns().forEach((column) => gsap.getTweensOf(column)[0].progress(.5))
+  expect(onFrame).not.toHaveBeenCalled()
+  gsap.ticker.tick()
+  expect(onFrame).toHaveBeenCalledTimes(1)
+  expect(columns().every((column) => y(column) < 0)).toBe(true)
+})
 
 it('retargets actual independent transforms then converges to one reversible raw-wheel offset', async () => {
   await fixture()

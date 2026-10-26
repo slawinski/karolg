@@ -357,6 +357,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     let returningToCenter = false
     let pointer: { x: number; y: number } | null = null
     let tracking = false
+    let overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
 
     const isBelowSkyline = () => {
       if (!pointer) return false
@@ -385,7 +386,6 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     const apply = () => {
-      const overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
       rail.style.transform = `translate3d(${-overflow * current}px, 0, 0)`
     }
 
@@ -446,12 +446,16 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       }
     }
 
-    const resizeObserver = new ResizeObserver(handleViewportChange)
+    const handleResize = () => {
+      overflow = Math.max(0, rail.scrollWidth - viewport.clientWidth)
+      handleViewportChange()
+    }
+    const resizeObserver = new ResizeObserver(handleResize)
 
     viewport.addEventListener('pointermove', handlePointerMove)
     viewport.addEventListener('pointerleave', handlePointerLeave)
     window.addEventListener('scroll', handleViewportChange, { passive: true })
-    window.addEventListener('resize', handleViewportChange)
+    window.addEventListener('resize', handleResize)
     resizeObserver.observe(viewport)
     resizeObserver.observe(rail)
     apply()
@@ -461,7 +465,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       viewport.removeEventListener('pointermove', handlePointerMove)
       viewport.removeEventListener('pointerleave', handlePointerLeave)
       window.removeEventListener('scroll', handleViewportChange)
-      window.removeEventListener('resize', handleViewportChange)
+      window.removeEventListener('resize', handleResize)
       resizeObserver.disconnect()
 
       if (animationFrame) window.cancelAnimationFrame(animationFrame)

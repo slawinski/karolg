@@ -4,6 +4,7 @@ import { page } from 'vitest/browser'
 import { cleanup, render } from 'vitest-browser-react'
 import { HomepageScroll } from './HomepageScroll'
 import '@/app/(frontend)/styles.css'
+import { gsap } from 'gsap'
 
 afterEach(async () => { await cleanup(); vi.unstubAllGlobals(); window.scrollTo({ top: 0, behavior: 'instant' }) })
 
@@ -37,4 +38,20 @@ it('leaves mobile and reduced-motion visitors on native scrolling', async () => 
   expect(document.documentElement.classList.contains('lenis')).toBe(false)
   window.scrollTo({ top: 200, behavior: 'instant' })
   expect(scrollY).toBe(200)
+})
+
+it('advances page scrolling on the column animation clock and releases that clock on unmount', async () => {
+  await page.viewport(1440, 900)
+  const add = vi.spyOn(gsap.ticker, 'add')
+  const remove = vi.spyOn(gsap.ticker, 'remove')
+  try {
+    const view = await render(<HomepageScroll><div style={{ height: 5000 }} /></HomepageScroll>)
+    expect(add).toHaveBeenCalledWith(expect.any(Function), false, true)
+    const advance = add.mock.calls.find((call) => call[2] === true)![0]
+    await view.unmount()
+    expect(remove).toHaveBeenCalledWith(advance)
+  } finally {
+    add.mockRestore()
+    remove.mockRestore()
+  }
 })

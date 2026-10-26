@@ -51,7 +51,7 @@ const galleryMotion = {
 } as const
 
 const homepageCardSizes =
-  '(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)'
+  '(max-width: 700px) calc(50vw - 4px), (hover: hover) and (pointer: fine) and (max-width: 1100px) calc((150vw - clamp(8px, 1vw, 16px) * 2) / 3), (max-width: 1100px) calc((125vw - clamp(12px, 1.5vw, 24px) * 2) / 3), (hover: hover) and (pointer: fine) calc((125vw - clamp(8px, 1vw, 16px) * 4) / 5), calc((125vw - clamp(12px, 1.5vw, 24px) * 4) / 5)'
 
 const waveDirections: readonly HomepageWaveDirection[] = [
   'left-to-right',

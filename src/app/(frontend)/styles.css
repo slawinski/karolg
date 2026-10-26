@@ -292,6 +292,12 @@ img { display:block; }
   margin-bottom:0;
 }
 
+@media (hover:hover) and (pointer:fine) and (min-width:701px) {
+  .cursor-masonry { overflow:hidden; }
+  .cursor-masonry__rail,
+  .cursor-masonry__column-motion { gap:clamp(8px,1vw,16px); }
+}
+
 @media (min-width:701px) and (max-width:1100px) {
   .cursor-masonry__rail {
     grid-template-columns:repeat(3,minmax(0,1fr));

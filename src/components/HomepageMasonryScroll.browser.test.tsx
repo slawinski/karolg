@@ -93,3 +93,47 @@ it('uses positional durations and rechecks a stationary pointer during vertical 
   wheel(120)
   expect(columns().map((column) => gsap.getTweensOf(column)[0].duration())).toEqual([.5, .8, .2])
 })
+
+it('clips only the images at the page-relative title origin without shortening the document', async () => {
+  await fixture()
+  const viewport = document.querySelector<HTMLElement>('.cursor-masonry')!
+  const title = document.querySelector<HTMLElement>('.masonry-name')!
+  expect(viewport.contains(title)).toBe(false)
+  expect(getComputedStyle(viewport).overflowY).toBe('hidden')
+  expect(viewport.getBoundingClientRect().top).toBe(title.getBoundingClientRect().top)
+  const height = viewport.clientHeight
+  const documentHeight = document.documentElement.scrollHeight
+  wheel(1e6)
+  await expect.poll(() => y(columns()[0])).toBeLessThan(-100)
+  expect(viewport.clientHeight).toBe(height)
+  expect(document.documentElement.scrollHeight).toBe(documentHeight)
+  const card = columns()[0].querySelector<HTMLElement>('.masonry-card')!
+  const rect = card.getBoundingClientRect()
+  const edge = viewport.getBoundingClientRect().top
+  expect(rect.top).toBeLessThan(edge)
+  expect(document.elementFromPoint(Math.max(1, rect.right - 5), edge - 1)?.closest('.masonry-card')).toBeFalsy()
+  window.scrollTo({ top: 100, behavior: 'instant' })
+  expect(viewport.getBoundingClientRect().top).toBe(edge - 100)
+  wheel(-1e6)
+  await expect.poll(() => Math.abs(y(columns()[0]))).toBeLessThan(1)
+  expect(document.documentElement.scrollWidth).toBe(innerWidth)
+})
+
+it('uses 8–16px desktop gaps and matching image estimates across responsive widths', async () => {
+  await fixture()
+  for (const width of [701, 1000, 1440, 1920]) {
+    await page.viewport(width, 900)
+    await expect.poll(() => columns().length).toBe(width <= 1100 ? 3 : 5)
+    const expected = Math.max(8, Math.min(16, width * .01))
+    const rail = document.querySelector<HTMLElement>('.cursor-masonry__rail')!
+    const inner = columns()[0].querySelector<HTMLElement>('.cursor-masonry__column-motion')!
+    expect(parseFloat(getComputedStyle(rail).columnGap)).toBeCloseTo(expected, 1)
+    expect(parseFloat(getComputedStyle(inner).rowGap)).toBeCloseTo(expected, 1)
+    const count = columns().length
+    expect(columns()[0].clientWidth).toBeCloseTo((rail.getBoundingClientRect().width - expected * (count - 1)) / count, 0)
+    expect(document.querySelector('img')!.sizes).toContain('clamp(8px, 1vw, 16px)')
+  }
+  await page.viewport(390, 844)
+  await expect.poll(() => columns().length).toBe(2)
+  expect(getComputedStyle(document.querySelector('.cursor-masonry__rail')!).gap).toBe('8px')
+})

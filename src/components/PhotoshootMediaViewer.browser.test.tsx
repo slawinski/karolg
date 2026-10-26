@@ -274,11 +274,17 @@ it('allows explicit playback before public readiness and with reduced motion req
 })
 
 it('keeps revisioned photos optimizable without adding viewer images to critical readiness', async () => {
-  await gallery([{ id: 'revisioned', url: '/__controlled__/photo.jpg', processingRevision: 3, alt: 'Full portrait' }])
+  const photoUrl = new URL('../test/fixtures/portrait.svg?no-inline', import.meta.url).href
+  const revisionedUrl = new URL(photoUrl)
+  revisionedUrl.searchParams.set('v', '3')
+  await gallery([{ id: 'revisioned', url: photoUrl, processingRevision: 3, alt: 'Full portrait' }])
   await act(async () => trigger().click())
   const image = dialog().querySelector('img')!
-  expect(image.getAttribute('src')).toBe('/__controlled__/photo.jpg?v=3')
+  expect(image.getAttribute('src')).toBe(revisionedUrl.href)
   expect(image.hasAttribute('data-unoptimized')).toBe(false)
   expect(image.sizes).toBe('100vw')
   expect(image.hasAttribute('data-public-critical')).toBe(false)
+  await image.decode()
+  expect(image.naturalWidth).toBeGreaterThan(0)
+  expect(dialog().contains(image)).toBe(true)
 })

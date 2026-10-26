@@ -143,4 +143,7 @@ it('keeps the intended link under the pointer when keyboard focus yields during 
   links[1].addEventListener('click', (event) => { event.preventDefault(); activations++ })
   await userEvent.click(links[1])
   expect(activations).toBe(1)
+  await reveal(.6)
+  await userEvent.click(document.querySelector<HTMLElement>('.portfolio-footer__links h2')!)
+  await expect.poll(shade).toBeGreaterThan(.1)
 })

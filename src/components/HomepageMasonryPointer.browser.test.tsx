@@ -16,6 +16,7 @@ const slots: HomepageMasonrySlot[] = Array.from({ length: 10 }, (_, index) => ({
 }))
 let frames: Map<number, FrameRequestCallback>
 let nextFrame: number
+let frameTime: number
 let finePointer = true
 let reducedMotion = false
 const viewport = () => document.querySelector<HTMLElement>('.cursor-masonry')!
@@ -26,10 +27,11 @@ const center = () => -(rail().scrollWidth - viewport().clientWidth) / 2
 const move = (x: number, y: number) => viewport().dispatchEvent(new PointerEvent('pointermove', {
   clientX: x, clientY: y, bubbles: true, pointerType: 'mouse',
 }))
-const step = () => {
+const step = (elapsed = 1000 / 60) => {
+  frameTime += elapsed
   const pending = [...frames.values()]
   frames.clear()
-  pending.forEach((callback) => callback(performance.now()))
+  pending.forEach((callback) => callback(frameTime))
 }
 const settle = () => { for (let i = 0; i < 240 && frames.size; i++) step() }
 const belowSkyline = () => Math.max(...cards().map((card) => card.getBoundingClientRect().top)) + 40
@@ -39,6 +41,7 @@ beforeEach(async () => {
   window.scrollTo({ top: 0, behavior: 'instant' })
   frames = new Map()
   nextFrame = 0
+  frameTime = performance.now()
   finePointer = true
   reducedMotion = false
   vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
@@ -93,6 +96,16 @@ it('bridges gutters at the lower top and keeps vertical gaps active', async () =
   move(x, (first.bottom + second.top) / 2)
   settle()
   expect(offset()).toBeCloseTo(-(rail().scrollWidth - viewport().clientWidth) * x / viewport().clientWidth, 1)
+})
+
+it.each([30, 120])('returns to center within three seconds at %i frames per second', async (fps) => {
+  await render(<HomepageMasonry pools={pools} slots={slots} />)
+  move(1000, belowSkyline())
+  for (let i = 0; i < fps; i++) step(1000 / fps)
+  expect(offset()).toBeLessThan(center() - 30)
+  viewport().dispatchEvent(new PointerEvent('pointerleave'))
+  for (let i = 0; i < fps * 3; i++) step(1000 / fps)
+  expect(offset()).toBeCloseTo(center(), 0)
 })
 
 it('detects a skyline crossing under a stationary pointer and latches the return', async () => {

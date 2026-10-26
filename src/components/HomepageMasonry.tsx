@@ -354,6 +354,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     let current = 0.5
     let target = 0.5
     let animationFrame = 0
+    let previousFrameTime: number | null = null
     let returningToCenter = false
     let pointer: { x: number; y: number } | null = null
     let tracking = false
@@ -389,11 +390,13 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       rail.style.transform = `translate3d(${-overflow * current}px, 0, 0)`
     }
 
-    const tick = () => {
+    const tick = (time: number) => {
       animationFrame = 0
 
       const easing = returningToCenter ? 0.045 : 0.14
-      current += (target - current) * easing
+      const elapsed = previousFrameTime === null ? 1000 / 60 : Math.max(0, time - previousFrameTime)
+      previousFrameTime = time
+      current += (target - current) * (1 - Math.pow(1 - easing, elapsed / (1000 / 60)))
       apply()
 
       if (tracking && !isBelowSkyline()) returnToCenter()
@@ -408,7 +411,10 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     const animateToTarget = () => {
-      if (!animationFrame) animationFrame = window.requestAnimationFrame(tick)
+      if (!animationFrame) {
+        previousFrameTime = null
+        animationFrame = window.requestAnimationFrame(tick)
+      }
     }
 
     const updatePointerTarget = () => {

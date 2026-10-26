@@ -42,10 +42,11 @@ export function HomepageScroll({ children }: { children: ReactNode }) {
       }
       const key = (event: KeyboardEvent) => {
         const target = event.target
-        if (target instanceof Element && target.closest('input, textarea, select, [contenteditable="true"]')) return
+        if (target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select'))) return
         if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) interrupt()
       }
       const pointer = (event: PointerEvent) => {
+        click(event)
         if (event.pointerType === 'mouse' && event.clientX >= root.clientWidth) interrupt()
       }
       document.addEventListener('click', click, true)

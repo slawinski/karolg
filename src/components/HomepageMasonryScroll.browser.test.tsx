@@ -137,3 +137,27 @@ it('uses 8–16px desktop gaps and matching image estimates across responsive wi
   await expect.poll(() => columns().length).toBe(2)
   expect(getComputedStyle(document.querySelector('.cursor-masonry__rail')!).gap).toBe('8px')
 })
+
+it('accepts already-prevented raw wheel input, ignores zoom gestures, and leaves empty galleries finite', async () => {
+  await fixture()
+  const event = new WheelEvent('wheel', { deltaY: 120, cancelable: true })
+  event.preventDefault()
+  window.dispatchEvent(event)
+  await expect.poll(() => columns().every((column) => Math.abs(y(column) + 60) < 1)).toBe(true)
+  window.dispatchEvent(new WheelEvent('wheel', { deltaY: 120, ctrlKey: true }))
+  expect(columns().every((column) => Math.abs(y(column) + 60) < 1)).toBe(true)
+  await cleanup()
+  await render(<HomepageMasonry pools={[]} slots={[]} />)
+  wheel(1e6)
+  expect(columns().every((column) => y(column) === 0 && gsap.getTweensOf(column).length === 0)).toBe(true)
+})
+
+it('commits responsive topology before the next native hash destination can measure it', async () => {
+  await fixture()
+  vi.stubGlobal('innerWidth', 1000)
+  window.dispatchEvent(new Event('resize'))
+  expect(columns()).toHaveLength(3)
+  vi.stubGlobal('innerWidth', 1440)
+  window.dispatchEvent(new Event('resize'))
+  expect(columns()).toHaveLength(5)
+})

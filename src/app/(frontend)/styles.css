@@ -594,8 +594,10 @@ video.gallery-static-image { pointer-events:none; }
   opacity:var(--footer-shade,.1);
   pointer-events:none;
 }
-.portfolio-footer:has(:focus-visible) .portfolio-footer__inner { transform:none; }
-.portfolio-footer:has(:focus-visible) .portfolio-footer__shade { opacity:.1; }
+.portfolio-footer:has(:focus-visible) .portfolio-footer__inner,
+.portfolio-footer[data-keyboard-focus] .portfolio-footer__inner { transform:none; }
+.portfolio-footer:has(:focus-visible) .portfolio-footer__shade,
+.portfolio-footer[data-keyboard-focus] .portfolio-footer__shade { opacity:.1; }
 @media (prefers-reduced-motion:reduce) {
   .portfolio-footer__inner { transform:none; }
   .portfolio-footer__shade { opacity:.1; }

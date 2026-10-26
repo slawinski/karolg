@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { flushSync } from 'react-dom'
 import { mediaRevision } from '@/lib/media-revision'
 import {
   type AnimationEvent,
@@ -329,9 +330,11 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     updateColumns()
-    window.addEventListener('resize', updateColumns)
+    // Native hash navigation can measure the gallery immediately after a resize.
+    const handleResize = () => flushSync(updateColumns)
+    window.addEventListener('resize', handleResize)
 
-    return () => window.removeEventListener('resize', updateColumns)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   useEffect(() => {

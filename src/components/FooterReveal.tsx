@@ -8,6 +8,8 @@ export function FooterReveal({ children }: { children: ReactNode }) {
     const node = root.current!
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0
+    let pointerActive = false
+    let focusRelease = 0
     let disposed = false
     let lastProgress = NaN
     let modal = Boolean(document.querySelector('.photoshoot-viewer[open]'))
@@ -41,9 +43,21 @@ export function FooterReveal({ children }: { children: ReactNode }) {
       }
     }
     const releaseKeyboardFocus = (event: FocusEvent) => {
-      if (!(event.relatedTarget instanceof Node) || !node.contains(event.relatedTarget)) {
+      if (!pointerActive && (!(event.relatedTarget instanceof Node) || !node.contains(event.relatedTarget))) {
         node.removeAttribute('data-keyboard-focus')
       }
+    }
+    const retainPointerFocus = () => {
+      clearTimeout(focusRelease)
+      pointerActive = true
+    }
+    const releasePointerFocus = () => {
+      if (!pointerActive) return
+      pointerActive = false
+      // WebKit blurs links on mouse-down. Keep their layout through the native click.
+      focusRelease = window.setTimeout(() => {
+        if (!node.contains(document.activeElement)) node.removeAttribute('data-keyboard-focus')
+      }, 0)
     }
     const dialogs = new MutationObserver(() => {
       const open = Boolean(document.querySelector('.photoshoot-viewer[open]'))
@@ -64,6 +78,9 @@ export function FooterReveal({ children }: { children: ReactNode }) {
     node.addEventListener('focusin', retainKeyboardFocus)
     node.addEventListener('keydown', retainKeyboardFocus)
     node.addEventListener('focusout', releaseKeyboardFocus)
+    node.addEventListener('pointerdown', retainPointerFocus)
+    window.addEventListener('pointerup', releasePointerFocus)
+    window.addEventListener('pointercancel', releasePointerFocus)
     document.addEventListener('visibilitychange', visibility)
     motion.addEventListener('change', update)
     void document.fonts.ready.then(schedule)
@@ -71,6 +88,7 @@ export function FooterReveal({ children }: { children: ReactNode }) {
     return () => {
       disposed = true
       cancelAnimationFrame(frame)
+      clearTimeout(focusRelease)
       dialogs.disconnect()
       sizes.disconnect()
       window.removeEventListener('scroll', schedule)
@@ -79,6 +97,9 @@ export function FooterReveal({ children }: { children: ReactNode }) {
       node.removeEventListener('focusin', retainKeyboardFocus)
       node.removeEventListener('keydown', retainKeyboardFocus)
       node.removeEventListener('focusout', releaseKeyboardFocus)
+      node.removeEventListener('pointerdown', retainPointerFocus)
+      window.removeEventListener('pointerup', releasePointerFocus)
+      window.removeEventListener('pointercancel', releasePointerFocus)
       node.removeAttribute('data-keyboard-focus')
       document.removeEventListener('visibilitychange', visibility)
       motion.removeEventListener('change', update)

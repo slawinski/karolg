@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio CI — options and recommendation</title>
+<style>
+:root{color-scheme:light;--paper:#f3f0e8;--ink:#171715;--quiet:#59564f;--line:#c9c4b9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Arial,Helvetica,sans-serif}main{max-width:58rem;margin:auto;padding:3rem 1.4rem}h1,h2,h3{font-family:Georgia,'Times New Roman',serif;font-weight:400;line-height:1.15}h1{font-size:clamp(2.1rem,6vw,3.5rem);max-width:20ch;margin:.6rem 0 1.5rem}h2{font-size:1.9rem;margin:2.8rem 0 1rem}h3{font-size:1.5rem;margin:0 0 1rem}.eyebrow,.metadata{font-size:.8rem;letter-spacing:.06em;color:var(--quiet)}p,dd{max-width:75ch}a{color:inherit;text-underline-offset:3px}a:focus-visible{outline:2px solid;outline-offset:4px}code{font-size:.85em;overflow-wrap:anywhere}article{border-top:1px solid var(--line);padding:1.7rem 0}dt{font-weight:bold;margin-top:.75rem}dd{margin:0}nav ul{padding-left:1.2rem}.recommendation{background:#e8e4dc;padding:1.3rem 1.5rem}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;vertical-align:top;border-bottom:1px solid var(--line);padding:.7rem .5rem}.table-wrap{overflow-x:auto}svg{display:block;width:100%;height:auto;margin:1.5rem 0}footer{border-top:1px solid var(--line);margin-top:3rem;padding-top:1rem;font-size:.8rem;color:var(--quiet)}@media print{main{padding:0}article{break-inside:avoid}}
+</style>
+</head>
+<body><main>
+<header>
+<p class="eyebrow">Engineering choices / portfolio</p>
+<h1>Better CI, with a small maintenance bill.</h1>
+<p class="metadata">Date: <time datetime="2026-10-27">2026-10-27</time> · Topic: portfolio-ci · Scope: this codebase</p>
+<p><strong>Focus:</strong> What options do we have to improve this portfolio’s CI, and which should we take?</p>
+</header>
+<aside class="recommendation">
+<strong>Recommendation: take the balanced option.</strong>
+<p>Choose early feedback, a deterministic real-page visitor smoke test, and retained failure evidence (ideas 1–3). Keep Chromium and WebKit coverage. Consider sharing production-build setup once compatibility is established. Add performance reports before performance gates; keep recovery rehearsals selective.</p>
+<p><strong>Lean:</strong> 1 + 3. <strong>Balanced:</strong> 1 + 2 + 3. <strong>Extended:</strong> selected additions from 4–6. The balanced option closes a real integration gap without creating a large testing platform.</p>
+</aside>
+<section id="context"><h2>Codebase Context</h2>
+<p>The baseline is already substantial: one GitHub Actions job runs Node tests, Chromium and WebKit component tests, typechecking, migration, and two production-runtime verifiers. Those verifiers build and start Next.js against disposable data. A separate build check is therefore already covered indirectly.</p>
+<p>The clearest friction is ordering: typecheck follows FFmpeg setup and both browser suites. Both production verifiers independently build. Component browser tests replace Next links and images, while the real-navigation script is outside CI. The workflow does not upload diagnostic artifacts.</p>
+<p>Deployment uses a persistent Next server with SQLite and media storage. Populated-schema migration upgrade/rollback tests already exist; recovery’s remaining distinct question is whether restored data and media work together. Existing performance reports are historical local observations, not current production measurements.</p>
+<p>Evidence came from repository scans and independent source verification. Official GitHub Actions caching and concurrency documentation was consulted through Context7. Broad web search was unavailable. No CI runs were benchmarked, so speed and runner-cost benefits remain unmeasured. No application tests were executed for this advisory analysis.</p>
+</section>
+<section id="axes"><h2>Topic Axes</h2><ul>
+<li>Feedback speed and execution cost</li><li>Real visitor journey coverage</li><li>Trustworthy results and failure diagnosis</li><li>Ongoing quality and change safety</li>
+</ul></section>
+<section id="ideas"><h2>Ranked Ideas</h2>
+<p>36 raw ideas across six lenses converged into 9 distinct concepts; 3 combinations added focused options. All 12 were critiqued, yielding 6 ranked directions after merging and rejection. Confidence percentages express judgment about suitability, not measured probabilities.</p>
+<nav aria-label="Ranked idea index"><ol>
+<li><a href="#idea1">Earlier answers with lean workflow hygiene</a></li>
+<li><a href="#idea2">One seeded production visitor journey</a></li>
+<li><a href="#idea3">Failure evidence you can actually inspect</a></li>
+<li><a href="#idea4">One compatible production-test harness</a></li>
+<li><a href="#idea5">Report-first mobile performance checks</a></li>
+<li><a href="#idea6">Selective paired-volume recovery rehearsal</a></li>
+</ol></nav>
+<article id="idea1"><h3>1. Earlier answers with lean workflow hygiene</h3>
+<p>Get typecheck results before browser provisioning can delay them. Use a modest number of independent checks where timings justify the extra setup. Add pnpm-store caching and cancellation of superseded PR runs, with explicit token permissions and clear check names.</p>
+<dl><dt>Axis</dt><dd>Feedback speed and execution cost</dd>
+<dt>Basis — direct + external</dt><dd><code>.github/workflows/ci.yml:25–42</code> places <code>pnpm typecheck</code> after FFmpeg setup and both browser suites. The workflow does not configure cache or concurrency. GitHub documents pnpm caching through setup-node and workflow/ref cancellation groups.</dd>
+<dt>Rationale</dt><dd>This removes avoidable waiting and stale work without requiring new product tests. Distinguish time to first useful failure from total duration and runner minutes. Start here.</dd>
+<dt>Downsides</dt><dd>More jobs repeat install/setup and may increase runner minutes. Caching does not eliminate installs. Cancellation policy needs care if deployment is later added; separate browser jobs are an option to measure, not an automatic requirement.</dd>
+<dt>Confidence</dt><dd>95%</dd><dt>Complexity</dt><dd>Low for ordering/cache/cancellation; Medium if splitting jobs.</dd></dl>
+</article>
+<article id="idea2"><h3>2. One seeded production visitor journey</h3>
+<p>Use a small synthetic portfolio to test the actual Next.js experience: home → story → back → contact at mobile and desktop sizes. Reuse navigation and reduced-motion checks, adding focused keyboard/focus and automated accessibility checks. Keep component tests for detailed behavior.</p>
+<svg viewBox="0 0 760 100" role="img" aria-label="Conceptual visitor journey from homepage through story and back to contact"><g fill="none" stroke="#59564f"><rect x="5" y="20" width="150" height="50"/><path d="M155 45h45"/><rect x="200" y="20" width="150" height="50"/><path d="M350 45h45"/><rect x="395" y="20" width="150" height="50"/><path d="M545 45h45"/><rect x="590" y="20" width="165" height="50"/></g><g font-family="Arial,sans-serif" font-size="16" text-anchor="middle" fill="#171715"><text x="80" y="50">Home</text><text x="275" y="50">Story</text><text x="470" y="50">Back to work</text><text x="672" y="50">Contact</text></g></svg>
+<dl><dt>Axis</dt><dd>Real visitor journey coverage</dd>
+<dt>Basis — direct</dt><dd><code>PRODUCT.md:20</code> defines success through understanding, exploring stories and contacting Carla. <code>vitest.browser.config.ts:9–12</code> substitutes Next image/link implementations. <code>scripts/verify-public-navigation.mjs:33–168</code> tests real navigation but is not run by CI.</dd>
+<dt>Rationale</dt><dd>This is the strongest coverage addition: certify the assembled experience and the portfolio’s intended outcome. The product’s accessibility requirements at <code>PRODUCT.md:118–120</code> give the focused checks a clear purpose.</dd>
+<dt>Downsides</dt><dd>The existing script is not plug-and-play: it assumes tall pages, video, delayed poster behavior, and <code>/work/d</code>. Fixtures must supply those capabilities or the script must accept a manifest. Avoid arbitrary sleeps and a broad breakpoint matrix. Automated accessibility scans cannot prove full WCAG conformance.</dd>
+<dt>Confidence</dt><dd>94%</dd><dt>Complexity</dt><dd>Medium</dd></dl>
+</article>
+<article id="idea3"><h3>3. Failure evidence you can actually inspect</h3>
+<p>Retain browser failure screenshots, available traces, relevant server output and a small report naming the route, viewport and failed step. Add a concise test summary with unexpected skips, rather than a standalone reporting subsystem.</p>
+<dl><dt>Axis</dt><dd>Trustworthy results and failure diagnosis</dd>
+<dt>Basis — direct</dt><dd>The full <code>.github/workflows/ci.yml</code> has no artifact upload. <code>scripts/verify-homepage-scroll.ts:222–233</code> already demonstrates project-specific failure state, <code>failure.png</code> and <code>evidence.json</code>. That script itself is not currently invoked by CI.</dd>
+<dt>Rationale</dt><dd>Scroll, readiness and media failures are easier to understand when the failing state survives the runner. Attach evidence collection to checks that actually execute; existing local patterns make this cheaper to design.</dd>
+<dt>Downsides</dt><dd>Artifacts need bounded retention and reliable capture during failure. A screenshot alone rarely explains the preceding sequence. Current FFmpeg/ffprobe preflights already fail on missing tools; there is no demonstrated false-green video run to justify a separate coverage-receipt system.</dd>
+<dt>Confidence</dt><dd>96%</dd><dt>Complexity</dt><dd>Low to Medium, depending on capture support.</dd></dl>
+</article>
+<article id="idea4"><h3>4. One compatible production-test harness</h3>
+<p>Explore sharing the build, server lifecycle and deterministic fixtures across slug, social-metadata and visitor scenarios. Keep the important guarantee that CMS changes made after build are visible without redeployment.</p>
+<dl><dt>Axis</dt><dd>Feedback speed and execution cost</dd>
+<dt>Basis — direct</dt><dd><code>scripts/verify-photoshoot-slugs.ts:11–40</code> and <code>scripts/verify-social-metadata.ts:10–39</code> independently configure disposable environments, migrate, build and start. <code>README.md:59–62</code> warns that verification writes shared <code>.next</code> output.</dd>
+<dt>Rationale</dt><dd>A common lifecycle could eliminate duplicated builds and make future production checks cheaper to add. This ranks below immediate workflow improvements because safe reuse requires more reasoning than caching.</dd>
+<dt>Downsides</dt><dd>Each script currently uses distinct database/media paths, secrets and public origins. Reuse must reconcile build-time assumptions and isolate scenario state. Do not parallelize scripts that write the same <code>.next</code> directory. Avoid turning a useful helper into a large test framework.</dd>
+<dt>Confidence</dt><dd>83%</dd><dt>Complexity</dt><dd>Medium</dd></dl>
+</article>
+<article id="idea5"><h3>5. Report-first mobile performance checks</h3>
+<p>Reuse the controlled cold-load experiment for media/loading changes or scheduled runs. Retain repeated samples, raw results and route-specific measurements; consider paired base/candidate comparisons when the signal warrants their cost. Promote only stable, actionable regressions to blocking checks.</p>
+<dl><dt>Axis</dt><dd>Ongoing quality and change safety</dd>
+<dt>Basis — direct + reasoned</dt><dd><code>docs/verification/public-mobile-cold-load.md:13–19</code> defines constrained viewport/network/CPU measurements and repeats. Lines 196–209 report historical homepage LCP of 2789 ms and explicitly limit the claim to local samples. <code>PRODUCT.md:116</code> makes performance part of the aesthetic.</dd>
+<dt>Rationale</dt><dd>Media and motion changes can erode the first impression while functional tests stay green. Existing measurement work provides a credible starting point, not a ready-made universal threshold.</dd>
+<dt>Downsides</dt><dd>Hosted-runner noise and base/candidate setup add expense. Synthetic fixtures improve repeatability but may not represent real content weight. Keep absolute targets and change deltas distinct. The custom script’s blocking metric is not Lighthouse TBT; lab results are not CrUX.</dd>
+<dt>Confidence</dt><dd>82%</dd><dt>Complexity</dt><dd>Medium to High</dd></dl>
+</article>
+<article id="idea6"><h3>6. Selective paired-volume recovery rehearsal</h3>
+<p>For storage or migration-sensitive changes, restore synthetic persisted database and media together, boot the candidate, and check that a representative public story and its assets remain usable. Consider a scheduled rehearsal if these changes become frequent.</p>
+<dl><dt>Axis</dt><dd>Ongoing quality and change safety</dd>
+<dt>Basis — direct + reasoned</dt><dd><code>README.md:155–157</code> identifies shared data/media volumes and paired restoration. <code>src/lib/social-image-migration.integration.test.ts:25–68</code> already checks populated-schema upgrade/rollback, so the additional value is serving restored media with restored records.</dd>
+<dt>Rationale</dt><dd>Accumulated portfolio content is worth preserving. This targets an operational boundary clean installs and database-only migration tests cannot establish.</dd>
+<dt>Downsides</dt><dd>Versioned historical fixtures need maintenance. A synthetic rehearsal does not prove real backups are complete or recoverable. This is a selective later investment, not a default requirement on every presentation-only PR.</dd>
+<dt>Confidence</dt><dd>76%</dd><dt>Complexity</dt><dd>High</dd></dl>
+</article>
+</section>
+<section id="cuts"><h2>Rejection Summary</h2>
+<div class="table-wrap"><table><thead><tr><th>Considered option</th><th>Decision and reason</th></tr></thead><tbody>
+<tr><td>Standalone execution receipts</td><td>Cut as an independent system: no demonstrated false green; fold useful skip/scenario summaries into idea 3.</td></tr>
+<tr><td>Another editorial mutation suite</td><td>Cut: post-build creation/rename and image replacement/clearing already have tests; no specific missing interaction justifies coupling them.</td></tr>
+<tr><td>Scheduled deliberate-fault/mutation runs</td><td>Defer: disproportionate maintenance before a real visitor journey is covered.</td></tr>
+<tr><td>Separate workflow-hygiene project</td><td>Merge: keep cache/cancellation/permissions with idea 1 rather than expanding checklist scope.</td></tr>
+<tr><td>Standalone accessibility pipeline</td><td>Merge: focused real-page checks belong with idea 2 and its fixtures.</td></tr>
+<tr><td>Mandatory generated CMS-file drift gate</td><td>Defer: output determinism and isolated generation side effects remain unverified, with no demonstrated stale-contract failure.</td></tr>
+<tr><td>Duplicate suggestions across six lenses</td><td>Merge: 36 raw suggestions converged to 9 concepts before adding 3 combinations. All concepts were independently critiqued.</td></tr>
+</tbody></table></div>
+<p>All four topic axes retain survivors. The stricter cut favors direct evidence, meaningful visitor protection, low recurring burden and reuse of existing work. Blanket coverage percentages, broad screenshot matrices and hard Lighthouse-score gates do not currently have evidence strong enough to displace the ranked choices.</p>
+</section>
+<section id="sources"><h2>Sources &amp; References</h2><ul>
+<li><a href="https://github.com/slawinski/karolg/blob/main/.github/workflows/ci.yml">Current CI workflow</a></li>
+<li><a href="https://github.com/slawinski/karolg/blob/main/vitest.browser.config.ts">Browser component-test boundaries</a></li>
+<li><a href="https://github.com/slawinski/karolg/blob/main/scripts/verify-public-navigation.mjs">Real navigation verifier</a></li>
+<li><a href="https://github.com/slawinski/karolg/blob/main/scripts/verify-photoshoot-slugs.ts">Production slug verifier</a> and <a href="https://github.com/slawinski/karolg/blob/main/scripts/verify-social-metadata.ts">social-metadata verifier</a></li>
+<li><a href="https://github.com/slawinski/karolg/blob/main/src/lib/social-image-migration.integration.test.ts">Existing populated migration tests</a></li>
+<li><a href="https://github.com/slawinski/karolg/blob/main/PRODUCT.md">Product and accessibility requirements</a> and <a href="https://github.com/slawinski/karolg/blob/main/README.md">deployment/recovery guidance</a></li>
+<li><a href="https://github.com/slawinski/karolg/blob/main/docs/verification/public-mobile-cold-load.md">Historical mobile measurements and limitations</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching">GitHub dependency caching</a> and <a href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency">concurrency control</a></li>
+</ul></section>
+<footer>Composed 2026-10-27T15:40:28Z by ce-ideate from the portfolio CI question and this checkout. Source inspection is point-in-time; main-branch reference links may evolve.</footer>
+</main></body></html>

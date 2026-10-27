@@ -5,7 +5,91 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -eo pipefail {0}
+
 jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+      - uses: pnpm/action-setup@v4
+        id: pnpm
+        with:
+          version: 10.34.6
+          run_install: false
+      - uses: actions/setup-node@v4
+        id: node
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - id: install
+        run: |
+          mkdir -p artifacts/ci
+          pnpm install --frozen-lockfile 2>&1 | tee artifacts/ci/install.log
+      - id: typecheck
+        run: pnpm typecheck 2>&1 | tee artifacts/ci/typecheck.log
+      - name: Job summary
+        if: always()
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          SUMMARY_TITLE: Typecheck
+        run: &job-summary |
+          node --input-type=module <<'JS'
+          import { appendFileSync, existsSync, readFileSync } from 'node:fs'
+          const steps = JSON.parse(process.env.STEPS)
+          let blocked = false
+          const lines = [`### ${process.env.SUMMARY_TITLE}`, '| Step | Outcome |', '| --- | --- |']
+          for (const [name, step] of Object.entries(steps)) {
+            const skipped = step.outcome === 'skipped'
+            lines.push(`| ${name} | ${skipped ? (blocked ? 'not-run (failed/cancelled prerequisite)' : 'UNEXPECTED SKIP') : step.outcome} |`)
+            if (skipped && !blocked) process.exitCode = 1
+            blocked ||= ['failure', 'cancelled'].includes(step.outcome)
+          }
+          if (process.env.SMOKE_REPORT === 'true') {
+            const reportPath = 'artifacts/ci/public-smoke/report.json'
+            if (existsSync(reportPath)) {
+              const report = JSON.parse(readFileSync(reportPath, 'utf8'))
+              lines.push('', `Report: **${report.status}**; phase: ${report.phase}; step: ${report.step}.`)
+              for (const scenario of report.browserScenarios) {
+                const counts = Object.values(scenario.checks).reduce((counts, value) => {
+                  counts[value] = (counts[value] || 0) + 1
+                  return counts
+                }, {})
+                lines.push(`- ${scenario.name}: ${scenario.status}; ${counts.passed || 0} passed, ${counts.failed || 0} failed, ${counts['not-run'] || 0} not-run.`)
+              }
+              const complete = report.status === 'passed' && Object.values(report.checks).every(value => value === 'passed') &&
+                report.browserScenarios.length === 3 && report.browserScenarios.every(scenario =>
+                  scenario.status === 'passed' && Object.values(scenario.checks).every(value => value === 'passed'))
+              if (!complete) {
+                lines.push('Mandatory smoke coverage incomplete: see report for the primary failure; not-run checks are not passes.')
+                process.exitCode = 1
+              }
+            } else {
+              lines.push('', 'No smoke report produced; browser coverage is not established.')
+              if (steps.smoke.outcome === 'success') process.exitCode = 1
+            }
+          }
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n')
+          JS
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: typecheck-diagnostics
+          retention-days: 7
+          path: artifacts/ci/*.log
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -15,28 +99,116 @@ jobs:
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
+        id: checkout
       - uses: pnpm/action-setup@v4
+        id: pnpm
         with:
           version: 10.34.6
           run_install: false
       - uses: actions/setup-node@v4
+        id: node
         with:
           node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install FFmpeg
+        id: ffmpeg
         timeout-minutes: 5
         run: |
+          mkdir -p artifacts/ci
           apt_options=(-o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
-          sudo apt-get "${apt_options[@]}" update
-          sudo apt-get "${apt_options[@]}" install --no-install-recommends -y ffmpeg
-          ffmpeg -version
-          ffprobe -version
-      - run: pnpm install --frozen-lockfile
-      - run: mkdir -p data
-      - run: pnpm test
-      - run: pnpm exec playwright install --with-deps chromium webkit
-      - run: pnpm test:browser
-      - run: pnpm test:browser:webkit
-      - run: pnpm typecheck
-      - run: pnpm exec payload migrate
-      - run: pnpm test:slugs
-      - run: pnpm test:social-metadata
+          sudo apt-get "${apt_options[@]}" update 2>&1 | tee artifacts/ci/apt-update.log
+          sudo apt-get "${apt_options[@]}" install --no-install-recommends -y ffmpeg 2>&1 | tee artifacts/ci/apt-install.log
+          ffmpeg -version 2>&1 | tee artifacts/ci/ffmpeg.log
+          ffprobe -version 2>&1 | tee artifacts/ci/ffprobe.log
+      - id: install
+        run: pnpm install --frozen-lockfile 2>&1 | tee artifacts/ci/install.log
+      - id: data
+        run: mkdir -p data
+      - id: tests
+        run: pnpm test 2>&1 | tee artifacts/ci/node-tests.log
+      - id: browsers
+        run: pnpm exec playwright install --with-deps chromium webkit 2>&1 | tee artifacts/ci/browsers.log
+      - id: chromium
+        run: pnpm test:browser 2>&1 | tee artifacts/ci/chromium.log
+      - id: webkit
+        run: pnpm test:browser:webkit 2>&1 | tee artifacts/ci/webkit.log
+      - id: migration
+        run: pnpm exec payload migrate 2>&1 | tee artifacts/ci/migration.log
+      - id: slugs
+        run: pnpm test:slugs 2>&1 | tee artifacts/ci/slugs.log
+      - id: social
+        run: pnpm test:social-metadata 2>&1 | tee artifacts/ci/social.log
+      - name: Job summary
+        if: always()
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          SUMMARY_TITLE: Regression checks
+        run: *job-summary
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: regression-diagnostics
+          retention-days: 7
+          # Hidden support is limited to these diagnostic file types and directories.
+          include-hidden-files: true
+          path: |
+            artifacts/ci/**/*.log
+            artifacts/ci/**/*.json
+            artifacts/ci/**/*.png
+            artifacts/ci/**/*.zip
+            src/**/__screenshots__/**/*.png
+            .vitest-attachments/**/*.png
+            .vitest-attachments/**/*.json
+            .vitest-attachments/**/*.zip
+
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+      - uses: pnpm/action-setup@v4
+        id: pnpm
+        with:
+          version: 10.34.6
+          run_install: false
+      - uses: actions/setup-node@v4
+        id: node
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install FFmpeg
+        id: ffmpeg
+        timeout-minutes: 5
+        run: |
+          mkdir -p artifacts/ci
+          apt_options=(-o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+          sudo apt-get "${apt_options[@]}" update 2>&1 | tee artifacts/ci/apt-update.log
+          sudo apt-get "${apt_options[@]}" install --no-install-recommends -y ffmpeg 2>&1 | tee artifacts/ci/apt-install.log
+          ffmpeg -version 2>&1 | tee artifacts/ci/ffmpeg.log
+          ffprobe -version 2>&1 | tee artifacts/ci/ffprobe.log
+      - id: install
+        run: pnpm install --frozen-lockfile 2>&1 | tee artifacts/ci/install.log
+      - id: browser
+        run: pnpm exec playwright install --with-deps chromium 2>&1 | tee artifacts/ci/browser.log
+      - id: smoke
+        run: pnpm test:public-smoke 2>&1 | tee artifacts/ci/public-smoke.log
+      - name: Job summary
+        if: always()
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          SUMMARY_TITLE: Public visitor smoke
+          SMOKE_REPORT: 'true'
+        run: *job-summary
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: public-smoke-diagnostics
+          retention-days: 7
+          path: |
+            artifacts/ci/**/*.log
+            artifacts/ci/**/*.json
+            artifacts/ci/**/*.png
+            artifacts/ci/**/*.zip

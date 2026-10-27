@@ -12,3 +12,4 @@ data/upload-tmp/
 public/media/*
 !public/media/.gitkeep
 .context/compound-engineering/
+/artifacts/ci/

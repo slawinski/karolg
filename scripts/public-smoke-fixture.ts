@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import type { ChildProcess } from 'node:child_process'
+import { execFileSync, type ChildProcess } from 'node:child_process'
 import { lstatSync } from 'node:fs'
 import path from 'node:path'
 import type { Payload } from 'payload'
@@ -36,25 +36,36 @@ export function waitForSmokeChild(child: ChildProcess, timeout: number): Promise
 }
 
 export async function stopSmokeChild(child: ChildProcess) {
-  if (!child.pid || child.exitCode !== null || child.signalCode !== null) return
-  const signal = (name: NodeJS.Signals) => {
-    try { process.kill(-child.pid!, name) } catch (error) {
+  const pid = child.pid
+  // Callers spawn detached: this PID owns the group, even after its leader exits.
+  if (!pid || !Number.isInteger(pid) || pid <= 1) return
+  const signal = (name: NodeJS.Signals | 0) => {
+    try { process.kill(-pid, name); return true } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error
+      return false
     }
   }
-  const exited = (timeout: number) => new Promise<boolean>((resolve) => {
-    const done = () => { clearTimeout(timer); resolve(true) }
-    const timer = setTimeout(() => { child.off('exit', done); resolve(false) }, timeout)
-    child.once('exit', done)
-    if (child.exitCode !== null || child.signalCode !== null) {
-      child.off('exit', done)
-      done()
-    }
-  })
+  const leaderExited = () => child.exitCode !== null || child.signalCode !== null
+  const drained = async () => {
+    const deadline = Date.now() + 5000
+    do {
+      if (!signal(0) && leaderExited()) return true
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    } while (Date.now() < deadline)
+    return !signal(0) && leaderExited()
+  }
   signal('SIGTERM')
-  if (await exited(5000)) return
+  if (await drained()) return
   signal('SIGKILL')
-  assert(await exited(5000), 'Owned smoke child did not exit after SIGKILL')
+  if (await drained()) return
+  // kill(0) also sees orphaned zombies, which only init can reap (not us).
+  // After the bounded wait, distinguish these from surviving runnable workers.
+  const rows = execFileSync('ps', ['-axo', 'pgid=,stat='], { encoding: 'utf8', timeout: 1000 })
+  const survivors = rows.split('\n').some((row) => {
+    const [group, state] = row.trim().split(/\s+/)
+    return Number(group) === pid && !state.startsWith('Z')
+  })
+  assert(leaderExited() && !survivors, 'Owned smoke process group did not exit after SIGKILL')
 }
 
 export type PublicSmokeFixture = {

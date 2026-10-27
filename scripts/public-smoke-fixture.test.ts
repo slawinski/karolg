@@ -64,14 +64,24 @@ it('terminates an owned process group and escalates a stuck child', async () => 
   expect(kill).toHaveBeenCalledWith(-12345, 'SIGKILL')
   Object.defineProperty(child, 'exitCode', { value: 0 })
   child.emit('exit', 0, null)
+  kill.mockImplementation(() => { throw Object.assign(new Error('gone'), { code: 'ESRCH' }) })
+  await vi.advanceTimersByTimeAsync(50)
   await stopped
 })
 
-it('does not signal a child that already exited', async () => {
+it('tolerates a missing group after its leader already exited', async () => {
   const child = new ChildProcess()
   Object.defineProperty(child, 'pid', { value: 12345 })
   Object.defineProperty(child, 'exitCode', { value: 1 })
-  const kill = vi.spyOn(process, 'kill')
+  const kill = vi.spyOn(process, 'kill').mockImplementation(() => {
+    throw Object.assign(new Error('gone'), { code: 'ESRCH' })
+  })
   await stopSmokeChild(child)
+  expect(kill).toHaveBeenCalledWith(-12345, 'SIGTERM')
+})
+
+it('does not signal a failed spawn without a PID', async () => {
+  const kill = vi.spyOn(process, 'kill')
+  await stopSmokeChild(new ChildProcess())
   expect(kill).not.toHaveBeenCalled()
 })

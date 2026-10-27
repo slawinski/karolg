@@ -48,6 +48,7 @@ function start(commandName: string, args: string[], logName: string) {
 async function run(commandName: string, args: string[], logName: string, timeout: number) {
   command = start(commandName, args, logName)
   await waitForSmokeChild(command, timeout)
+  await stopSmokeChild(command)
   command = undefined
 }
 

@@ -44,16 +44,42 @@ jobs:
         if: always()
         env:
           STEPS: ${{ toJSON(steps) }}
-        run: |
+          SUMMARY_TITLE: Typecheck
+        run: &job-summary |
           node --input-type=module <<'JS'
-          import { appendFileSync } from 'node:fs'
+          import { appendFileSync, existsSync, readFileSync } from 'node:fs'
+          const steps = JSON.parse(process.env.STEPS)
           let blocked = false
-          const lines = ['### Typecheck', '| Step | Outcome |', '| --- | --- |']
-          for (const [name, step] of Object.entries(JSON.parse(process.env.STEPS))) {
+          const lines = [`### ${process.env.SUMMARY_TITLE}`, '| Step | Outcome |', '| --- | --- |']
+          for (const [name, step] of Object.entries(steps)) {
             const skipped = step.outcome === 'skipped'
             lines.push(`| ${name} | ${skipped ? (blocked ? 'not-run (failed/cancelled prerequisite)' : 'UNEXPECTED SKIP') : step.outcome} |`)
             if (skipped && !blocked) process.exitCode = 1
             blocked ||= ['failure', 'cancelled'].includes(step.outcome)
+          }
+          if (process.env.SMOKE_REPORT === 'true') {
+            const reportPath = 'artifacts/ci/public-smoke/report.json'
+            if (existsSync(reportPath)) {
+              const report = JSON.parse(readFileSync(reportPath, 'utf8'))
+              lines.push('', `Report: **${report.status}**; phase: ${report.phase}; step: ${report.step}.`)
+              for (const scenario of report.browserScenarios) {
+                const counts = Object.values(scenario.checks).reduce((counts, value) => {
+                  counts[value] = (counts[value] || 0) + 1
+                  return counts
+                }, {})
+                lines.push(`- ${scenario.name}: ${scenario.status}; ${counts.passed || 0} passed, ${counts.failed || 0} failed, ${counts['not-run'] || 0} not-run.`)
+              }
+              const complete = report.status === 'passed' && Object.values(report.checks).every(value => value === 'passed') &&
+                report.browserScenarios.length === 3 && report.browserScenarios.every(scenario =>
+                  scenario.status === 'passed' && Object.values(scenario.checks).every(value => value === 'passed'))
+              if (!complete) {
+                lines.push('Mandatory smoke coverage incomplete: see report for the primary failure; not-run checks are not passes.')
+                process.exitCode = 1
+              }
+            } else {
+              lines.push('', 'No smoke report produced; browser coverage is not established.')
+              if (steps.smoke.outcome === 'success') process.exitCode = 1
+            }
           }
           appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n')
           JS
@@ -117,19 +143,8 @@ jobs:
         if: always()
         env:
           STEPS: ${{ toJSON(steps) }}
-        run: |
-          node --input-type=module <<'JS'
-          import { appendFileSync } from 'node:fs'
-          let blocked = false
-          const lines = ['### Regression checks', '| Step | Outcome |', '| --- | --- |']
-          for (const [name, step] of Object.entries(JSON.parse(process.env.STEPS))) {
-            const skipped = step.outcome === 'skipped'
-            lines.push(`| ${name} | ${skipped ? (blocked ? 'not-run (failed/cancelled prerequisite)' : 'UNEXPECTED SKIP') : step.outcome} |`)
-            if (skipped && !blocked) process.exitCode = 1
-            blocked ||= ['failure', 'cancelled'].includes(step.outcome)
-          }
-          appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n')
-          JS
+          SUMMARY_TITLE: Regression checks
+        run: *job-summary
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -184,42 +199,9 @@ jobs:
         if: always()
         env:
           STEPS: ${{ toJSON(steps) }}
-        run: |
-          node --input-type=module <<'JS'
-          import { appendFileSync, existsSync, readFileSync } from 'node:fs'
-          const steps = JSON.parse(process.env.STEPS)
-          let blocked = false
-          const lines = ['### Public visitor smoke', '| Step | Outcome |', '| --- | --- |']
-          for (const [name, step] of Object.entries(steps)) {
-            const skipped = step.outcome === 'skipped'
-            lines.push(`| ${name} | ${skipped ? (blocked ? 'not-run (failed/cancelled prerequisite)' : 'UNEXPECTED SKIP') : step.outcome} |`)
-            if (skipped && !blocked) process.exitCode = 1
-            blocked ||= ['failure', 'cancelled'].includes(step.outcome)
-          }
-          const reportPath = 'artifacts/ci/public-smoke/report.json'
-          if (existsSync(reportPath)) {
-            const report = JSON.parse(readFileSync(reportPath, 'utf8'))
-            lines.push('', `Report: **${report.status}**; phase: ${report.phase}; step: ${report.step}.`)
-            for (const scenario of report.browserScenarios) {
-              const counts = Object.values(scenario.checks).reduce((counts, value) => {
-                counts[value] = (counts[value] || 0) + 1
-                return counts
-              }, {})
-              lines.push(`- ${scenario.name}: ${scenario.status}; ${counts.passed || 0} passed, ${counts.failed || 0} failed, ${counts['not-run'] || 0} not-run.`)
-            }
-            const complete = report.status === 'passed' && Object.values(report.checks).every(value => value === 'passed') &&
-              report.browserScenarios.length === 3 && report.browserScenarios.every(scenario =>
-                scenario.status === 'passed' && Object.values(scenario.checks).every(value => value === 'passed'))
-            if (!complete) {
-              lines.push('Mandatory smoke coverage incomplete: see report for the primary failure; not-run checks are not passes.')
-              process.exitCode = 1
-            }
-          } else {
-            lines.push('', 'No smoke report produced; browser coverage is not established.')
-            if (steps.smoke.outcome === 'success') process.exitCode = 1
-          }
-          appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n')
-          JS
+          SUMMARY_TITLE: Public visitor smoke
+          SMOKE_REPORT: 'true'
+        run: *job-summary
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

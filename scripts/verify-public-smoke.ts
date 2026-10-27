@@ -61,6 +61,8 @@ async function step(name: string, action: () => Promise<void>) {
 
 try {
   // Reporting exists even when preflight refuses this checkout. Never inspect .env contents.
+  // This directory belongs exclusively to this verifier; old failure traces are not current evidence.
+  await rm(artifacts, { recursive: true, force: true })
   await mkdir(artifacts, { recursive: true })
   await persist()
   await step('preflight', async () => { assertSmokeCheckout(process.cwd()) })
@@ -182,6 +184,9 @@ try {
       await persist()
     })
   })
+  assert(browserScenarios.every((scenario) => scenario.status === 'passed' &&
+    Object.values(scenario.checks).every((status) => status === 'passed')),
+  'Mandatory browser scenarios must all pass; not-run is not success')
   report.status = 'passed'
 } catch (error) {
   primaryError = error
@@ -212,6 +217,11 @@ try {
     console.error('Could not persist public smoke report', error)
     process.exitCode = 1
   }
+}
+console.log(`Public smoke: ${report.status}; setup ${Object.values(report.checks).filter((status) => status === 'passed').length}/${steps.length} passed`)
+for (const scenario of browserScenarios) {
+  const outcomes = Object.values(scenario.checks)
+  console.log(`${scenario.name}: ${scenario.status}; ${outcomes.filter((status) => status === 'passed').length} passed, ${outcomes.filter((status) => status === 'failed').length} failed, ${outcomes.filter((status) => status === 'not-run').length} not-run`)
 }
 if (primaryError || report.status === 'failed') {
   console.error(primaryError || report.cleanupErrors.join('\n'))

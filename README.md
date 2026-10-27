@@ -93,6 +93,57 @@ visible, and the document is visible. Reduced motion suppresses acquisition,
 autoplay and swaps without exposing manual controls. Autoplay rejection retains
 the responsive poster. Homepage swap timing starts after initial readiness.
 
+## CI and public visitor smoke
+
+CI runs independent typecheck, regression (`build`), and public-smoke jobs on PRs
+and main pushes. Regression checks retain Node/media tests, Chromium and WebKit
+components, migrations, and the slug/social production verifiers in that order.
+Each job always publishes actual step outcomes; downstream checks blocked by a
+failed prerequisite are not-run, not passes. Unexpected skips are flagged.
+
+Run the visitor smoke from a **clean separate clone** with Node 22, pnpm 10.34.6,
+FFmpeg/ffprobe (libx264), and Chromium installed:
+
+~~~bash
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+pnpm test:public-smoke
+~~~
+
+Do not copy `.env` into that clone. The smoke refuses `.env`, `.env.local`,
+`.env.production`, and `.env.production.local` by existence, without reading them.
+It sets its own generated secret, loopback origin, absolute temporary SQLite and
+media paths; it does not use local portfolio records. It migrates and seeds one
+synthetic story, three images, a processed video, and an email, builds production,
+and checks real navigation, keyboard focus, reduced motion, and focused axe scans
+at 390 and 1440 widths. This is not full WCAG certification. Temporary data and
+owned processes are cleaned up; missing prerequisites or mandatory checks fail.
+
+All production verifiers write `.next`: run `test:slugs`, `test:social-metadata`,
+and `test:public-smoke` sequentially in a checkout without a running local server.
+The historical `scripts/verify-public-navigation.mjs` is not the CI entry point.
+
+Diagnostics live under `artifacts/ci/`. The smoke resets only its owned
+`artifacts/ci/public-smoke/` directory on each invocation so old traces cannot
+masquerade as current evidence. `report.json` includes setup outcomes, scenario,
+route, viewport, motion, step, passed/failed/not-run checks, primary error, and
+secondary capture/cleanup errors. Build/server logs and raw axe results are kept.
+Browser failures add a PNG and Playwright trace when capture is available; setup
+failures retain JSON/logs without claiming a screenshot. Successful traces are
+discarded. A capture failure does not replace the primary assertion failure.
+
+Failed CI jobs upload allowlisted logs, JSON, PNG, and ZIP diagnostics for seven
+days (subject to repository policy). Component suites contribute their existing
+failure screenshots/attachments from `src/**/__screenshots__/` and the explicitly
+allowlisted hidden `.vitest-attachments/`; they do not promise Playwright traces.
+No database, media directory, environment file, or whole checkout is uploaded.
+Download the failed job's diagnostics from the Actions run, read its report/logs,
+and open an available smoke trace locally:
+
+~~~bash
+pnpm exec playwright show-trace path/to/mobile-trace.zip
+~~~
+
 ## FFmpeg and workers
 
 Video processing requires `ffmpeg` and `ffprobe` with `libx264`. The commands default to `PATH`; override them when needed:

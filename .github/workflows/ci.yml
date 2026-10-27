@@ -5,7 +5,31 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.6
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -22,6 +46,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install FFmpeg
         timeout-minutes: 5
         run: |
@@ -36,7 +62,6 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium webkit
       - run: pnpm test:browser
       - run: pnpm test:browser:webkit
-      - run: pnpm typecheck
       - run: pnpm exec payload migrate
       - run: pnpm test:slugs
       - run: pnpm test:social-metadata

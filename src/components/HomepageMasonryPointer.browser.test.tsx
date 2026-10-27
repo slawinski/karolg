@@ -77,6 +77,20 @@ it('recenters in short-column headroom and resumes below the skyline', async () 
   expect(offset()).toBeLessThan(center() - 30)
 })
 
+it('keeps keyboard-focused edge cards inside the viewport instead of the clipped pointer rail', async () => {
+  await render(<HomepageMasonry pools={pools} slots={slots} />)
+  for (const card of [cards()[0], cards().at(-1)!]) {
+    const link = card.querySelector<HTMLAnchorElement>('a')!
+    link.focus()
+    move(1000, belowSkyline())
+    settle()
+    const box = link.getBoundingClientRect()
+    expect(box.left).toBeGreaterThanOrEqual(0)
+    expect(box.right).toBeLessThanOrEqual(innerWidth)
+    expect(document.activeElement).toBe(link)
+  }
+})
+
 it('bridges gutters at the lower top and keeps vertical gaps active', async () => {
   await render(<HomepageMasonry pools={pools} slots={slots} />)
   const high = cards()[0].getBoundingClientRect()

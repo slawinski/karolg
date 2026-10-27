@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import type { Payload } from 'payload'
+import { browserScenarios, runPublicSmokeJourney } from './public-smoke-journey'
 import {
   assertSmokeCheckout, seedPublicSmokeFixture, stopSmokeChild, waitForSmokeChild,
   type PublicSmokeFixture,
@@ -17,14 +18,14 @@ const artifacts = path.resolve('artifacts/ci/public-smoke')
 const report = {
   status: 'running' as 'running' | 'passed' | 'failed',
   scenario: 'fixture-http', phase: 'setup', step: 'preflight',
-  browserScenarios: 'not-run (U3)',
-  url: null as string | null, viewport: null, motion: null,
+  browserScenarios,
+  url: null as string | null, viewport: null as { width: number; height: number } | null, motion: null as string | null,
   checks: {} as Record<string, 'passed' | 'failed' | 'not-run'>,
   fixture: null as PublicSmokeFixture | null,
   logs: [] as string[],
   error: null as string | null, cleanupErrors: [] as string[], evidenceErrors: [] as string[],
 }
-const steps = ['preflight', 'media-tools', 'environment', 'payload', 'migrate', 'seed', 'build', 'server', 'fixture-http']
+const steps = ['preflight', 'media-tools', 'environment', 'payload', 'migrate', 'seed', 'build', 'server', 'fixture-http', 'browser-journey']
 for (const step of steps) report.checks[step] = 'not-run'
 const errorMessage = (error: unknown) => error instanceof Error ? error.stack || error.message : String(error)
 const persist = () => writeFile(path.join(artifacts, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)
@@ -168,13 +169,24 @@ try {
     const { info: poster } = await sharp(await get(fixture.video.posterUrl, 'image/jpeg')).raw().toBuffer({ resolveWithObject: true })
     assert(poster.width && poster.height, 'Video poster must decode')
     await get(fixture.video.playbackUrl, 'video/mp4')
-    // U3 adds browser contexts here, while the same server and manifest are alive.
+  })
+  await step('browser-journey', async () => {
+    report.phase = 'browser'
+    report.scenario = 'browser-setup'
+    await runPublicSmokeJourney(base, report.fixture!, artifacts, async (scenario) => {
+      report.scenario = scenario.name
+      report.step = scenario.step
+      report.url = scenario.url
+      report.viewport = scenario.viewport
+      report.motion = scenario.motion
+      await persist()
+    })
   })
   report.status = 'passed'
 } catch (error) {
   primaryError = error
   report.status = 'failed'
-  report.checks[report.step] = 'failed'
+  report.checks[report.phase === 'browser' ? 'browser-journey' : report.step] = 'failed'
   report.error = errorMessage(error)
 } finally {
   const cleanup = async (action: () => Promise<unknown>) => {
@@ -206,4 +218,4 @@ if (primaryError || report.status === 'failed') {
   process.exitCode = 1
   // A timed-out destroy may leave handles alive; the report is already flushed.
   if (report.cleanupErrors.length) process.exit(1)
-} else console.log('PASS public smoke fixture HTTP lifecycle (browser scenarios belong to U3)')
+} else console.log('PASS public smoke fixture HTTP lifecycle and mobile, desktop, reduced-motion visitor journeys')

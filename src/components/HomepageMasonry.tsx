@@ -390,6 +390,23 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       rail.style.transform = `translate3d(${-overflow * current}px, 0, 0)`
     }
 
+    const revealKeyboardFocus = () => {
+      const link = viewport.querySelector<HTMLElement>('.masonry-card__link:focus-visible')
+      if (!link) return false
+      if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      animationFrame = 0
+      tracking = false
+      // Native focus may scroll the overflow-hidden container as well as the page.
+      viewport.scrollLeft = 0
+      const box = link.getBoundingClientRect()
+      const bounds = viewport.getBoundingClientRect()
+      const shift = box.left < bounds.left ? bounds.left - box.left :
+        box.right > bounds.right ? bounds.right - box.right : 0
+      current = target = overflow ? clamp(current - shift / overflow, 0, 1) : 0
+      apply()
+      return true
+    }
+
     const tick = (time: number) => {
       animationFrame = 0
 
@@ -418,6 +435,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
     }
 
     const updatePointerTarget = () => {
+      if (revealKeyboardFocus()) return
       if (isBelowSkyline() && pointer) {
         const bounds = viewport.getBoundingClientRect()
         tracking = true
@@ -436,11 +454,13 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
 
     const handlePointerLeave = () => {
       pointer = null
+      if (revealKeyboardFocus()) return
       returnToCenter()
       animateToTarget()
     }
 
     const handleViewportChange = () => {
+      if (revealKeyboardFocus()) return
       apply()
       if (pointer) updatePointerTarget()
     }
@@ -460,6 +480,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
 
     viewport.addEventListener('pointermove', handlePointerMove)
     viewport.addEventListener('pointerleave', handlePointerLeave)
+    viewport.addEventListener('focusin', revealKeyboardFocus)
     window.addEventListener('scroll', handleViewportChange, { passive: true })
     window.addEventListener('resize', handleResize)
     resizeObserver.observe(viewport)
@@ -470,6 +491,7 @@ export function HomepageMasonry({ pools, slots }: HomepageMasonryProps) {
       invalidatePointerRef.current = () => {}
       viewport.removeEventListener('pointermove', handlePointerMove)
       viewport.removeEventListener('pointerleave', handlePointerLeave)
+      viewport.removeEventListener('focusin', revealKeyboardFocus)
       window.removeEventListener('scroll', handleViewportChange)
       window.removeEventListener('resize', handleResize)
       resizeObserver.disconnect()
